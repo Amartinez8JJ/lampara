@@ -1,0 +1,156 @@
+/* Lámpara · motion.css — capa de movimiento (dueño: agente Movimiento)
+
+   Todo lo de este archivo vive detrás de clases que motion.js pone en <html>:
+     .mo-gest   gestos activos (touch-action, asas de arrastre). Sigue con movimiento reducido.
+     .mo-on     movimiento decorativo permitido (sin Lampara.RM() y sin apagar).
+     .mo-vt     transiciones de vista con dirección (View Transitions).
+     .mo-drag   hay un gesto en curso (sin selección de texto).
+   Sin esas clases la app queda exactamente como la deja index.html.
+   Solo se anima transform/opacity (y sus propiedades sueltas translate/scale/rotate). */
+
+/* ================================================================
+   TOKENS DE MOVIMIENTO (espejo de LamparaMotion.DUR / EASE en motion.js)
+   ================================================================ */
+:root {
+  --mo-instant: 90ms;   /* aparecer un anillo, confirmar */
+  --mo-fast: 160ms;     /* hundirse al presionar, colores */
+  --mo-base: 260ms;     /* cerrar, cambios chicos */
+  --mo-page: 340ms;     /* cambio de pestaña */
+  --mo-slow: 520ms;     /* asentarse, celebrar */
+  --mo-ease-out: cubic-bezier(0.22, 1, 0.36, 1);    /* llegar: = --ease del núcleo */
+  --mo-ease-in: cubic-bezier(0.55, 0, 1, 0.45);     /* irse: acelera hacia afuera */
+  --mo-ease-page: cubic-bezier(0.2, 0.8, 0.2, 1);   /* eje compartido entre pestañas */
+  --mo-ease-pop: cubic-bezier(0.34, 1.4, 0.64, 1);  /* resorte corto en CSS (= --pop) */
+  --mo-screen-r: 36px;  /* radio interior de la pantalla del teléfono */
+}
+@media (max-width: 440px) { :root { --mo-screen-r: 0px; } }
+
+/* ================================================================
+   GESTOS
+   El navegador solo hace scroll vertical en las vistas: lo horizontal
+   queda para deslizar entre pestañas o volver. Los carruseles (.strip,
+   .tpls, .who) son scrollers propios y siguen deslizando solos.
+   ================================================================ */
+html.mo-gest .view > .scr { touch-action: pan-y pinch-zoom; }
+html.mo-gest #sheet { overscroll-behavior: contain; }
+html.mo-gest #sheet .grab { position: relative; touch-action: none; cursor: grab; }
+html.mo-gest #sheet .grab::before { content: ""; position: absolute; left: -150px; right: -150px; top: -10px; bottom: -16px; touch-action: none; }
+html.mo-gest #focus .fo-top { touch-action: none; }
+html.mo-gest #medal .md-badge, html.mo-gest .ach-d .md-badge { touch-action: none; cursor: grab; }
+html.mo-gest #banner { touch-action: none; }
+html.mo-drag, html.mo-drag * { -webkit-user-select: none !important; user-select: none !important; cursor: grabbing !important; }
+.view.push.mo-swiping { box-shadow: -18px 0 44px rgba(0, 0, 0, 0.55); }
+
+/* ================================================================
+   TRANSICIÓN ENTRE PESTAÑAS (View Transitions + Lampara 'beforeTab')
+   La pantalla (#views) se mueve en eje compartido según el orden de las
+   pestañas; la barra, el toast, el aviso y las chispas quedan vivos
+   encima (si no, el snapshot de la vista los taparía 340 ms).
+   ================================================================ */
+html.mo-vt #views { view-transition-name: lp-views; }
+html.mo-vt #tabbar { view-transition-name: lp-tabbar; }
+html.mo-vt #toast { view-transition-name: lp-toast; }
+html.mo-vt #banner { view-transition-name: lp-banner; }
+html.mo-vt #fx { view-transition-name: lp-fx; }
+html.mo-vt #embers { view-transition-name: lp-embers; }
+
+html[data-mo-nav]::view-transition-group(lp-views) { overflow: clip; border-radius: var(--mo-screen-r); animation-duration: var(--mo-page); }
+html[data-mo-nav]::view-transition-old(lp-tabbar),
+html[data-mo-nav]::view-transition-old(lp-toast),
+html[data-mo-nav]::view-transition-old(lp-banner),
+html[data-mo-nav]::view-transition-old(lp-fx),
+html[data-mo-nav]::view-transition-old(lp-embers) { animation: none; opacity: 0; }
+html[data-mo-nav]::view-transition-new(lp-tabbar),
+html[data-mo-nav]::view-transition-new(lp-toast),
+html[data-mo-nav]::view-transition-new(lp-banner),
+html[data-mo-nav]::view-transition-new(lp-fx),
+html[data-mo-nav]::view-transition-new(lp-embers) { animation: none; opacity: 1; }
+
+html[data-mo-nav="fwd"]::view-transition-old(lp-views) { animation: mo-vt-out-l var(--mo-page) var(--mo-ease-page) both; }
+html[data-mo-nav="fwd"]::view-transition-new(lp-views) { animation: mo-vt-in-r var(--mo-page) var(--mo-ease-page) both; }
+html[data-mo-nav="back"]::view-transition-old(lp-views) { animation: mo-vt-out-r var(--mo-page) var(--mo-ease-page) both; }
+html[data-mo-nav="back"]::view-transition-new(lp-views) { animation: mo-vt-in-l var(--mo-page) var(--mo-ease-page) both; }
+html[data-mo-nav="same"]::view-transition-old(lp-views) { animation: mo-vt-fade-out 200ms ease-out both; }
+html[data-mo-nav="same"]::view-transition-new(lp-views) { animation: mo-vt-fade-in 300ms var(--mo-ease-out) both; }
+
+/* el que se va desaparece rápido (40 %) y el que llega aparece después: sin doble exposición */
+@keyframes mo-vt-out-l { 0% { transform: none; opacity: 1; } 40% { opacity: 0; } 100% { transform: translateX(-44px); opacity: 0; } }
+@keyframes mo-vt-out-r { 0% { transform: none; opacity: 1; } 40% { opacity: 0; } 100% { transform: translateX(44px); opacity: 0; } }
+@keyframes mo-vt-in-r { 0% { transform: translateX(44px); opacity: 0; } 25% { opacity: 0; } 100% { transform: none; opacity: 1; } }
+@keyframes mo-vt-in-l { 0% { transform: translateX(-44px); opacity: 0; } 25% { opacity: 0; } 100% { transform: none; opacity: 1; } }
+@keyframes mo-vt-fade-out { to { opacity: 0; } }
+@keyframes mo-vt-fade-in { from { opacity: 0; transform: scale(0.985); } }
+
+/* ================================================================
+   BARRA INFERIOR: indicador que se desliza, color, punto de aviso
+   ================================================================ */
+/* Todo lo que inyecta motion.js usa etiquetas propias (<mo-…>): ninguna regla
+   descendiente del núcleo o de los módulos (p. ej. «.stat span») puede alcanzarlas. */
+mo-tabind, mo-bloom, mo-glow, mo-hold, mo-h, mo-arc, mo-pill, mo-sr { display: block; }
+
+/* misma brasa que dibuja el núcleo en .tab::before (54×34 detrás del ícono), pero una sola que viaja */
+mo-tabind {
+  position: absolute; left: -27px; top: -17px; width: 54px; height: 34px; z-index: -1;
+  border-radius: 17px; pointer-events: none; opacity: 0;
+  background: radial-gradient(70% 90% at 50% 40%, rgba(255, 180, 67, 0.26), rgba(255, 180, 67, 0.07) 70%, transparent);
+  box-shadow: inset 0 1px 0 rgba(255, 220, 160, 0.10);
+  transition: opacity var(--mo-base) var(--mo-ease-out);
+}
+mo-tabind.show { opacity: 1; }
+mo-tabind[hidden] { display: none; }
+html.mo-on .tab { transition: color 0.3s var(--mo-ease-out); }
+html.mo-on .tab .dot { animation: mo-dot-in 0.55s var(--mo-ease-pop) both; }
+@keyframes mo-dot-in { from { transform: scale(0); opacity: 0; } }
+
+/* aro de luz que se abre desde el ＋ (queda debajo de la hoja) */
+mo-bloom {
+  position: absolute; z-index: 24; width: 60px; height: 60px; margin: -30px 0 0 -30px; border-radius: 50%; pointer-events: none;
+  border: 1.5px solid rgba(255, 214, 140, 0.85);
+  box-shadow: 0 0 22px 2px rgba(255, 180, 67, 0.45), inset 0 0 16px rgba(255, 180, 67, 0.35);
+}
+
+/* ================================================================
+   CAPA DE DESTELLOS (encima de todo, nunca recibe toques)
+   ================================================================ */
+#mo-fx { position: absolute; inset: 0; z-index: 60; pointer-events: none; overflow: hidden; }
+mo-glow {
+  --mo-gc: #ffc35a;
+  position: absolute; width: 140px; height: 140px; margin: -70px 0 0 -70px; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle, rgba(255, 248, 230, 0.5) 0%, color-mix(in oklab, var(--mo-gc) 55%, transparent) 20%, color-mix(in oklab, var(--mo-gc) 16%, transparent) 44%, transparent 68%);
+  mix-blend-mode: plus-lighter;
+}
+
+/* ================================================================
+   MANTENER PARA MARCAR: anillo que se llena (dos mitades que giran)
+   ================================================================ */
+mo-hold { --mo-hc: var(--c); position: absolute !important; inset: -7px; z-index: 1; border-radius: 50%; pointer-events: none; opacity: 0; }
+.prac.on mo-hold { --mo-hc: var(--ink-2); }
+mo-hold > mo-h { position: absolute; top: 0; bottom: 0; width: 50%; overflow: hidden; }
+mo-hold > mo-h.r { right: 0; }
+mo-hold > mo-h.l { left: 0; }
+mo-arc { position: absolute; top: 0; bottom: 0; width: 200%; border-radius: 50%; border: 3px solid transparent; transform: rotate(45deg); }
+mo-h.r > mo-arc { left: -100%; border-bottom-color: var(--mo-hc); border-left-color: var(--mo-hc); }
+mo-h.l > mo-arc { left: 0; border-top-color: var(--mo-hc); border-right-color: var(--mo-hc); }
+
+/* ================================================================
+   CONTADORES QUE RUEDAN (cada cifra es una tira 0–9 que se traslada)
+   ================================================================ */
+mo-odo { display: inline; white-space: nowrap; }
+mo-col { position: relative; display: inline-block; clip-path: inset(0 -1em); }
+mo-sz { display: inline; visibility: hidden; }
+mo-strip { position: absolute; left: -1em; right: -1em; top: 0; display: block; text-align: center; }
+mo-d { display: block; white-space: nowrap; }
+mo-sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+/* ================================================================
+   CONTROLES SEGMENTADOS: la píldora se desliza
+   ================================================================ */
+html.mo-on .segc, html.mo-on .fo-seg { position: relative; }
+html.mo-on .fo-seg button { position: relative; }
+mo-pill { position: absolute; pointer-events: none; }
+.mo-seg-gliding button[aria-selected="true"] { background: transparent !important; box-shadow: none !important; }
+
+/* ================================================================
+   MEDALLA: la moneda gira en 3D al arrastrarla
+   ================================================================ */
+html.mo-gest #medal .md-badge, html.mo-gest .ach-d .md-badge { perspective: 560px; }
