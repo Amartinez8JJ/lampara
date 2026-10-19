@@ -177,12 +177,12 @@
     save(); refresh();
     if (!on) return;
     haptic(12);
-    if (tierOf(litDays()) > tierOf(ld0)) setTimeout(() => evolveWhenFree(tierOf(ld0), tierOf(litDays()), litDays()), 900);
+    if (tierOf(litDays()) > tierOf(ld0)) setTimeout(() => evolveWhenFree(tierOf(ld0), tierOf(litDays()), litDays()), 900 + (o.anim || 0));
     if (!wasLit && litToday() && !o.quiet) {
       emit('lit');
       toast('Encendiste tu llama · ' + litDays() + ' días encendidos', { icon: 'flame' });
     }
-    if (!wasAll && allDone() && !o.quiet) setTimeout(celebrate, 380);
+    if (!wasAll && allDone() && !o.quiet) setTimeout(celebrate, 380 + (o.anim || 0));
     const wkKey = dk(weekStart(today()));
     S.summit = S.summit || {};
     if (wk0 < GOAL && weekLit() >= GOAL && !S.summit[wkKey]) { S.summit[wkKey] = 1; save(); setTimeout(summitWhenFree, 1200); }

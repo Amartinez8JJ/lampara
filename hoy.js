@@ -28,8 +28,59 @@
     return '<button class="rbtn' + cls + '" data-ring="' + it.id + '" data-a="' + it.a + '" aria-label="' + esc(it.t) + (done ? ', hecho' : ', mantén presionado para completar') + '">' +
       '<span class="disk"><svg class="rg" viewBox="0 0 96 96"><circle class="trk" cx="48" cy="48" r="44"/><circle class="bar" cx="48" cy="48" r="44"/></svg>' +
       '<span class="core">' + ic(D.ICON[it.a]) + '</span><span class="badge">' + ic('checkmark') + '</span></span>' +
-      '<b>' + esc(it.t) + '</b><small>' + (done && !fresh ? 'Hecho' : esc(it.h)) + '</small></button>';
+      '<b>' + esc(it.t) + '</b><small>' + (done && !fresh ? 'Hecho' : esc(it.h)) + (it.n ? ic('document-text', 'nmark') : '') + '</small></button>';
   }
+  /* ---------- la fogata (propuesta C, elegida el 19/10): cada práctica viaja hasta tu llama y la aviva ----------
+     Duolingo (la racha que cambia con los hitos), Finch (la energía sube con cada meta) y Apple Fitness (el anillo del día). */
+  const RM = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const lvVars = p => '--s:' + (0.34 + 0.66 * p).toFixed(3) + ';--sat:' + (0.12 + 0.88 * p).toFixed(2) + ';--br:' + (0.72 + 0.28 * p).toFixed(2) + ';--go:' + (0.06 + 0.4 * p).toFixed(2) + ';--gs:' + (0.45 + 0.55 * p).toFixed(2);
+  const setLv = (z, p) => { lvVars(p).split(';').forEach(x => { const [k, v] = x.split(':'); z.style.setProperty(k, v); }); };
+  const capHTML = (k, n) => n && k === n ? '<b>Encendida</b>' : k ? '<b>Se aviva</b>' : '<b>En brasa</b>';
+  const inView = el => { const r = el.getBoundingClientRect(); return r.bottom > 40 && r.top < innerHeight - 60; };
+  function ember(z, color, o) {
+    o = o || {}; const e = document.createElement('i'); e.className = 'fo-em'; const sz = o.size || 3 + Math.random() * 3;
+    e.style.width = e.style.height = sz + 'px'; e.style.background = color; e.style.left = (z.clientWidth / 2 - sz / 2 + (Math.random() - 0.5) * (o.w || 60)) + 'px';
+    if (o.bottom) e.style.bottom = o.bottom + 'px'; z.appendChild(e);
+    const g = -Math.PI / 2 + (Math.random() - 0.5) * (o.spread || 0.5), d = (o.d || 110) + Math.random() * (o.dv || 70);
+    e.animate([{ transform: 'translate(0,0) scale(1)', opacity: 0 }, { opacity: o.op || 1, offset: 0.12 }, { transform: 'translate(' + Math.cos(g) * d + 'px,' + Math.sin(g) * d + 'px) scale(.2)', opacity: 0 }],
+      { duration: (o.t || 1500) + Math.random() * 800, easing: 'cubic-bezier(.2,.65,.35,1)' }).onfinish = () => e.remove();
+  }
+  const ringOut = (z, color, sc, dl) => { const r = document.createElement('i'); r.className = 'fo-ring'; r.style.borderColor = color; z.appendChild(r);
+    r.animate([{ transform: 'scale(.3)', opacity: 0.9 }, { transform: 'scale(' + sc + ')', opacity: 0 }], { duration: 800, delay: dl || 0, easing: 'cubic-bezier(.2,.7,.3,1)', fill: 'backwards' }).onfinish = () => r.remove(); };
+  const burst = (z, colors, n, spread) => { for (let i = 0; i < n; i++) ember(z, colors[i % colors.length], { bottom: 70, w: 10, spread, d: 50, dv: 100, t: 700, size: 3 + Math.random() * 5 }); };
+  /* la práctica sale del anillo como una bola de su color, con estela, y cae en curva sobre la llama */
+  function orb(from, z, color, cb) {
+    const a = from.getBoundingClientRect(), b = z.getBoundingClientRect();
+    const x0 = a.left + a.width / 2, y0 = a.top + a.height / 2, x2 = b.left + b.width / 2, y2 = b.bottom - 66;
+    const x1 = (x0 + x2) / 2 + (x0 < x2 ? -50 : 50), y1 = Math.min(y0, y2) - 70;
+    const o = document.createElement('i'); o.className = 'fo-orb'; o.style.background = 'radial-gradient(circle, #fff 0 22%, ' + color + ' 62%)'; o.style.boxShadow = '0 0 18px 5px ' + color; document.body.appendChild(o);
+    const D = 620, t0 = performance.now(); let last = 0;
+    const ease = t => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+    (function step(now) {
+      const t = Math.min(1, (now - t0) / D), e = ease(t), u = 1 - e, x = u * u * x0 + 2 * u * e * x1 + e * e * x2, y = u * u * y0 + 2 * u * e * y1 + e * e * y2;
+      o.style.transform = 'translate(' + x + 'px,' + y + 'px) scale(' + (1 - 0.4 * e) + ')';
+      if (now - last > 14) { last = now; const tr = document.createElement('i'); tr.className = 'fo-trail'; tr.style.background = color; document.body.appendChild(tr);
+        tr.animate([{ transform: 'translate(' + x + 'px,' + y + 'px) scale(1)', opacity: 0.65 }, { transform: 'translate(' + x + 'px,' + (y + 8) + 'px) scale(.15)', opacity: 0 }], { duration: 420, easing: 'ease-out' }).onfinish = () => tr.remove(); }
+      if (t < 1) requestAnimationFrame(step); else { o.remove(); cb(); }
+    })(t0);
+  }
+  /* al llegar: la llama se aplasta, rebota, toma un instante el color de la práctica y suelta chispas */
+  function impact(z, color) {
+    const fi = z.querySelector('.fo-in'); if (!fi) return;
+    fi.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.14,.82)', offset: 0.22 }, { transform: 'scale(.93,1.12)', offset: 0.55 }, { transform: 'scale(1.02,.98)', offset: 0.8 }, { transform: 'scale(1)' }], { duration: 700, easing: 'ease-out' });
+    fi.animate([{ filter: 'none' }, { filter: 'drop-shadow(0 0 16px ' + color + ') brightness(1.3)', offset: 0.3 }, { filter: 'none' }], { duration: 900 });
+    ringOut(z, color, 2.3); burst(z, [color, '#fff'], 14, 1.6); L.haptic([10, 30, 14]);
+  }
+  /* el día completo: toma aire, se enciende entera con un destello y dos anillos de luz */
+  function blaze(z) {
+    const fi = z.querySelector('.fo-in'), T = L.TIERS[L.tierOf(L.litDays())]; if (!fi) return;
+    fi.animate([{ transform: 'scale(1)' }, { transform: 'scale(.84)', offset: 0.28 }, { transform: 'scale(1.26)', offset: 0.52 }, { transform: 'scale(.96)', offset: 0.78 }, { transform: 'scale(1)' }], { duration: 1150, easing: 'ease-out' });
+    setTimeout(() => {
+      z.classList.add('blaze'); const f = z.querySelector('.fo-flash'); if (f) f.animate([{ opacity: 0 }, { opacity: 1, offset: 0.2 }, { opacity: 0 }], { duration: 800 });
+      ringOut(z, T.c, 3.6); ringOut(z, T.l, 2.8, 140); burst(z, [T.c, T.l, '#fff'], 40, 2.8); L.haptic([20, 60, 30, 60, 40]);
+    }, 320);
+  }
+
   function weekHTML() {
     const t = L.today();
     return '<div class="week">' + L.weekDates(t).map(d => {
@@ -58,6 +109,16 @@
       this.addEventListener('pointermove', e => { if (holdB && Math.hypot(e.clientX - x0, e.clientY - y0) > 10) cancel(); });
       ['pointerup', 'pointercancel'].forEach(ev => this.addEventListener(ev, () => { if (!this.fired) cancel(); }));
       this.addEventListener('contextmenu', e => { if (e.target.closest('[data-ring]')) e.preventDefault(); });
+      const embers = () => {
+        const z = this.pg && this.pg.querySelector('.fo-z'), p = this.lvShown || 0;
+        if (z && !document.hidden && !RM() && z.offsetParent && inView(z)) {
+          const T = L.TIERS[L.tierOf(L.litDays())];
+          if (p) ember(z, Math.random() < 0.5 ? T.c : T.l, { w: 24 + 46 * p, bottom: 64 });
+          else if (Math.random() < 0.4) ember(z, '#8a6a4a', { w: 14, d: 34, dv: 26, op: 0.55, size: 3, bottom: 64 });
+        }
+        setTimeout(embers, p === 1 ? 160 : p ? 840 - 560 * p : 1200);
+      };
+      embers();
     }
     render() {
       const S = L.S, t = L.today(), its = L.todayItems(), k = its.filter(i => L.isDone(i.id)).length, n = its.length;
@@ -68,27 +129,33 @@
       /* la barra de colores arranca como estaba y se completa en after(): así se anima */
       this.onNow = new Set(its.filter(i => L.isDone(i.id)).map(i => i.id));
       const cta = pend.length ? '<button class="btn" data-start>' + ic('play') + (k ? 'Seguir · ' + pend.length + ' más' : 'Empezar') + '</button>'
-        : n && k === n ? '<div class="done-line">Tu llama está encendida</div>' : n ? '<p class="muted">Lo que queda es con otras personas.</p>' : '<p class="muted">Nada planeado para hoy.</p>';
+        : n && k === n ? '' : n ? '<p class="muted">Lo que queda es con otras personas.</p>' : '<p class="muted">Nada planeado para hoy.</p>';
       /* la llama: crece con lo que vas haciendo hoy y cambia de etapa con los días encendidos */
       const ld = L.litDays(), ti = L.tierOf(ld), T = L.TIERS[ti], NX = L.TIERS[ti + 1], lit = L.litToday();
       const prog = NX ? (ld - T.d) / (NX.d - T.d) : 1;
-      const flame = '<button class="tcd-fl' + (lit ? ' on' : '') + (n && k === n ? ' full' : '') + '" data-llama style="--tc:' + T.c + ';--lv:' + (n ? (0.55 + 0.45 * k / n).toFixed(2) : 1) + '" aria-label="Tu llama: ' + esc(T.n) + '">' + L.llama(ti) + '</button>';
-      const tier = '<div class="tier" style="--tc:' + T.c + '"><span><b>' + ld + '</b> días encendidos · <em>' + esc(T.n) + '</em></span><i><s style="width:' + Math.round(prog * 100) + '%"></s></i><small>' + (NX ? (NX.d - ld === 1 ? 'Falta 1 día' : 'Faltan ' + (NX.d - ld) + ' días') + ' para ' + esc(NX.n) : 'La última llama') + '</small></div>';
+      /* si viene un orbe en camino, la llama arranca como estaba y crece cuando llega (after) */
+      const k0 = this.just && L.isDone(this.just) ? k - 1 : k;
+      this.lvTo = n ? k / n : 0;
+      const lvFrom = this.just ? (n ? k0 / n : 0) : this.lvShown != null ? this.lvShown : this.lvTo;
+      this.capTo = capHTML(k, n);
+      const flame = '<div class="fo-z' + (n && k === n && !this.just ? ' blaze' : '') + '" style="--tc:' + T.c + ';' + lvVars(lvFrom) + '"><div class="fo-flash"></div><div class="fo-glow"></div>' +
+        '<button class="fo-fl" data-llama aria-label="Tu llama: ' + esc(T.n) + '"><span class="fo-in">' + L.llama(ti) + '</span></button></div>' +
+        '<p class="fo-cap">' + capHTML(k0, n) + '</p>';
+      const tier = '<div class="tier fo-tier" style="--tc:' + T.c + '"><span><em>' + esc(T.n) + '</em> · <b>' + ld + '</b> días encendidos</span><i><s style="width:' + Math.round(prog * 100) + '%"></s></i><small>' + (NX ? (NX.d - ld === 1 ? 'Falta 1 día' : 'Faltan ' + (NX.d - ld) + ' días') + ' para ' + esc(NX.n) : 'La última llama') + '</small></div>';
       /* lo que sigue (lo de «Ahora» en v3): la próxima pendiente late suave */
       const nx = its.find(i => !L.isDone(i.id));
-      const tcd = '<div class="tcd"><div class="tcd-hero">' + flame + '<div class="tcd-txt"><div class="tcd-top"><h2>Tu tiempo con Dios</h2><span>' + k + ' de ' + n + (min ? ' · ' + min + ' min' : '') + '</span></div>' + tier + '</div></div>' + cta + '</div>';
+      const tcd = '<div class="tcd fogata"><div class="tcd-top"><h2>Tu tiempo con Dios</h2><span>' + k + ' de ' + n + (min ? ' · ' + min + ' min' : '') + '</span></div>' + flame + tier + cta + '</div>';
       const groups = MOMENTS.map(([name, icon, a, b]) => {
         const g = its.filter(i => L.mins(i.h) >= a && L.mins(i.h) < b);
         return g.length ? '<p class="moment">' + ic(icon) + name + '</p><div class="rings">' + g.map(i => ring(i, this.just, nx && i.id === nx.id)).join('') + '</div>' : '';
       }).join('');
       const ppl = [{ id: D.LEADER.id, name: D.LEADER.name, first: D.LEADER.first, lead: true }].concat(S.people).concat([{ id: 'AN', name: 'Ana', first: 'Ana', fam: true }]);
       return '<p class="today-date">' + L.longDate(t) + (S.focus ? '<span class="focus-chip">' + ic('flag') + esc(S.focus.t) + '</span>' : '') + '</p>' + weekHTML() +
-        (ctx ? ctx.html() : '') +
+        (ctx ? ctx.html() : '') + tcd + groups +
+        (tipSeen() ? '' : '<div class="tip">' + ic('information-circle-outline') + '<span><b>Cómo se usa:</b> mantén presionado un círculo hasta que se llene: la práctica viaja a tu llama. Tócalo para leer qué hacer y tus notas.</span><button class="iconbtn" data-tipx aria-label="Cerrar">' + ic('close') + '</button></div>') +
         '<div class="verse" data-verse data-a="palabra"><span class="art">' + ic('sh-palabra') + '</span><p class="eyebrow">Versículo del día · <b>' + esc(v.r) + '</b></p><p class="vt">«' + esc(v.t) + '»</p>' +
         '<div class="vacts"><button data-vact="keep" class="' + (saved ? 'on' : '') + '">' + ic(saved ? 'bookmark' : 'bookmark-outline') + (saved ? 'Guardado' : 'Guardar') + '</button>' +
         '<button data-vact="memo">' + ic('leaf-outline') + 'Memorizar</button><button data-vact="share">' + ic('paper-plane-outline') + 'Compartir</button></div></div>' +
-        '<div class="sec"></div>' + tcd + groups +
-        (tipSeen() ? '' : '<div class="tip">' + ic('information-circle-outline') + '<span><b>Cómo se usa:</b> mantén presionado un círculo hasta que se llene para completarlo. Tócalo para ver qué hacer.</span><button class="iconbtn" data-tipx aria-label="Cerrar">' + ic('close') + '</button></div>') +
         '<button class="link add-today" data-addtoday>' + ic('add-circle') + ' Agregar algo a hoy</button>' +
         '<div class="sec"><h2>Tu gente</h2><button class="more" data-anotar>' + ic('add') + ' Anotar</button></div><div class="stories">' + ppl.map(p => {
           const cls = p.lead || p.fam ? 'dim' : p.signal === 'hablar' || p.signal === 'cuesta' ? 'talk' : p.share >= 2 && p.dToday > 0 ? 'lit' : 'dim';
@@ -102,6 +169,13 @@
         chip.classList.toggle('lit', L.litToday()); chip.style.setProperty('--tc', L.TIERS[ti].c);
         chip.querySelector('.fc-f').innerHTML = L.llama(ti, { cls: 'll-mini' }); chip.querySelector('.fc-n').textContent = ld;
       }
+      const z = this.pg.querySelector('.fo-z'), lv = this.lvTo, cap = this.capTo, all = lv === 1;
+      const land = (color, hit) => {
+        const zz = this.pg.querySelector('.fo-z'); if (!zz) return;
+        setLv(zz, lv); this.lvShown = lv;
+        const c = this.pg.querySelector('.fo-cap'); if (c) c.innerHTML = cap;
+        if (hit) { impact(zz, color); if (all) blaze(zz); } else zz.classList.toggle('blaze', all);
+      };
       if (this.just) {
         const id = this.just; this.just = null;
         const b = this.pg.querySelector('[data-ring="' + id + '"]');
@@ -110,13 +184,17 @@
           b.querySelector('.core').classList.add('pop');
           b.querySelector('small').textContent = 'Hecho';
           L.sparks(b.querySelector('.disk'), 16);
+          const color = getComputedStyle(b).getPropertyValue('--c').trim();
+          if (z && !RM() && inView(z) && inView(b)) orb(b.querySelector('.disk'), z, color, () => land(color, true));
+          else land(color, !!z && inView(z));
         }));
-      }
+        else if (z) land('', false);
+      } else if (z) requestAnimationFrame(() => requestAnimationFrame(() => land('', false)));
     }
     mark(id, on) {
       if (!L.todayItems().some(i => i.id === id)) return;
       if (on) this.just = id;
-      L.setDone(id, on);
+      L.setDone(id, on, on ? { anim: 1800 } : undefined);
       if (!on) L.toast('Desmarcado', { undo: () => L.setDone(id, true, { quiet: true }) });
     }
     onClick(e) {
