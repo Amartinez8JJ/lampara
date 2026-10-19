@@ -33,14 +33,17 @@
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   /* íconos incrustados (icons.js): aparecen al instante y no parpadean al redibujar */
   const ic = (n, cls) => window.ICONS && ICONS[n]
-    ? '<svg class="ico' + (cls ? ' ' + cls : '') + '" viewBox="0 0 512 512" aria-hidden="true">' + ICONS[n] + '</svg>'
+    ? '<svg class="ico' + (cls ? ' ' + cls : '') + '" viewBox="' + (window.ICONS_VB || '0 0 512 512') + '" aria-hidden="true">' + ICONS[n] + '</svg>'
     : '<ion-icon name="' + n + '"' + (cls ? ' class="' + cls + '"' : '') + ' aria-hidden="true"></ion-icon>';
   const actIc = (a, filled) => ic(D.ICON[a] + (filled ? '' : '-outline'));
   const hueOf = id => { let h = 0; for (const c of id) h = (h * 31 + c.charCodeAt(0)) % 360; return h; };
   const ini = name => name.split(' ').filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase();
+  /* avatares de color pleno: cada persona toma un color de la paleta */
+  const AVC = ['palabra', 'oracion', 'diario', 'meditar', 'mensaje', 'adoracion', 'encuentro', 'ayuno'];
+  const avColor = id => 'var(--' + AVC[hueOf(id) % AVC.length] + ')';
   function av(id, name, size, cls) {
     const s = size || 40;
-    return '<span class="av ' + (cls || '') + '" style="--s:' + s + 'px;--ah:' + hueOf(id) + '"><b>' + esc(ini(name || id)) + '</b></span>';
+    return '<span class="av ' + (cls || '') + '" style="--s:' + s + 'px;--avc:' + avColor(id) + '"><b>' + esc(ini(name || id)) + '</b></span>';
   }
   let fid = 0;
   const flameSVG = cls => { const g = 'fg' + (++fid);
@@ -60,29 +63,31 @@
     for (let i = 1; i <= 120; i++) hist[dk(addDays(t0, -i))] = i % 11 === 5 ? 'grace' : i % 23 === 9 ? 'ember' : 'lit';
     const people = clone(D.PEOPLE).map(p => {
       p.hist = {}; [...DPAST[p.id]].forEach((c, i) => { p.hist[dk(addDays(t0, -(i + 1)))] = c === 'L' ? 'lit' : c === 'G' ? 'grace' : 'ember'; });
-      p.dToday = DTODAY[p.id]; return p;
+      p.dToday = DTODAY[p.id];
+      const l = D.LAST[p.id]; p.last = l ? { d: dk(addDays(t0, l.w)), notes: l.notes, agree: l.agree.slice() } : null;
+      return p;
     });
     return {
-      v: 4, real: dk(t0), base: dk(t0), off: 0,
+      v: 5, real: dk(t0), base: dk(t0), off: 0,
       done: {}, skip: {}, kept: {},
       routine: clone(D.ROUTINE),
       plans: D.PLANS.map(p => Object.assign(clone(p), { start: dk(p.start === 'year' ? new Date(t0.getFullYear(), 0, 1) : addDays(t0, p.start)) })),
       invites: clone(D.INVITES),
       people, myShare: 2, asked: {},
       log: [],
-      pets: clone(D.PETS), answered: D.ANSWERED.map(a => Object.assign(clone(a), { d: dk(addDays(t0, a.w)) })), nextPet: 7, prayedToday: {},
+      pets: D.PETS.map(p => Object.assign(clone(p), { since: dk(addDays(t0, p.since)), check: p.check ? dk(addDays(t0, p.check)) : null, updates: [] })), answered: D.ANSWERED.map(a => Object.assign(clone(a), { d: dk(addDays(t0, a.w)) })), nextPet: 7, prayedToday: {},
       keeps: D.KEEPS.map(k => Object.assign(clone(k), { d: dk(addDays(t0, k.w)) })),
       memo: clone(D.MEMO), read: clone(D.READ),
       hist, earned: {},
       stats: { prayOthers: 64, paper: 0, diary: 21, weeksLit: 38 },
       posts: clone(D.POSTS), rx: {}, praying: {}, going: {},
       fam: { nights: { [dk(addDays(t0, -2))]: 1, [dk(addDays(t0, -4))]: 1 }, mesa: 0, q: 0, ans: {} },
-      seen: {}
+      seen: {}, reviews: {}, focus: null, agreeOk: {}, asked2: {}
     };
   }
   let S;
   try { S = JSON.parse(localStorage.getItem(KEY)); } catch (e) { S = null; }
-  if (!S || S.v !== 4 || S.real !== dk(new Date())) S = fresh();      /* prototipo: cada día real arranca limpio */
+  if (!S || S.v !== 5 || S.real !== dk(new Date())) S = fresh();      /* prototipo: cada día real arranca limpio */
   let saveT = 0;
   const save = () => { clearTimeout(saveT); saveT = setTimeout(() => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }, 120); };
   const today = () => addDays(fromDk(S.base), S.off);
@@ -260,8 +265,10 @@
     const nav = document.createElement('ion-nav');
     m.appendChild(nav);
     app().appendChild(m);
-    nav.root = tag; nav.rootParams = props || {};
     m.addEventListener('didDismiss', () => gone(m));
+    /* Ionic mueve el contenido al abrir; la página se carga después de ese movimiento y antes de la animación,
+       así existe cuando Ionic busca su contenido para el gesto de cerrar */
+    m.addEventListener('ionModalWillPresent', () => { const n = m.querySelector('ion-nav'); n.rootParams = props || {}; n.root = tag; }, { once: true });
     m.present();
     return m;
   }
@@ -280,8 +287,10 @@
   function toast(msg, o) {
     o = o || {};
     const t = document.createElement('ion-toast');
-    t.message = msg; t.duration = o.undo ? 4200 : 2300; t.position = 'bottom'; t.cssClass = 'tst';
-    if (document.getElementById('tabbar')) t.positionAnchor = 'tabbar';
+    t.message = msg; t.duration = o.undo ? 4200 : 2300; t.cssClass = 'tst';
+    /* con una pantalla completa o tarjeta abierta, el aviso va arriba para no tapar su botón */
+    if (document.querySelector('ion-modal.full, ion-modal.card')) t.position = 'top';
+    else { t.position = 'bottom'; if (document.getElementById('tabbar')) t.positionAnchor = 'tabbar'; }
     if (o.icon) t.icon = o.icon;
     if (o.undo) t.buttons = [{ text: 'Deshacer', handler: o.undo }];
     app().appendChild(t);
@@ -323,18 +332,67 @@
     }
   }
 
+  /* ================= interacción ================= */
+  /* mantener presionado (sin moverse) → fn(el); el click que sigue se ignora */
+  function press(root, sel, fn) {
+    let t = 0, x = 0, y = 0, el = null, fired = false;
+    root.addEventListener('pointerdown', e => {
+      el = e.target.closest(sel); if (!el || e.target.closest('[data-chk], button.chk')) { el = null; return; }
+      x = e.clientX; y = e.clientY; fired = false;
+      clearTimeout(t); t = setTimeout(() => { fired = true; haptic(14); fn(el); }, 430);
+    });
+    const cancel = () => clearTimeout(t);
+    root.addEventListener('pointermove', e => { if (el && Math.hypot(e.clientX - x, e.clientY - y) > 8) cancel(); });
+    root.addEventListener('pointerup', cancel); root.addEventListener('pointercancel', cancel);
+    root.addEventListener('click', e => { if (fired) { e.stopPropagation(); e.preventDefault(); fired = false; } }, true);
+    root.addEventListener('contextmenu', e => { if (e.target.closest(sel)) e.preventDefault(); });
+  }
+  /* menú contextual estilo iOS: la tarjeta se levanta, el fondo se desenfoca y aparecen las acciones */
+  function context(fromEl, previewHTML, items, dataA) {
+    const r = fromEl.getBoundingClientRect(), host = app(), hr = host.getBoundingClientRect();
+    const box = document.createElement('div');
+    box.className = 'ctx';
+    box.innerHTML = '<div class="ctx-bg"></div><div class="ctx-card"' + (dataA ? ' data-a="' + dataA + '"' : '') + '>' + previewHTML + '</div><div class="ctx-menu">' +
+      items.map((it, i) => '<button data-i="' + i + '" class="' + (it.danger ? 'danger' : '') + '">' + esc(it.text) + (it.icon ? ic(it.icon) : '') + '</button>').join('') + '</div>';
+    host.appendChild(box);
+    const card = box.querySelector('.ctx-card'), menu = box.querySelector('.ctx-menu');
+    const top = Math.min(Math.max(r.top - hr.top, 70), hr.height - card.offsetHeight - menu.offsetHeight - 40);
+    card.style.top = top + 'px'; menu.style.top = (top + card.offsetHeight + 10) + 'px';
+    const close = () => { box.classList.add('out'); setTimeout(() => box.remove(), 220); };
+    box.addEventListener('click', e => {
+      const b = e.target.closest('[data-i]');
+      if (b) { close(); setTimeout(() => items[+b.dataset.i].handler(), 120); return; }
+      if (!e.target.closest('.ctx-card')) close();
+    });
+    requestAnimationFrame(() => box.classList.add('in'));
+  }
+  /* aparición escalonada (solo transform/opacity) */
+  function stagger(root, sel) {
+    if (!root || RM()) return;
+    [...root.querySelectorAll(sel || ':scope > *')].slice(0, 12).forEach((el, i) =>
+      el.animate([{ opacity: 0, transform: 'translateY(12px)' }, { opacity: 1, transform: 'none' }], { duration: 420, delay: i * 35, easing: 'cubic-bezier(.22,1,.36,1)', fill: 'backwards' }));
+  }
+  /* cambio de sección con dirección */
+  function slide(root, dir) {
+    if (!root || RM() || !dir) return;
+    root.animate([{ opacity: 0, transform: 'translateX(' + (dir * 28) + 'px)' }, { opacity: 1, transform: 'none' }], { duration: 340, easing: 'cubic-bezier(.22,1,.36,1)' });
+  }
+  /* tarjetas de contexto para Hoy: aparece solo la más importante */
+  const CTX = [];
+  const ctxCard = c => CTX.push(c);
+  function topCtx() { let best = null, bp = 0; CTX.forEach(c => { const p = c.pri(); if (p > bp) { bp = p; best = c; } }); return best; }
+
   /* ================= celebración: una sola grande, cuando completas el día ================= */
   function celebrate() {
     if (document.querySelector('ion-modal.celeb')) return;
     const v = D.VERSES[0];
     full((el, m) => {
       const wk = weekDates(today()).map(d => { const st = dayStatus(d), isT = same(d, today()); return '<span class="cw ' + st + (isT ? ' now' : '') + '"><i></i>' + DL[d.getDay()] + '</span>'; }).join('');
-      el.innerHTML = '<div class="celeb-in"><div class="glow"></div><div class="cflame">' + flameSVG('flm big') + '</div>' +
+      el.innerHTML = '<div class="celeb-in"><span class="lampa">' + ic('lampara') + '</span>' +
         '<h1>Tu lámpara<br>está encendida</h1><p class="cv">«' + esc(v.t) + '»<small>' + esc(v.r) + '</small></p>' +
-        '<div class="cweek">' + wk + '</div><p class="muted">' + weekLit() + ' de ' + GOAL + ' días esta semana</p>' +
+        '<div class="cweek">' + wk + '</div><p class="wk-note">' + weekLit() + ' de ' + GOAL + ' días esta semana</p>' +
         '<button class="btn big" data-close>Amén</button></div>';
       el.querySelector('[data-close]').onclick = () => m.dismiss();
-      setTimeout(() => sparks(el.querySelector('.cflame'), 26), 450);
       haptic([12, 60, 20, 60, 30]);
     }, { cls: 'celeb' });
   }
@@ -362,7 +420,12 @@
   function initTabs() {
     const tabs = document.querySelector('ion-tabs');
     if (!tabs) return;
-    tabs.addEventListener('ionTabsDidChange', e => { curTab = e.detail.tab; emit('tab', curTab); });
+    document.querySelectorAll('ion-tab-button [data-tbi]').forEach(s => { const n = s.dataset.tbi; s.innerHTML = ic(n + '-outline', 'off') + ic(n, 'on'); });
+    tabs.addEventListener('ionTabsDidChange', e => {
+      curTab = e.detail.tab; emit('tab', curTab);
+      const s = document.querySelector('ion-tab-button[tab="' + curTab + '"] [data-tbi]');
+      if (s && !RM()) s.animate([{ transform: 'scale(.8)' }, { transform: 'scale(1.12)' }, { transform: 'scale(1)' }], { duration: 380, easing: 'cubic-bezier(.34,1.56,.64,1)' });
+    });
     /* tocar la pestaña en la que ya estás: vuelve al inicio, como en iOS */
     document.addEventListener('ionTabButtonClick', e => {
       if (e.detail.tab !== curTab) return;
@@ -380,12 +443,13 @@
 
   window.L = {
     /* fechas */ mid, addDays, dk, fromDk, same, diffDays, DN, DS, DL, MN, MS, WEEK, cap, short, longDate, weekStart, weekDates, mins, nowHM, rel, ago,
-    /* html */ esc, ic, actIc, av, ini, hueOf, flameSVG,
+    /* html */ esc, ic, actIc, av, avColor, ini, hueOf, flameSVG,
+    /* tema: automático según el celular, o fijo */ theme: { get: () => (window.LamparaTema ? LamparaTema.get() : 'auto'), set: v => { window.LamparaTema && LamparaTema.set(v); refresh(); } },
     /* estado */ get S() { return S; }, save, today, tk, clone,
     /* día */ itemsFor, todayItems, isDone, doneCount, litToday, allDone, dayStatus, weekLit, GOAL, setDone, skipToday, planDay,
     /* personas */ person, discItems, discDone, discStatus,
     /* logros */ achProg, achEarned, checkAch, medal,
-    /* ui */ Page, shell, define, refresh, on, emit, sheet, card, full, toast, actions, prompt, haptic, sparks, RM, celebrate, go, tab, setBadge,
+    /* ui */ press, context, stagger, slide, ctxCard, topCtx, Page, shell, define, refresh, on, emit, sheet, card, full, toast, actions, prompt, haptic, sparks, RM, celebrate, go, tab, setBadge,
     /* demo */ nextDay, reset
   };
   document.addEventListener('DOMContentLoaded', initTabs);

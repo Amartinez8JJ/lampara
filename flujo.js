@@ -11,7 +11,7 @@
     if (!items || !items.length) return;
     L.full((el, m) => {
       st = { items, i: 0, m, el, timers: [], o };
-      el.innerHTML = '<div class="fl-top"><div class="fl-bars">' + items.map(() => '<i><b></b></i>').join('') + '</div>' +
+      el.innerHTML = '<div class="fl-top"><div class="fl-bars">' + items.map(it => '<i data-a="' + it.a + '"></i>').join('') + '</div>' +
         '<button class="iconbtn fl-x" data-x aria-label="Cerrar">' + ic('close') + '</button></div><div class="fl-stage"><div class="fl-body"></div></div><div class="fl-foot"></div>';
       el.addEventListener('click', onClick);
       el.addEventListener('input', onInput);

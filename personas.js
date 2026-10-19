@@ -18,8 +18,8 @@
   }
   function statusEnd(p) {
     const its = L.discItems(p, L.today()), k = p.dToday;
-    if (p.share >= 3) return '<span class="ddots" slot="end">' + its.map((it, i) => '<i data-a="' + it.a + '" class="' + (i < k ? 'on' : '') + '"></i>').join('') + '</span>';
-    if (p.share === 2) return '<span class="dflame' + (k ? ' on' : '') + '" slot="end">' + L.flameSVG() + '</span>';
+    if (p.share >= 3) return '<span class="ddots" slot="end">' + its.map((it, i) => '<i data-a="' + it.a + '">' + ic(D.ICON[it.a] + (i < k ? '' : '-outline')) + '</i>').join('') + '</span>';
+    if (p.share === 2) return '<span class="dflame' + (k ? ' on' : '') + '" slot="end">' + ic('flame') + '</span>';
     if (p.share === 1) return '<span class="sig ' + p.signal + '" slot="end">' + D.SIG[p.signal] + '</span>';
     return '<span class="dlock" slot="end">' + ic('lock-closed') + '</span>';
   }
@@ -28,7 +28,9 @@
   function discipuladoHTML() {
     const S = L.S, ppl = S.people.slice().sort((a, b) => (b.signal !== 'bien') - (a.signal !== 'bien'));
     const sharing = ppl.filter(p => p.share >= 2).length;
-    return '<div class="sec"><h2>Te acompaña</h2></div><ion-list inset="true" lines="none"><ion-item button detail="true" data-lider>' +
+    const ups = window.Encuentro ? Encuentro.upcoming() : [];
+    return (ups.length ? '<div class="sec"><h2>Esta semana te ves con</h2></div><div class="evs">' + ups.map(u => '<button class="ev" data-prep="' + u.p.id + '"><p class="eyebrow">' + esc(Encuentro.whenLabel(u)) + '</p><b>' + esc(u.it.t) + '</b><small>' + esc(u.p.name) + '</small><span class="chip on">' + ic('reader-outline') + 'Preparar</span></button>').join('') + '</div>' : '') +
+      '<div class="sec"><h2>Te acompaña</h2></div><ion-list inset="true" lines="none"><ion-item button detail="true" data-lider>' +
       '<div slot="start" class="avs">' + av(D.LEADER.id, D.LEADER.name, 44) + '</div><ion-label><h3>' + esc(D.LEADER.name) + '</h3><p>' + esc(D.LEADER.role) + ' · ve: ' + D.SHARE[S.myShare].n + '</p></ion-label></ion-item></ion-list>' +
       '<div class="sec"><h2>Acompañas</h2><span class="muted">' + sharing + ' de ' + ppl.length + ' te muestran su día</span></div><ion-list inset="true" lines="inset">' +
       ppl.map(p => '<ion-item-sliding><ion-item button detail="false" data-person="' + p.id + '"><div slot="start" class="avs">' + av(p.id, p.name, 44, ringOf(p)) + '</div>' +
@@ -46,7 +48,7 @@
     const mesa = D.MESAS[F.mesa % D.MESAS.length];
     const q = D.COUPLE_Q[F.q % D.COUPLE_Q.length], ans = F.ans[L.tk()];
     const tonight = !!F.nights[L.tk()];
-    return '<div class="hero home-hero"><div class="ring' + (lit ? ' lit' : '') + '">' + L.flameSVG() + '</div><div><h2>Casa encendida</h2><p>' + lit + ' de 4 noches juntos esta semana</p></div>' +
+    return '<div class="home-hero"><div class="hh-top">' + ic('home') + '<div><h2>Casa encendida</h2><p>' + lit + ' de 4 noches juntos esta semana</p></div></div>' +
       '<div class="hdots">' + wk.map(d => '<span class="' + (F.nights[L.dk(d)] ? 'on' : '') + (L.same(d, L.today()) ? ' now' : '') + '"><i></i>' + L.DL[d.getDay()] + '</span>').join('') + '</div></div>' +
       '<div class="sec"><h2>Esta noche en la mesa</h2></div><div class="box pad mesa" data-a="palabra"><p class="eyebrow">' + esc(mesa.r) + '</p><h3>' + esc(mesa.t) + '</h3><p class="muted">Leer · conversar · orar · 10 min</p>' +
       (tonight ? '<button class="btn ghost" disabled>' + ic('checkmark') + 'Hecho esta noche</button>' : '<button class="btn c" data-mesa>' + ic('restaurant') + 'Empezar en la mesa</button>') + '</div>' +
@@ -62,7 +64,7 @@
   function iglesiaHTML() {
     const C = D.CHURCH, S = L.S;
     const evs = D.EVENTS.map(e => ({ ...e, d: nextDate(e.dow) })).sort((a, b) => a.d - b.d);
-    return '<div class="hero church"><div class="ch-ic">' + ic('home') + '</div><div><h2>' + esc(C.name) + '</h2><p>' + esc(C.place) + ' · ' + C.members + ' miembros</p></div></div>' +
+    return '<div class="church"><div class="ch-ic">' + ic('church') + '</div><div><h2>' + esc(C.name) + '</h2><p>' + esc(C.place) + ' · ' + C.members + ' miembros</p></div></div>' +
       '<div class="sec"><h2>Esta semana</h2></div><div class="evs">' + evs.map(e => {
         const n = L.diffDays(e.d, L.today()), on = !!S.going[e.id];
         return '<div class="ev"><p class="eyebrow">' + (n === 0 ? 'Hoy' : n === 1 ? 'Mañana' : L.cap(L.DN[e.d.getDay()])) + ' · ' + e.h + '</p><b>' + esc(e.t) + '</b><small>' + esc(e.place) + '</small>' +
@@ -70,7 +72,7 @@
       }).join('') + '</div>' +
       '<div class="sec"><h2>Canales</h2></div><ion-list inset="true" lines="inset">' + D.CHANNELS.map(c => {
         const last = S.posts.filter(p => p.ch === c.id).sort((a, b) => a.w - b.w)[0], u = unread(c.id);
-        return '<ion-item button detail="false" data-canal="' + c.id + '" data-a="' + c.a + '"><div class="aic" slot="start">' + ic(c.i) + '</div><ion-label><h3>' + esc(c.n) + '</h3><p>' + esc(last ? last.t : c.d) + '</p></ion-label>' +
+        return '<ion-item button detail="false" data-canal="' + c.id + '" data-a="' + c.a + '"><div class="chan-ic" slot="start">' + ic(c.i) + '</div><ion-label><h3>' + esc(c.n) + '</h3><p>' + esc(last ? last.t : c.d) + '</p></ion-label>' +
           (u ? '<ion-badge slot="end" class="ub">' + u + '</ion-badge>' : '<span slot="end" class="ago">' + (last ? L.ago(last.w).replace('hace ', '') : '') + '</span>') + '</ion-item>';
       }).join('') + '</ion-list><p class="hint-swipe">' + ic('shield-checkmark-outline') + 'Solo miembros de ' + esc(C.name) + '</p>';
   }
@@ -90,6 +92,7 @@
     onClick(e) {
       const t = e.target; let el;
       if ((el = t.closest('[data-qa]'))) { quick(el.dataset.qa); return; }
+      if ((el = t.closest('[data-prep]'))) { this.push('page-encuentro', { pid: el.dataset.prep }); return; }
       if ((el = t.closest('[data-person]'))) { this.push('page-persona', { pid: el.dataset.person }); return; }
       if (t.closest('[data-lider]')) { this.push('page-lider'); return; }
       if (t.closest('[data-invite]')) { invite(); return; }
@@ -190,7 +193,9 @@
       const head = '<div class="prof">' + av(p.id, p.name, 84, ringOf(p)) + '<h1>' + esc(p.name) + '</h1><p class="muted">' + esc(p.since) + ' · ' + esc(p.focus) + '</p>' +
         '<span class="share-pill">' + ic(p.share ? 'eye-outline' : 'eye-off-outline') + 'Comparte: ' + D.SHARE[p.share].n + '</span></div>' +
         '<div class="qacts">' + [['oracion', 'heart', 'Orar'], ['mensaje', 'chatbubble', 'Escribir'], ['encuentro', 'people', 'Encuentro'], ['diario', 'create', 'Nota']].map(x => '<button data-a="' + x[0] + '" data-q="' + x[0] + '"><span>' + ic(x[1]) + '</span>' + x[2] + '</button>').join('') + '</div>';
-      const seg = '<div class="fl-seg three">' + [['hoy', 'Hoy'], ['semana', 'Semana'], ['historial', 'Historial']].map(x => '<button class="' + (this.tab === x[0] ? 'on' : '') + '" data-tab="' + x[0] + '">' + x[1] + '</button>').join('') + '</div>';
+      const up = window.Encuentro && Encuentro.upcoming().find(u => u.p.id === p.id);
+      const prep = up ? '<button class="addrow" data-prep>' + ic('reader-outline') + 'Preparar · ' + esc(Encuentro.whenLabel(up)) + '</button>' : '';
+      const seg = prep + '<div class="sec"></div><div class="fl-seg three">' + [['hoy', 'Hoy'], ['semana', 'Semana'], ['historial', 'Historial']].map(x => '<button class="' + (this.tab === x[0] ? 'on' : '') + '" data-tab="' + x[0] + '">' + x[1] + '</button>').join('') + '</div>';
       let body = '';
       if (this.tab === 'hoy') {
         if (p.share >= 3) {
@@ -198,7 +203,7 @@
             '<div class="pbar" data-a="palabra"><i style="width:' + p.plan.pct + '%"></i></div><div class="mini-list">' +
             its.map((it, i) => '<div class="mini" data-a="' + it.a + '"><div class="aic">' + actIc(it.a, i < k) + '</div><div><b>' + esc(it.t) + '</b><small>' + it.h + (it.with ? ' · contigo' : '') + '</small></div>' + (i < k ? ic('checkmark-circle', 'ok') : '<span class="muted sm">pendiente</span>') + '</div>').join('') + '</div></div>';
         } else if (p.share === 2) {
-          body = '<div class="box pad center"><div class="ring big' + (k ? ' lit' : '') + '">' + L.flameSVG() + '</div><b class="bigline">' + (k ? 'Hoy encendió su día' : 'Hoy todavía no') + '</b><p class="muted">Comparte su ritmo, no el detalle.</p></div>';
+          body = '<div class="box pad center"><span class="bigflame' + (k ? ' on' : '') + '">' + ic('flame') + '</span><b class="bigline">' + (k ? 'Hoy encendió su día' : 'Hoy todavía no') + '</b><p class="muted">Comparte su ritmo, no el detalle.</p></div>';
         } else if (p.share === 1) {
           body = '<div class="box pad center"><span class="sig big ' + p.signal + '">' + D.SIG[p.signal] + '</span><p class="muted">Así dice que está esta semana.</p></div>';
         } else body = locked(p, 'su progreso');
@@ -218,6 +223,7 @@
     }
     onClick(e) {
       const t = e.target, p = L.person(this.pid); let el;
+      if (t.closest('[data-prep]')) { this.push('page-encuentro', { pid: p.id }); return; }
       if ((el = t.closest('[data-tab]'))) { this.tab = el.dataset.tab; this.update(); return; }
       if ((el = t.closest('[data-q]'))) {
         const a = el.dataset.q;

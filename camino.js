@@ -4,13 +4,21 @@
   const { esc, ic, av } = L;
   const BOOK_TOTAL = D.BOOKS.length;
 
-  function flameCard() {
-    const t = L.today(), wl = L.weekLit();
-    /* las últimas 5 semanas, como mapa de calor */
-    const ws = L.weekStart(t), weeks = [];
-    for (let w = 4; w >= 0; w--) weeks.push(L.WEEK.map((_, i) => L.addDays(ws, -w * 7 + i)));
-    return '<div class="hero flame-card"><div class="ring big' + (L.litToday() ? ' lit' : '') + '">' + L.flameSVG() + '</div><div><h2>' + wl + ' de ' + L.GOAL + ' esta semana</h2><p>' + L.S.stats.weeksLit + ' semanas encendidas este año</p></div>' +
-      '<div class="heat">' + weeks.map(wk => '<div>' + wk.map(d => { const st = L.dayStatus(d); return '<i class="' + st + (L.same(d, t) ? ' now' : '') + '"></i>'; }).join('') + '</div>').join('') + '</div>' +
+  /* historial como calendario de formas (How We Feel): cada día muestra las formas de lo que hiciste */
+  function dayShapes(d) {
+    const st = L.dayStatus(d);
+    if (st !== 'lit') return { st, acts: [] };
+    const done = L.S.done[L.dk(d)], its = L.itemsFor(d);
+    let acts = done ? its.filter(i => done[i.id]).map(i => i.a) : its.map(i => i.a).slice(0, 2 + (d.getDate() % 2));
+    return { st, acts: [...new Set(acts)].slice(0, 4) };
+  }
+  function streakCard() {
+    const t = L.today(), start = L.addDays(L.weekStart(t), -21), days = [];
+    for (let i = 0; i < 28; i++) days.push(L.addDays(start, i));
+    const cells = days.map(d => { const x = dayShapes(d); return '<div class="cd ' + x.st + (L.same(d, t) ? ' now' : '') + '"><small>' + d.getDate() + '</small><span class="shp">' +
+      x.acts.map(a => '<i data-a="' + a + '">' + ic(D.ICON[a]) + '</i>').join('') + '</span></div>'; }).join('');
+    return '<div class="streak-card"><div class="sc-top"><b>' + L.weekLit() + ' de ' + L.GOAL + ' esta semana</b><span>' + L.S.stats.weeksLit + ' semanas encendidas</span></div>' +
+      '<div class="cal">' + L.WEEK.map(w => '<span class="dh">' + L.DL[w] + '</span>').join('') + cells + '</div>' +
       '<p class="fine">' + ic('sunny-outline') + 'La llama nunca se apaga: un día de gracia por semana.</p></div>';
   }
   function achHTML() {
@@ -33,12 +41,14 @@
     render() {
       const S = L.S;
       return '<div class="prof me">' + av('JC', D.ME.name, 72, L.litToday() ? 'lit' : 'dim') + '<h1>' + esc(D.ME.name) + '</h1><p class="muted">' + (D.ME.since + S.off) + ' días caminando</p></div>' +
-        flameCard() +
+        streakCard() + '<button class="addrow" data-repaso>' + ic('ribbon') + 'Repaso de la semana</button>' +
         '<div class="sec"><h2>Logros</h2><span class="muted">' + D.ACH.filter(L.achEarned).length + ' de ' + D.ACH.length + '</span></div>' + achHTML() +
         '<div class="sec"><h2>Tu Biblia</h2></div>' + booksHTML() +
         '<div class="sec"><h2>De memoria</h2><span class="muted">' + S.memo.filter(m => m.lvl >= 3).length + ' versículos</span></div><ion-list inset="true" lines="inset">' + S.memo.map((m, i) => '<ion-item button detail="false" data-memo="' + i + '"><ion-label><h3>' + esc(m.r) + '</h3><p>' + esc(m.t) + '</p></ion-label><span slot="end">' + stars(m.lvl) + '</span></ion-item>').join('') + '</ion-list>' +
         '<div class="sec"><h2>Lo que me llevo</h2></div><div class="keeps">' + S.keeps.slice(0, 6).map(k => '<div class="keep" data-a="' + k.a + '"><p>' + esc(k.t) + '</p><small>' + (k.r ? esc(k.r) + ' · ' : '') + L.cap(L.rel(L.diffDays(L.fromDk(k.d), L.today()))) + '</small></div>').join('') + '</div>' +
-        '<div class="sec"><h2>Privacidad</h2></div><ion-list inset="true" lines="inset"><ion-item button detail="true" data-priv><div class="aic" slot="start" data-a="">' + ic('eye') + '</div><ion-label><h3>Qué ve ' + esc(D.LEADER.first) + ' de ti</h3><p>' + D.SHARE[S.myShare].n + ' · ' + D.SHARE[S.myShare].d + '</p></ion-label></ion-item></ion-list>' +
+        '<div class="sec"><h2>Privacidad</h2></div><ion-list inset="true" lines="inset"><ion-item button detail="true" data-priv><div class="aic" slot="start" data-a="">' + ic('eye-outline') + '</div><ion-label><h3>Qué ve ' + esc(D.LEADER.first) + ' de ti</h3><p>' + D.SHARE[S.myShare].n + ' · ' + D.SHARE[S.myShare].d + '</p></ion-label></ion-item></ion-list>' +
+        '<div class="sec"><h2>Apariencia</h2><span class="muted">' + (L.theme.get() === 'auto' ? 'Sigue a tu celular' : '') + '</span></div><div class="theme-opts">' +
+          [['auto', 'Automático', 'a'], ['light', 'Claro', 'l'], ['dark', 'Oscuro', 'd']].map(x => '<button class="' + (L.theme.get() === x[0] ? 'on' : '') + '" data-theme="' + x[0] + '"><span class="sw ' + x[2] + '"><i></i></span>' + x[1] + '</button>').join('') + '</div>' +
         '<div class="sec"><h2>Probar la demo</h2></div><div class="row2"><button class="btn ghost" data-next>' + ic('play-forward') + 'Día siguiente</button><button class="btn ghost" data-reset>' + ic('refresh') + 'Reiniciar</button></div>';
     }
     onClick(e) {
@@ -49,6 +59,8 @@
       if ((el = t.closest('[data-memo]'))) { memorize(+el.dataset.memo); return; }
       if (t.closest('[data-priv]')) { this.push('page-lider'); return; }
       if (t.closest('[data-next]')) { L.nextDay(); return; }
+      if ((el = t.closest('[data-theme]'))) { L.theme.set(el.dataset.theme); L.haptic(6); return; }
+      if (t.closest('[data-repaso]')) { window.Repaso && Repaso.start(); return; }
       if (t.closest('[data-reset]')) { L.actions('¿Reiniciar la demo?', [{ text: 'Reiniciar', role: 'destructive', handler: () => L.reset() }]); return; }
     }
   }

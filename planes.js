@@ -10,18 +10,26 @@
   const findAny = id => L.S.plans.find(p => p.id === id) || L.S.invites.find(p => p.id === id) || D.TEMPLATES.find(p => p.id === id);
   const kindOf = id => L.S.plans.some(p => p.id === id) ? 'mine' : L.S.invites.some(p => p.id === id) ? 'invite' : 'tpl';
 
+  /* portada de arte plano con las formas de sus actividades (en lugar de ilustraciones como Hallow) */
+  function cover(p) {
+    const h = L.hueOf(p.id), a = p.acts, all = D.ACTS;
+    const s2 = a[1] || all[h % all.length], s3 = all[(h >> 3) % all.length];
+    const others = all.filter(x => x !== a[0]), c1 = others[h % others.length], c2 = others[(h + 3) % others.length];
+    const tint = (svg, c) => svg.replace('<svg class="ico', '<svg style="color:var(--' + c + ')" class="ico');
+    return '<div class="cover" data-a="' + a[0] + '">' + tint(ic(D.ICON[s2], 's1'), c1) + tint(ic(D.ICON[a[0]], 's2'), c2) + ic(D.ICON[s3], 's3') + '</div>';
+  }
   function planCard(p) {
     const day = Math.min(p.len, Math.max(1, L.planDay(p, L.today()))), pct = Math.round((day - 1) / p.len * 100);
     const todayT = p.acts.map(a => D.SEQ[p.seq](a, day))[0];
-    return '<button class="plan" data-plan="' + p.id + '" data-a="' + p.acts[0] + '"><div class="plan-top">' + actRow(p.acts) + '<span class="muted">Día ' + day + ' de ' + p.len + '</span></div>' +
+    return '<button class="plan" data-plan="' + p.id + '" data-a="' + p.acts[0] + '">' + cover(p) + '<div class="plan-body"><div class="plan-top">' + actRow(p.acts) + '<span class="muted">Día ' + day + ' de ' + p.len + '</span></div>' +
       '<h3>' + esc(p.name) + (p.sub ? ' <small>' + esc(p.sub) + '</small>' : '') + '</h3><p class="muted">Hoy: ' + esc(todayT) + '</p>' +
       '<div class="pbar"><i style="width:' + pct + '%"></i></div>' +
-      (p.people && p.people.length ? '<div class="ppl">' + p.people.map(id => av(id, fullOf(id), 26)).join('') + '<small>con ' + p.people.map(nameOf).join(', ') + '</small></div>' : '') + '</button>';
+      (p.people && p.people.length ? '<div class="ppl">' + p.people.map(id => av(id, fullOf(id), 26)).join('') + '<small>con ' + p.people.map(nameOf).join(', ') + '</small></div>' : '') + '</div></button>';
   }
   function inviteCard(p) {
-    return '<div class="invite" data-a="' + p.acts[0] + '"><div class="inv-from">' + av(p.from, fullOf(p.from), 34) + '<span><b>' + esc(nameOf(p.from)) + '</b> te invita' + (p.group !== nameOf(p.from) ? ' · ' + esc(p.group) : '') + '</span></div>' +
+    return '<div class="invite" data-a="' + p.acts[0] + '">' + cover(p) + '<div class="inv-body"><div class="inv-from">' + av(p.from, fullOf(p.from), 34) + '<span><b>' + esc(nameOf(p.from)) + '</b> te invita' + (p.group !== nameOf(p.from) ? ' · ' + esc(p.group) : '') + '</span></div>' +
       '<h3>' + esc(p.name) + '</h3><p class="muted">' + esc(p.desc) + '</p><div class="meta">' + actRow(p.acts) + '<span>' + p.len + ' días · ' + p.min + ' min · ' + fmtDays(p.days) + '</span></div>' +
-      '<div class="row2"><button class="btn ghost" data-plan="' + p.id + '">En qué consiste</button><button class="btn c" data-join="' + p.id + '">Unirme</button></div></div>';
+      '<div class="row2"><button class="btn ghost" data-plan="' + p.id + '">En qué consiste</button><button class="btn c" data-join="' + p.id + '">Unirme</button></div></div></div>';
   }
 
   class PagePlanes extends L.Page {
@@ -44,7 +52,7 @@
         }).join('') + '</div>';
       }
       if (this.seg === 'explorar') {
-        return '<div class="tpls">' + D.TEMPLATES.map(t => '<button class="tpl" data-plan="' + t.id + '" data-a="' + t.acts[0] + '"><span class="tpl-ic">' + ic(D.ICON[t.acts[0]]) + '</span><span class="tag">' + esc(t.tag) + '</span><b>' + esc(t.name) + '</b><small>' + t.len + ' días · ' + t.min + ' min</small></button>').join('') + '</div>' +
+        return '<div class="tpls">' + D.TEMPLATES.map(t => '<button class="tpl" data-plan="' + t.id + '" data-a="' + t.acts[0] + '">' + cover(t) + '<div class="tpl-b"><span class="tag">' + esc(t.tag) + '</span><b>' + esc(t.name) + '</b><small>' + t.len + ' días · ' + t.min + ' min</small></div></button>').join('') + '</div>' +
           '<button class="addrow" data-new>' + ic('add-circle-outline') + 'Crear tu propio plan</button>';
       }
       return (S.invites.length ? '<div class="sec"><h2>Te invitaron</h2><span class="muted">' + S.invites.length + '</span></div>' + S.invites.map(inviteCard).join('') : '') +
@@ -82,10 +90,10 @@
       const days = [];
       const from = kind === 'mine' ? Math.max(1, day - 1) : 1;
       for (let d = from; d < from + 5 && d <= p.len; d++) days.push(d);
-      const head = '<div class="phead" data-a="' + p.acts[0] + '"><div class="ph-art">' + p.acts.map(a => '<span data-a="' + a + '">' + ic(D.ICON[a]) + '</span>').join('') + '</div>' +
+      const head = '<div class="phead" data-a="' + p.acts[0] + '">' + cover(p) + '<div class="phead-b">' +
         (kind === 'invite' ? '<p class="eyebrow">' + esc(nameOf(p.from)) + ' te invita</p>' : kind === 'mine' ? '<p class="eyebrow">En curso · día ' + day + ' de ' + p.len + '</p>' : '<p class="eyebrow">' + esc(p.tag || 'Plan') + '</p>') +
         '<h1>' + esc(p.name) + '</h1>' + (p.sub ? '<p class="muted">' + esc(p.sub) + '</p>' : '') +
-        '<div class="pmeta"><span>' + ic('calendar-outline') + p.len + ' días</span><span>' + ic('time-outline') + p.min + ' min</span><span>' + ic('repeat') + fmtDays(p.days) + '</span></div></div>';
+        '<div class="pmeta"><span>' + ic('calendar-outline') + p.len + ' días</span><span>' + ic('time-outline') + p.min + ' min</span><span>' + ic('repeat') + fmtDays(p.days) + '</span></div></div></div>';
       const what = '<div class="sec"><h2>En qué consiste</h2></div><p class="pdesc">' + esc(p.desc) + '</p><div class="box pad"><div class="mini-list">' + (p.what || []).map((w, i) => '<div class="mini" data-a="' + (p.acts[i] || p.acts[0]) + '"><div class="aic">' + actIc(p.acts[i] || p.acts[0], true) + '</div><div><b>' + esc(w) + '</b></div></div>').join('') + '</div></div>';
       const cada = '<div class="sec"><h2>' + (kind === 'mine' ? 'Estos días' : 'Los primeros días') + '</h2></div><div class="box pad"><div class="mini-list">' + days.map(d => {
         const st = kind === 'mine' ? (d < day ? 'done' : d === day ? 'now' : '') : '';

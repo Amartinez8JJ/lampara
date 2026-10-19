@@ -4,7 +4,8 @@ window.D = (() => {
   /* ---------- actividades: un color por actividad, misma intensidad (OKLCH L .79 C .13) ---------- */
   const ACTS = ['oracion', 'palabra', 'meditar', 'diario', 'adoracion', 'ayuno', 'encuentro', 'mensaje'];
   const NAME = { oracion: 'Oración', palabra: 'Palabra', meditar: 'Meditar', diario: 'Diario', adoracion: 'Adoración', ayuno: 'Ayuno', encuentro: 'Encuentro', mensaje: 'Mensaje' };
-  const ICON = { oracion: 'heart', palabra: 'book', meditar: 'leaf', diario: 'create', adoracion: 'musical-notes', ayuno: 'hourglass', encuentro: 'people', mensaje: 'chatbubble' };
+  /* cada actividad tiene su forma (patrón de How We Feel): contorno = pendiente, llena = hecha */
+  const ICON = { oracion: 'sh-oracion', palabra: 'sh-palabra', meditar: 'sh-meditar', diario: 'sh-diario', adoracion: 'sh-adoracion', ayuno: 'sh-ayuno', encuentro: 'sh-encuentro', mensaje: 'sh-mensaje' };
   const INFO = {
     oracion: { why: 'Hablar con Dios antes que con el mundo.', ref: 'Filipenses 4:6', how: ['Empieza dando gracias', 'Nombra a las personas', 'Termina en silencio'] },
     palabra: { why: 'Su palabra alumbra el paso de hoy.', ref: 'Salmo 119:105', how: ['Lee despacio', 'Elige un versículo', '¿Qué me pide hoy?'] },
@@ -144,7 +145,8 @@ window.D = (() => {
     { id: 'r6', a: 'encuentro', t: 'Grupo de hombres', h: '19:00', days: [4], n: 'Romanos 8 · casa de Raúl' },
     { id: 'r7', a: 'diario', t: 'Examen del día', h: '22:00', days: [4, 5], n: 'Gratitud, confesión, entrega' },
     { id: 'r8', a: 'adoracion', t: 'Culto', h: '10:00', days: [0], n: 'El Buen Pastor' },
-    { id: 'r9', a: 'encuentro', t: 'Café con María', h: '17:00', days: [6], with: 'MA' }
+    { id: 'r9', a: 'encuentro', t: 'Café con María', h: '17:00', days: [6], with: 'MA' },
+    { id: 'r10', a: 'encuentro', t: 'Reunión con Lucas', h: '18:00', days: [2], with: 'LO', n: 'Evangelio de Juan' }
   ];
 
   /* ---------- personas ---------- */
@@ -184,18 +186,35 @@ window.D = (() => {
       ...(d === 0 ? [{ a: 'adoracion', t: 'Culto', h: '10:00' }] : [])],
     LO: d => [...(d >= 1 ? [{ a: 'palabra', t: 'Juan ' + d, h: '07:00' }] : []), { a: 'oracion', t: 'Oración', h: '07:15' },
       ...(d === 1 || d === 4 ? [{ a: 'meditar', t: 'Juan 3:16', h: '21:00' }] : []),
-      ...(d === 2 ? [{ a: 'encuentro', t: 'Reunión con Juan Carlos', h: '19:00', with: true }] : []),
+      ...(d === 2 ? [{ a: 'encuentro', t: 'Reunión con Juan Carlos', h: '18:00', with: true }] : []),
       ...(d === 0 ? [{ a: 'adoracion', t: 'Culto', h: '10:00' }] : [])]
   };
 
+  /* ---------- encuentros: la última vez, lo que acordaron y de qué conversar ---------- */
+  const LAST = {
+    MA: { w: -7, notes: 'Le preocupa el cambio de trabajo. Lloró hablando de su mamá.', agree: ['Leer Romanos 8 completo', 'Una línea de diario por día'] },
+    LO: { w: -6, notes: 'Preguntó por el bautismo. Está leyendo solo por primera vez.', agree: ['Leer Juan 4 a 6', 'Venir el domingo al culto'] },
+    DV: { w: -5, notes: 'La ansiedad lo despierta de noche.', agree: ['Memorizar Filipenses 4:6'] },
+    SR: { w: -28, notes: 'Visita en su casa. Está cansada.', agree: ['Llamarla esta semana'] }
+  };
+  const QUESTIONS = {
+    MA: ['¿Qué versículo de Romanos 8 te sostuvo esta semana?', '¿Cómo sigue tu mamá? ¿Cómo oramos?', '¿Dónde viste a Dios en la clínica?'],
+    LO: ['¿Qué te llamó la atención de Juan 4?', '¿Qué piensas del bautismo hoy?', '¿Cómo te va orando solo?'],
+    DV: ['¿Cuándo te ganó la ansiedad esta semana?', '¿Ya sabes Filipenses 4:6 de memoria?', '¿Qué necesitas del grupo?'],
+    SR: ['¿Cómo estás de verdad?', '¿Qué te está costando más?', '¿Cómo te puedo ayudar esta semana?']
+  };
+  const AGREE_SUG = ['Leer el próximo capítulo', 'Orar juntos por teléfono', 'Memorizar un versículo', 'Venir al grupo el jueves', 'Escribir una línea por día'];
+  /* lo que puedes elegir como foco al cerrar la semana */
+  const FOCUS = ['Orar por mi familia', 'Leer con constancia', 'Descansar en Dios', 'Servir a alguien', 'Memorizar un versículo', 'Acompañar mejor a los míos'];
+
   /* ---------- oración ---------- */
   const PETS = [
-    { id: 1, who: 'MA', t: 'Trabajo nuevo en la clínica', n: 12 },
-    { id: 2, who: 'yo', t: 'Decisiones del trabajo', n: 9 },
-    { id: 3, who: 'DV', t: 'Paz en medio de la ansiedad', n: 5 },
-    { id: 4, who: 'MA', t: 'Sanidad de su mamá', n: 8 },
-    { id: 5, who: 'SR', t: 'Su familia', n: 3 },
-    { id: 6, who: 'yo', t: 'Salud de papá', n: 14 }
+    { id: 1, who: 'MA', t: 'Trabajo nuevo en la clínica', n: 12, since: -30, check: -9 },
+    { id: 2, who: 'yo', t: 'Decisiones del trabajo', n: 9, since: -10 },
+    { id: 3, who: 'DV', t: 'Paz en medio de la ansiedad', n: 5, since: -6 },
+    { id: 4, who: 'MA', t: 'Sanidad de su mamá', n: 8, since: -21 },
+    { id: 5, who: 'SR', t: 'Su familia', n: 3, since: -16, check: -15 },
+    { id: 6, who: 'yo', t: 'Salud de papá', n: 14, since: -45, check: -12 }
   ];
   const ANSWERED = [{ who: 'LO', t: 'Que Lucas ame la Palabra', w: -24 }, { who: 'yo', t: 'Trabajo para Daniel', w: -41 }];
 
@@ -271,6 +290,6 @@ window.D = (() => {
     { id: 'diario30', a: 'diario', i: 'create', t: 'Lo que Dios hace', d: 'Treinta líneas en tu diario', goal: 30, key: 'diary' }
   ];
 
-  return { ACTS, NAME, ICON, INFO, VERSES, VTXT, TEXT, BOOKS, AT, bibleDay, SEQ, PLANS, INVITES, TEMPLATES, ROUTINE, ME, LEADER, PEOPLE, SHARE, SIG, DWEEK, PETS, ANSWERED,
+  return { LAST, QUESTIONS, AGREE_SUG, FOCUS, ACTS, NAME, ICON, INFO, VERSES, VTXT, TEXT, BOOKS, AT, bibleDay, SEQ, PLANS, INVITES, TEMPLATES, ROUTINE, ME, LEADER, PEOPLE, SHARE, SIG, DWEEK, PETS, ANSWERED,
     FAMILY, MESAS, COUPLE_Q, CHURCH, MEMBERS, CHANNELS, POSTS, RX, EVENTS, MEMO, KEEPS, READ, ACH };
 })();

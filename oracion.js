@@ -6,6 +6,29 @@
   const whoFull = w => w === 'yo' ? 'Juan Carlos' : w === 'AN' ? 'Ana' : (L.person(w) || {}).name || w;
   const WHO = [['yo', 'Por mí'], ...D.PEOPLE.map(p => [p.id, p.first]), ['AN', 'Ana']];
 
+  /* seguimiento: si hace dos semanas o más que oras por algo, te pregunta cómo sigue */
+  const ago = k => -L.diffDays(L.fromDk(k), L.today());
+  function dueFollow() {
+    const S = L.S;
+    return S.pets.filter(p => p.since && ago(p.since) >= 14 && (!p.check || ago(p.check) >= 14) && !S.asked2[p.id + '@' + L.tk()])
+      .sort((a, b) => ago(b.since) - ago(a.since))[0] || null;
+  }
+  function followHTML(p, ctx) {
+    const w = Math.round(ago(p.since) / 7), who = p.who === 'yo' ? '' : ' · ' + whoName(p.who);
+    const attr = ctx ? 'data-ctx="seguimiento" ' : '';
+    return '<div class="ctxc follow' + (ctx ? '' : ' soft') + '" data-a="oracion"><div class="ctxc-top">' + (p.who === 'yo' ? '<div class="aic">' + ic('person') + '</div>' : av(p.who, whoFull(p.who), 44)) +
+      '<div><p class="eyebrow">Seguimiento' + esc(who) + '</p><b>¿Cómo sigue «' + esc(p.t) + '»?</b></div></div>' +
+      '<p class="muted">Hace ' + (w === 1 ? 'una semana' : w + ' semanas') + ' que oras por esto · ' + p.n + ' veces' + (p.updates && p.updates.length ? ' · última novedad: ' + esc(p.updates[0].t) : '') + '</p>' +
+      '<div class="fu-btns"><button class="btn ghost sm" ' + attr + 'data-fu="keep" data-pid="' + p.id + '">Sigo orando</button><button class="btn ghost sm" ' + attr + 'data-fu="change" data-pid="' + p.id + '">Hubo cambios</button>' +
+      '<button class="btn c sm" ' + attr + 'data-fu="yes" data-pid="' + p.id + '">' + ic('star') + 'Dios respondió</button></div></div>';
+  }
+  function follow(act, id) {
+    const S = L.S, p = S.pets.find(x => x.id === id); if (!p) return;
+    if (act === 'yes') { answer(id); return; }
+    if (act === 'keep') { p.check = L.tk(); L.save(); L.refresh(); L.toast('Seguimos orando. Te pregunto de nuevo en dos semanas', { icon: 'heart' }); return; }
+    L.prompt('¿Qué cambió?', { ph: 'Ej: le dieron el alta', ok: 'Anotar' }, v => { p.updates.unshift({ d: L.tk(), t: v }); p.check = L.tk(); L.save(); L.refresh(); L.toast('Anotado en el pedido', { icon: 'create' }); });
+  }
+
   function petRow(p) {
     const today = !!L.S.prayedToday[p.id];
     const lead = p.who === 'yo' ? '<div class="aic" slot="start" data-a="oracion">' + ic('person') + '</div>' : '<div slot="start" class="avs">' + av(p.who, whoFull(p.who), 40) + '</div>';
@@ -34,13 +57,15 @@
       }
       const mine = S.pets.filter(p => p.who === 'yo'), others = S.pets.filter(p => p.who !== 'yo');
       const left = S.pets.filter(p => !S.prayedToday[p.id]).length;
-      const hero = '<div class="hero pray-hero" data-a="oracion"><div class="ph-ic">' + ic('heart') + '</div><div><h2>' + (left ? 'Orar ahora' : 'Oraste por todos') + '</h2><p>' + (left ? left + ' pedidos · unos ' + Math.max(1, Math.round(left * 0.5)) + ' min' : 'Hoy no quedó nadie afuera') + '</p></div>' +
+      const fu = dueFollow();
+      const hero = (fu ? followHTML(fu) : '') + '<div class="pray-hero" data-a="oracion"><div class="ph-ic">' + ic('hands-praying') + '</div><div><h2>' + (left ? 'Orar ahora' : 'Oraste por todos') + '</h2><p>' + (left ? left + ' pedidos · unos ' + Math.max(1, Math.round(left * 0.5)) + ' min' : 'Hoy no quedó nadie afuera') + '</p></div>' +
         (left ? '<button class="btn c" data-now>' + ic('play') + 'Empezar</button>' : '') + '</div>';
       const list = (title, arr) => arr.length ? '<div class="sec"><h2>' + title + '</h2><span class="muted">' + arr.length + '</span></div><ion-list inset="true" lines="inset">' + arr.map(petRow).join('') + '</ion-list>' : '';
       return hero + list('Por otros', others) + list('Por ti', mine) + '<p class="hint-swipe">' + ic('swap-horizontal') + 'Desliza un pedido para marcarlo</p>';
     }
     onClick(e) {
       const t = e.target; let el;
+      if ((el = t.closest('[data-fu]'))) { follow(el.dataset.fu, +el.dataset.pid); return; }
       if ((el = t.closest('[data-pray]'))) { pray(+el.dataset.pray); return; }
       if ((el = t.closest('[data-answer]'))) { answer(+el.dataset.answer); return; }
       if ((el = t.closest('[data-del]'))) { del(+el.dataset.del); return; }
@@ -65,8 +90,23 @@
     L.S.pets = L.S.pets.filter(x => x.id !== id);
     L.S.answered.unshift({ who: p.who, t: p.t, d: L.tk() });
     L.save(); L.refresh();
-    L.sheet('<div class="medal" data-a="oracion"><div class="coin">' + ic('star') + '</div><p class="eyebrow">Dios respondió</p><h2>' + esc(p.t) + '</h2><p class="muted">Oraste ' + p.n + ' veces. Queda guardado en «Respondidas».</p><button class="btn c" data-close>¡Gloria a Dios!</button></div>',
-      { mount: (el, m) => { el.querySelector('[data-close]').onclick = () => m.dismiss(); setTimeout(() => L.sparks(el.querySelector('.coin'), 22), 300); } });
+    const other = p.who !== 'yo' && p.who !== 'AN' ? whoName(p.who) : p.who === 'AN' ? 'Ana' : null;
+    L.sheet('<div class="medal" data-a="oracion"><div class="coin">' + ic('star') + '</div><p class="eyebrow">Dios respondió</p><h2>' + esc(p.t) + '</h2><p class="muted">Oraste ' + p.n + ' veces. Queda guardado en «Respondidas».</p>' +
+      '<button class="btn c" data-close>¡Gloria a Dios!</button><p class="eyebrow tell">Cuéntalo</p><div class="row2">' +
+      (other ? '<button class="btn ghost sm" data-tell="who">' + ic('chatbubble') + 'A ' + esc(other) + '</button>' : '<button class="btn ghost sm" data-tell="lider">' + ic('chatbubble') + 'A ' + esc(D.LEADER.first) + '</button>') +
+      '<button class="btn ghost sm" data-tell="iglesia">' + ic('sparkles') + 'En Testimonios</button></div></div>',
+      { mount: (el, m) => {
+        el.addEventListener('click', e => {
+          if (e.target.closest('[data-close]')) { m.dismiss(); return; }
+          const b = e.target.closest('[data-tell]'); if (!b || b.disabled) return;
+          b.disabled = true; L.haptic(8);
+          if (b.dataset.tell === 'iglesia') {
+            L.S.posts.push({ id: Date.now(), ch: 'testimonios', by: 'JC', w: 0, t: '¡Dios respondió! ' + p.t + '. Gracias a todos los que oraron.', rx: { gloria: 0, amen: 0 } });
+            L.save(); L.toast('Publicado en Testimonios', { icon: 'sparkles' });
+          } else L.toast('Se lo contaste a ' + (other || D.LEADER.first), { icon: 'chatbubble' });
+        });
+        setTimeout(() => L.sparks(el.querySelector('.coin'), 22), 300);
+      } });
     L.haptic([10, 50, 20]);
     L.checkAch();
   }
@@ -120,7 +160,7 @@
       const deck = el.querySelector('.deck');
       const bars = () => el.querySelectorAll('.fl-bars i').forEach((b, k) => { b.className = k < i ? 'done' : k === i ? 'now' : ''; });
       function cardHTML(p) {
-        return '<div class="pc"><div class="pc-who">' + (p.who === 'yo' ? '<div class="aic">' + ic('person') + '</div>' : av(p.who, whoFull(p.who), 64)) + '<span>' + esc(p.who === 'yo' ? 'Por ti' : 'Por ' + whoName(p.who)) + '</span></div>' +
+        return '<div class="pc" style="--pcc:' + (p.who === 'yo' ? 'var(--oracion)' : L.avColor(p.who)) + '"><span class="pc-art">' + ic('sh-oracion') + '</span><div class="pc-who">' + (p.who === 'yo' ? '<div class="aic">' + ic('person') + '</div>' : av(p.who, whoFull(p.who), 64)) + '<span>' + esc(p.who === 'yo' ? 'Por ti' : 'Por ' + whoName(p.who)) + '</span></div>' +
           '<h2>' + esc(p.t) + '</h2><p class="muted">' + p.n + ' veces orado</p><div class="pc-stamp yes">Oré</div><div class="pc-stamp no">Después</div></div>';
       }
       function show() {
@@ -171,5 +211,9 @@
     }, { cls: 'flow', onClose: () => { if (L.allDone()) setTimeout(L.celebrate, 200); } });
   }
 
-  window.Oracion = { pray, prayNow, addPet };
+  /* en Hoy, si hay un pedido para revisar */
+  L.ctxCard({ id: 'seguimiento', pri: () => dueFollow() ? 2 : 0, html: () => followHTML(dueFollow(), true),
+    click: el => { L.S.asked2[el.dataset.pid + '@' + L.tk()] = 1; follow(el.dataset.fu, +el.dataset.pid); } });
+
+  window.Oracion = { pray, prayNow, addPet, dueFollow };
 })();
