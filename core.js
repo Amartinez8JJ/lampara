@@ -35,7 +35,8 @@
   const ic = (n, cls) => window.ICONS && ICONS[n]
     ? '<svg class="ico' + (cls ? ' ' + cls : '') + '" viewBox="' + (window.ICONS_VB || '0 0 512 512') + '" aria-hidden="true">' + ICONS[n] + '</svg>'
     : '<ion-icon name="' + n + '"' + (cls ? ' class="' + cls + '"' : '') + ' aria-hidden="true"></ion-icon>';
-  const actIc = (a, filled) => ic(D.ICON[a] + (filled ? '' : '-outline'));
+  /* glifo de la actividad; el círculo lo pone el contenedor (.aic): lleno = hecho */
+  const actIc = (a, filled) => ic(D.ICON[a], filled ? 'af' : 'ap');
   const hueOf = id => { let h = 0; for (const c of id) h = (h * 31 + c.charCodeAt(0)) % 360; return h; };
   const ini = name => name.split(' ').filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase();
   /* avatares de color pleno: cada persona toma un color de la paleta */
@@ -293,7 +294,7 @@
     const t = document.createElement('ion-toast');
     t.message = msg; t.duration = o.undo ? 4200 : 2300; t.cssClass = 'tst';
     /* con una pantalla completa o tarjeta abierta, el aviso va arriba para no tapar su botón */
-    if (document.querySelector('ion-modal.full, ion-modal.card')) t.position = 'top';
+    if (document.querySelector('ion-modal.full, ion-modal.card, ion-modal.sheet')) t.position = 'top';
     else { t.position = 'bottom'; if (document.getElementById('tabbar') && !document.querySelector('ion-tabs.notabs')) t.positionAnchor = 'tabbar'; }
     if (o.icon) t.icon = o.icon;
     if (o.undo) t.buttons = [{ text: 'Deshacer', handler: o.undo }];

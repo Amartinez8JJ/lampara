@@ -52,7 +52,7 @@
   ];
   const GRM = {}; GR.forEach(g => { GRM[g.id] = g; });
   /* reacciones con sentido (sin «me gusta»), según el canal */
-  const RX = { amen: ['Amén', 'checkmark'], gracias: ['Gracias', 'heart'], gloria: ['¡Gloria a Dios!', 'sh-adoracion'] };
+  const RX = { amen: ['Amén', 'checkmark'], gracias: ['Gracias', 'heart'], gloria: ['¡Gloria a Dios!', 'sparkles'] };
   const CHRX = { anuncios: ['amen', 'gracias'], testimonios: ['gloria', 'amen'], preguntas: ['gracias'], grupos: ['amen'] };
   const COMPOSE = { oracion: '¿Por qué podemos orar?', testimonios: '¿Qué hizo Dios esta semana?', preguntas: '¿Qué te preguntas?' };
   const TYPES = [

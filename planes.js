@@ -6,7 +6,7 @@
   const fmtDays = ds => !ds || ds.length === 7 ? 'Todos los días' : ds.join() === '1,2,3,4,5' ? 'Lunes a viernes' : ds.slice().sort((a, b) => ((a + 6) % 7) - ((b + 6) % 7)).map(d => L.DS[d]).join(' · ');
   const nameOf = id => id === 'JC' ? 'Tú' : id === 'BP' ? D.CHURCH.name : (L.person(id) || {}).first || (D.MEMBERS[id] || id).split(' ')[0];
   const fullOf = id => id === 'BP' ? 'Buen Pastor' : (L.person(id) || {}).name || D.MEMBERS[id] || id;
-  const actRow = acts => '<span class="acts">' + acts.map(a => '<i data-a="' + a + '">' + ic(D.ICON[a]) + '</i>').join('') + '</span>';
+  const actRow = acts => '<span class="acts">' + acts.map(a => '<i data-a="' + a + '">' + ic(D.ICON[a]) + '</i>').join('') + '</span>';  /* círculos llenos chicos */
   const findAny = id => L.S.plans.find(p => p.id === id) || L.S.invites.find(p => p.id === id) || D.TEMPLATES.find(p => p.id === id);
   const kindOf = id => L.S.plans.some(p => p.id === id) ? 'mine' : L.S.invites.some(p => p.id === id) ? 'invite' : 'tpl';
 
@@ -16,7 +16,7 @@
     const s2 = a[1] || all[h % all.length], s3 = all[(h >> 3) % all.length];
     const others = all.filter(x => x !== a[0]), c1 = others[h % others.length], c2 = others[(h + 3) % others.length];
     const tint = (svg, c) => svg.replace('<svg class="ico', '<svg style="color:var(--' + c + ')" class="ico');
-    return '<div class="cover" data-a="' + a[0] + '">' + tint(ic(D.ICON[s2], 's1'), c1) + tint(ic(D.ICON[a[0]], 's2'), c2) + ic(D.ICON[s3], 's3') + '</div>';
+    return '<div class="cover" data-a="' + a[0] + '">' + tint(ic(D.SHAPE[s2], 's1'), c1) + tint(ic(D.SHAPE[a[0]], 's2'), c2) + ic(D.SHAPE[s3], 's3') + '</div>';
   }
   function planCard(p) {
     const day = Math.min(p.len, Math.max(1, L.planDay(p, L.today()))), pct = Math.round((day - 1) / p.len * 100);
@@ -48,7 +48,7 @@
         return '<p class="lead-note">Tu rutina se repite cada semana. Los planes suman lo suyo solos.</p><div class="drows">' + L.weekDates(L.today()).map(d => {
           const its = L.itemsFor(d), n = L.diffDays(d, L.today());
           return '<button class="drow' + (n === 0 ? ' now' : '') + '" data-dow="' + d.getDay() + '"><span class="dd"><b>' + L.DS[d.getDay()] + '</b><span>' + d.getDate() + '</span></span><span class="dits">' +
-            its.map(it => '<i class="wi" data-a="' + it.a + '">' + ic(D.ICON[it.a] + '-outline') + '</i>').join('') + '</span><span class="dn">' + its.length + ic('chevron-forward', 'chev') + '</span></button>';
+            its.map(it => '<i class="wi" data-a="' + it.a + '">' + ic(D.ICON[it.a]) + '</i>').join('') + '</span><span class="dn">' + its.length + ic('chevron-forward', 'chev') + '</span></button>';
         }).join('') + '</div>';
       }
       if (this.seg === 'explorar') {

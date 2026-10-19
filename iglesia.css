@@ -76,7 +76,7 @@ ion-item.unread .ig-chend small { color: var(--c); font-weight: 650; }
 /* ================= publicaciones ================= */
 .ig-post { position: relative; padding: 14px 14px 12px; margin-bottom: 8px; border-radius: var(--r); background: var(--surface); cursor: pointer; transition: transform 0.15s var(--ease); -webkit-user-select: none; user-select: none; }
 .ig-post:active { transform: scale(0.985); }
-.ig-post.mine { box-shadow: inset 3px 0 0 var(--c); }
+.ig-post.mine { background: color-mix(in srgb, var(--c) 10%, var(--surface)); }
 .ig-post.just, .ig-re.just { animation: igIn 0.6s var(--ease) both; }
 @keyframes igIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 .ig-pinned { display: flex; align-items: center; gap: 5px; margin: 0 0 10px; color: var(--c); font-size: 12.5px; font-weight: 700; }
@@ -98,7 +98,7 @@ ion-item.unread .ig-chend small { color: var(--c); font-weight: 650; }
 .ig-golink { display: flex; align-items: center; gap: 8px; width: 100%; margin: 0 0 10px; padding: 10px 12px; border: 0; border-radius: var(--r-sm); background: var(--surface2); color: var(--ink); font-size: 14.5px; font-weight: 600; text-align: left; cursor: pointer; }
 .ig-golink .ico { font-size: 18px; color: var(--brand); }
 .ig-golink .ico:last-child { margin-left: auto; font-size: 15px; color: var(--ink4); }
-.ig-apv { margin: 0 0 10px; padding: 10px 12px; border-radius: var(--r-sm); background: var(--surface2); box-shadow: inset 3px 0 0 var(--c); }
+.ig-apv { margin: 0 0 10px; padding: 10px 12px; border-radius: var(--r-sm); background: var(--surface2); background: color-mix(in srgb, var(--c) 12%, var(--surface2)); }
 .ig-apv small { display: flex; align-items: center; gap: 5px; margin-bottom: 3px; color: var(--c); font-size: 12.5px; font-weight: 700; }
 .ig-apv p { margin: 0; font-size: 14.5px; color: var(--ink2); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
 .ig-thx { display: flex; gap: 10px; align-items: flex-start; margin: 0 0 10px; padding: 10px 12px; border-radius: var(--r-sm); background: var(--surface2); }
@@ -197,7 +197,7 @@ ion-footer.ig-foot[hidden] { display: none; }
 .ig-ansdone b { display: block; font-family: var(--serif); font-optical-sizing: auto; font-size: 22px; font-weight: 600; }
 .ig-ansdone small { display: block; margin: 2px 0 14px; color: var(--ink3); font-size: 13.5px; }
 .ig-re { position: relative; padding: 12px 14px; margin-bottom: 8px; border-radius: var(--r); background: var(--surface); -webkit-user-select: none; user-select: none; }
-.ig-re.ofi { box-shadow: inset 3px 0 0 var(--c); }
+.ig-re.ofi { background: color-mix(in srgb, var(--c) 12%, var(--surface2)); }
 .ig-re.mine { background: color-mix(in srgb, var(--c) 9%, var(--surface)); }
 .ig-re .ig-by { margin-bottom: 6px; }
 .ig-ey { display: flex; align-items: center; gap: 5px; margin: 0 0 8px; color: var(--c); font-size: 12.5px; font-weight: 700; }

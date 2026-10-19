@@ -4,8 +4,10 @@ window.D = (() => {
   /* ---------- actividades: un color por actividad, misma intensidad (OKLCH L .79 C .13) ---------- */
   const ACTS = ['oracion', 'palabra', 'meditar', 'diario', 'adoracion', 'ayuno', 'encuentro', 'mensaje'];
   const NAME = { oracion: 'Oración', palabra: 'Palabra', meditar: 'Meditar', diario: 'Diario', adoracion: 'Adoración', ayuno: 'Ayuno', encuentro: 'Encuentro', mensaje: 'Mensaje' };
-  /* cada actividad tiene su forma (patrón de How We Feel): contorno = pendiente, llena = hecha */
-  const ICON = { oracion: 'sh-oracion', palabra: 'sh-palabra', meditar: 'sh-meditar', diario: 'sh-diario', adoracion: 'sh-adoracion', ayuno: 'sh-ayuno', encuentro: 'sh-encuentro', mensaje: 'sh-mensaje' };
+  /* cada actividad: glifo blanco relleno en un círculo de su color (dirección «Anillos»: Streaks + Apple Journal) */
+  const ICON = { oracion: 'hands-praying', palabra: 'book', meditar: 'water', diario: 'create', adoracion: 'musical-notes', ayuno: 'hourglass', encuentro: 'people', mensaje: 'chatbubble-ellipses' };
+  /* formas planas por actividad: solo para arte (portadas de planes), no como ícono */
+  const SHAPE = { oracion: 'sh-oracion', palabra: 'sh-palabra', meditar: 'sh-meditar', diario: 'sh-diario', adoracion: 'sh-adoracion', ayuno: 'sh-ayuno', encuentro: 'sh-encuentro', mensaje: 'sh-mensaje' };
   const INFO = {
     oracion: { why: 'Hablar con Dios antes que con el mundo.', ref: 'Filipenses 4:6', how: ['Empieza dando gracias', 'Nombra a las personas', 'Termina en silencio'] },
     palabra: { why: 'Su palabra alumbra el paso de hoy.', ref: 'Salmo 119:105', how: ['Lee despacio', 'Elige un versículo', '¿Qué me pide hoy?'] },
@@ -290,6 +292,6 @@ window.D = (() => {
     { id: 'diario30', a: 'diario', i: 'create', t: 'Lo que Dios hace', d: 'Treinta líneas en tu diario', goal: 30, key: 'diary' }
   ];
 
-  return { LAST, QUESTIONS, AGREE_SUG, FOCUS, ACTS, NAME, ICON, INFO, VERSES, VTXT, TEXT, BOOKS, AT, bibleDay, SEQ, PLANS, INVITES, TEMPLATES, ROUTINE, ME, LEADER, PEOPLE, SHARE, SIG, DWEEK, PETS, ANSWERED,
+  return { SHAPE, LAST, QUESTIONS, AGREE_SUG, FOCUS, ACTS, NAME, ICON, INFO, VERSES, VTXT, TEXT, BOOKS, AT, bibleDay, SEQ, PLANS, INVITES, TEMPLATES, ROUTINE, ME, LEADER, PEOPLE, SHARE, SIG, DWEEK, PETS, ANSWERED,
     FAMILY, MESAS, COUPLE_Q, CHURCH, MEMBERS, CHANNELS, POSTS, RX, EVENTS, MEMO, KEEPS, READ, ACH };
 })();

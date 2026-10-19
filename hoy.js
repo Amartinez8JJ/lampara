@@ -21,14 +21,14 @@
     else if (it.n) parts.push(it.n);
     return parts.filter(Boolean).join(' · ');
   }
-  function row(it, just) {
-    const done = L.isDone(it.id) && it.id !== just;
-    return '<ion-item-sliding><ion-item button detail="false" data-open="' + it.id + '" data-a="' + it.a + '" class="' + (done ? 'done' : '') + '">' +
-      '<div class="aic" slot="start">' + actIc(it.a, done) + '</div>' +
-      '<ion-label><h3>' + esc(it.t) + '</h3><p>' + esc(subOf(it)) + '</p></ion-label>' +
-      '<button class="chk" slot="end" data-chk="' + it.id + '" aria-label="' + (done ? 'Desmarcar' : 'Marcar hecho') + '">' + CHK + '</button></ion-item>' +
-      '<ion-item-options side="start"><ion-item-option class="o-done" expandable data-swdone="' + it.id + '">' + ic('checkmark') + '</ion-item-option></ion-item-options>' +
-      '<ion-item-options side="end"><ion-item-option class="o-skip" data-skip="' + it.id + '">Hoy no</ion-item-option></ion-item-options></ion-item-sliding>';
+  /* cada práctica es un anillo (Streaks): mantener = completar, tocar = ver qué hacer */
+  function ring(it, just, next) {
+    const done = L.isDone(it.id), fresh = it.id === just;
+    const cls = (done && !fresh ? ' done' : '') + (fresh ? ' filled' : '') + (next ? ' next' : '');
+    return '<button class="rbtn' + cls + '" data-ring="' + it.id + '" data-a="' + it.a + '" aria-label="' + esc(it.t) + (done ? ', hecho' : ', mantén presionado para completar') + '">' +
+      '<span class="disk"><svg class="rg" viewBox="0 0 96 96"><circle class="trk" cx="48" cy="48" r="44"/><circle class="bar" cx="48" cy="48" r="44"/></svg>' +
+      '<span class="core">' + ic(D.ICON[it.a]) + '</span><span class="badge">' + ic('checkmark') + '</span></span>' +
+      '<b>' + esc(it.t) + '</b><small>' + (done && !fresh ? 'Hecho' : esc(it.h)) + '</small></button>';
   }
   function weekHTML() {
     const t = L.today();
@@ -46,8 +46,18 @@
     mount() {
       this.prevOn = new Set();
       L.on('lit', () => { const c = this.querySelector('.streak'); if (c) { c.classList.remove('ignite'); void c.offsetWidth; c.classList.add('ignite'); L.sparks(c, 10); } });
-      this.addEventListener('ionSwipe', e => { const o = e.target.querySelector('[data-swdone]') || e.target.closest('[data-swdone]'); if (o) this.mark(o.dataset.swdone, true); });
-      L.press(this, '[data-open]', el => menu(el.dataset.open, el, this));
+      /* mantener presionado un anillo lo llena; si se suelta antes, vuelve */
+      const HOLD = 650; let ht = 0, x0 = 0, y0 = 0, holdB = null;
+      const cancel = () => { clearTimeout(ht); if (holdB) holdB.classList.remove('holding'); holdB = null; };
+      this.addEventListener('pointerdown', e => {
+        const b = e.target.closest('[data-ring]'); this.fired = false;
+        if (!b || L.isDone(b.dataset.ring)) return;
+        holdB = b; x0 = e.clientX; y0 = e.clientY; b.classList.add('holding'); L.haptic(4);
+        clearTimeout(ht); ht = setTimeout(() => { this.fired = true; const id = b.dataset.ring; holdB = null; b.classList.remove('holding'); this.mark(id, true); }, HOLD);
+      });
+      this.addEventListener('pointermove', e => { if (holdB && Math.hypot(e.clientX - x0, e.clientY - y0) > 10) cancel(); });
+      ['pointerup', 'pointercancel'].forEach(ev => this.addEventListener(ev, () => { if (!this.fired) cancel(); }));
+      this.addEventListener('contextmenu', e => { if (e.target.closest('[data-ring]')) e.preventDefault(); });
     }
     render() {
       const S = L.S, t = L.today(), its = L.todayItems(), k = its.filter(i => L.isDone(i.id)).length, n = its.length;
@@ -59,14 +69,12 @@
       this.onNow = new Set(its.filter(i => L.isDone(i.id)).map(i => i.id));
       const cta = pend.length ? '<button class="btn" data-start>' + ic('play') + (k ? 'Seguir · ' + pend.length + ' más' : 'Empezar') + '</button>'
         : n && k === n ? '<div class="done-line">' + ic('lampara') + 'Tu lámpara está encendida</div>' : n ? '<p class="muted">Lo que queda es con otras personas.</p>' : '<p class="muted">Nada planeado para hoy.</p>';
-      /* lo que sigue (la tarjeta «Ahora» de v3): la próxima práctica pendiente, a un toque */
+      /* lo que sigue (lo de «Ahora» en v3): la próxima pendiente late suave */
       const nx = its.find(i => !L.isDone(i.id));
-      const nextRow = nx && pend.length ? '<button class="nextrow" data-open="' + nx.id + '" data-a="' + nx.a + '"><span class="aic">' + actIc(nx.a) + '</span><span class="nr-t"><small>' + (L.mins(nx.h) < new Date().getHours() * 60 + new Date().getMinutes() ? 'Te quedó' : 'Sigue') + ' · ' + esc(nx.h) + '</small><b>' + esc(nx.t) + '</b></span>' + ic('chevron-forward', 'chev') + '</button>' : '';
-      const tcd = '<div class="tcd"><div class="tcd-top"><h2>Tu tiempo con Dios</h2><span>' + k + ' de ' + n + (min ? ' · ' + min + ' min' : '') + '</span></div>' +
-        (n ? '<div class="segbar">' + its.map(i => '<i data-a="' + i.a + '" data-seg="' + i.id + '" class="' + (this.prevOn.has(i.id) && this.onNow.has(i.id) ? 'on' : '') + '"></i>').join('') + '</div>' : '') + nextRow + cta + '</div>';
+      const tcd = '<div class="tcd"><div class="tcd-top"><h2>Tu tiempo con Dios</h2><span>' + k + ' de ' + n + (min ? ' · ' + min + ' min' : '') + '</span></div>' + cta + '</div>';
       const groups = MOMENTS.map(([name, icon, a, b]) => {
         const g = its.filter(i => L.mins(i.h) >= a && L.mins(i.h) < b);
-        return g.length ? '<p class="moment">' + ic(icon) + name + '</p><ion-list inset="true" lines="inset">' + g.map(i => row(i, this.just)).join('') + '</ion-list>' : '';
+        return g.length ? '<p class="moment">' + ic(icon) + name + '</p><div class="rings">' + g.map(i => ring(i, this.just, nx && i.id === nx.id)).join('') + '</div>' : '';
       }).join('');
       const ppl = [{ id: D.LEADER.id, name: D.LEADER.name, first: D.LEADER.first, lead: true }].concat(S.people).concat([{ id: 'AN', name: 'Ana', first: 'Ana', fam: true }]);
       return '<p class="today-date">' + L.longDate(t) + (S.focus ? '<span class="focus-chip">' + ic('flag') + esc(S.focus.t) + '</span>' : '') + '</p>' + weekHTML() +
@@ -75,7 +83,7 @@
         '<div class="vacts"><button data-vact="keep" class="' + (saved ? 'on' : '') + '">' + ic(saved ? 'bookmark' : 'bookmark-outline') + (saved ? 'Guardado' : 'Guardar') + '</button>' +
         '<button data-vact="memo">' + ic('leaf-outline') + 'Memorizar</button><button data-vact="share">' + ic('paper-plane-outline') + 'Compartir</button></div></div>' +
         '<div class="sec"></div>' + tcd + groups +
-        (tipSeen() ? '' : '<div class="tip">' + ic('information-circle-outline') + '<span><b>Atajos:</b> mantén presionada una práctica para ver opciones, o deslízala a la derecha para marcarla.</span><button class="iconbtn" data-tipx aria-label="Cerrar">' + ic('close') + '</button></div>') +
+        (tipSeen() ? '' : '<div class="tip">' + ic('information-circle-outline') + '<span><b>Cómo se usa:</b> mantén presionado un círculo hasta que se llene para completarlo. Tócalo para ver qué hacer.</span><button class="iconbtn" data-tipx aria-label="Cerrar">' + ic('close') + '</button></div>') +
         '<button class="link add-today" data-addtoday>' + ic('add-circle') + ' Agregar algo a hoy</button>' +
         '<div class="sec"><h2>Tu gente</h2><button class="more" data-anotar>' + ic('add') + ' Anotar</button></div><div class="stories">' + ppl.map(p => {
           const cls = p.lead || p.fam ? 'dim' : p.signal === 'hablar' || p.signal === 'cuesta' ? 'talk' : p.share >= 2 && p.dToday > 0 ? 'lit' : 'dim';
@@ -85,20 +93,15 @@
     after() {
       const chip = this.querySelector('.streak');
       if (chip) { chip.classList.toggle('lit', L.litToday()); chip.querySelector('.fc-n').textContent = L.weekLit(); }
-      const onNow = this.onNow;
-      requestAnimationFrame(() => requestAnimationFrame(() => this.pg.querySelectorAll('.segbar i').forEach(s => s.classList.toggle('on', onNow.has(s.dataset.seg)))));
-      this.prevOn = onNow;
       if (this.just) {
         const id = this.just; this.just = null;
-        const it = this.pg.querySelector('[data-open="' + id + '"]');
-        if (it) requestAnimationFrame(() => {
-          it.classList.add('done');
-          const a = L.todayItems().find(x => x.id === id);
-          if (a) it.querySelector('.aic').innerHTML = actIc(a.a, true);
-          it.querySelector('.aic').classList.add('pop');
-          const s = it.querySelector('.chk span'); s.classList.add('pop', 'ripple');
-          L.sparks(it.querySelector('.chk'), 8);
-        });
+        const b = this.pg.querySelector('[data-ring="' + id + '"]');
+        if (b) requestAnimationFrame(() => requestAnimationFrame(() => {
+          b.classList.remove('filled'); b.classList.add('done');
+          b.querySelector('.core').classList.add('pop');
+          b.querySelector('small').textContent = 'Hecho';
+          L.sparks(b.querySelector('.disk'), 16);
+        }));
       }
     }
     mark(id, on) {
@@ -113,6 +116,7 @@
       if ((el = t.closest('[data-chk]'))) { e.stopPropagation(); this.mark(el.dataset.chk, !L.isDone(el.dataset.chk)); return; }
       if ((el = t.closest('[data-swdone]'))) { this.mark(el.dataset.swdone, true); return; }
       if ((el = t.closest('[data-skip]'))) { const id = el.dataset.skip; L.skipToday(id, true); L.toast('Lo sacaste de hoy', { undo: () => L.skipToday(id, false) }); return; }
+      if ((el = t.closest('[data-ring]'))) { if (this.fired) { this.fired = false; return; } openItem(el.dataset.ring, this); return; }
       if ((el = t.closest('[data-open]'))) { openItem(el.dataset.open, this); return; }
       if ((el = t.closest('[data-ctx]'))) { const c = L.topCtx(); if (c) c.click(el); return; }
       if (t.closest('[data-start]')) { Flujo.start(L.todayItems().filter(i => !L.isDone(i.id) && canFlow(i))); return; }
@@ -153,10 +157,13 @@
       (withP ? '<div class="mini-list"><div class="mini">' + av(withP.id, withP.name, 34) + '<div><b>' + esc(withP.name) + '</b><small>' + esc(it.h) + '</small></div></div></div>' : '') +
       '<div class="why"><p>' + esc(inf.why) + '</p><small>' + esc(inf.ref) + '</small></div>' +
       '<div class="steps">' + inf.how.map(s => '<div>' + esc(s) + '</div>').join('') + '</div>' + extras(it) +
-      '<div class="row2"><button class="btn ghost" data-m>' + (done ? 'Desmarcar' : ic('checkmark') + 'Hecho') + '</button><button class="btn c" data-g>' + ic(go[0]) + go[1] + '</button></div></div>';
+      '<div class="row2"><button class="btn ghost" data-m>' + (done ? 'Desmarcar' : ic('checkmark') + 'Hecho') + '</button><button class="btn c" data-g>' + ic(go[0]) + go[1] + '</button></div>' +
+      (done ? '' : '<button class="link skip-link" data-skip1>' + ic('moon') + ' Hoy no</button>') + '</div>';
     L.sheet(html, {
       mount: (el, m) => {
         el.querySelector('[data-m]').onclick = () => { m.dismiss(); page ? page.mark(id, !done) : L.setDone(id, !done); };
+        const sk = el.querySelector('[data-skip1]');
+        if (sk) sk.onclick = () => { m.dismiss(); L.skipToday(id, true); L.toast('Lo sacaste de hoy', { undo: () => L.skipToday(id, false) }); };
         const nb = el.querySelector('[data-note]');
         if (nb) nb.onclick = () => { m.dismiss(); L.prompt('Anotar sobre ' + it.t, { ph: '¿Qué te quedó?' }, v => { L.S.keeps.unshift({ a: it.a, t: v, r: it.src === 'p' ? it.t : '', d: L.tk() }); L.save(); L.refresh(); L.toast('Anotado', { icon: 'create' }); }); };
         el.querySelector('[data-g]').onclick = () => {

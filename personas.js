@@ -15,7 +15,7 @@
   }
   function statusEnd(p) {
     const its = L.discItems(p, L.today()), k = p.dToday;
-    if (p.share >= 3) return '<span class="ddots" slot="end">' + its.map((it, i) => '<i data-a="' + it.a + '">' + ic(D.ICON[it.a] + (i < k ? '' : '-outline')) + '</i>').join('') + '</span>';
+    if (p.share >= 3) return '<span class="ddots" slot="end">' + its.map((it, i) => '<i data-a="' + it.a + '" class="' + (i < k ? 'on' : '') + '"></i>').join('') + '</span>';
     if (p.share === 2) return '<span class="dflame' + (k ? ' on' : '') + '" slot="end">' + ic('flame') + '</span>';
     if (p.share === 1) return '<span class="sig ' + p.signal + '" slot="end">' + D.SIG[p.signal] + '</span>';
     return '<span class="dlock" slot="end">' + ic('lock-closed') + '</span>';
@@ -70,7 +70,7 @@
     L.S.log.unshift({ who: id, a, d: L.tk() });
     if (a === 'oracion') L.S.stats.prayOthers++;
     L.save(); L.haptic(10); L.refresh();
-    L.toast(a === 'oracion' ? 'Oraste por ' + p.first : a === 'mensaje' ? 'Le escribiste a ' + p.first : 'Anotaste un encuentro con ' + p.first, { icon: D.ICON[a] });
+    L.toast(a === 'oracion' ? 'Oraste por ' + p.first : a === 'mensaje' ? 'Le escribiste a ' + p.first : 'Anotaste un encuentro con ' + p.first, { icon: { oracion: 'heart', mensaje: 'chatbubble', encuentro: 'people', palabra: 'book' }[a] || 'checkmark' });
     L.checkAch();
   }
   /* Anotar (el «＋ Anotar» de v3): con quién y qué hiciste, en dos toques */
@@ -119,7 +119,7 @@
       const its = L.discItems(p, d), done = L.discDone(p, d), st = L.discStatus(p, d), n = L.diffDays(d, L.today());
       const off = n < 0 && st !== 'lit';
       const body = off ? '<span class="wtag">' + ic(st === 'grace' ? 'sunny-outline' : 'flame-outline') + (st === 'grace' ? 'Día de gracia' : 'Sin registro') + '</span>'
-        : its.map((it, i) => '<i class="wi' + (done[i] ? ' on' : '') + '" data-a="' + it.a + '">' + ic(D.ICON[it.a] + (done[i] ? '' : '-outline')) + '</i>').join('') + (its.some(x => x.with) ? '<span class="tag">Contigo</span>' : '');
+        : its.map((it, i) => '<i class="wi' + (done[i] ? ' on' : '') + '" data-a="' + it.a + '">' + ic(D.ICON[it.a]) + '</i>').join('') + (its.some(x => x.with) ? '<span class="tag">Contigo</span>' : '');
       return '<button class="drow' + (n === 0 ? ' now' : n < 0 ? ' past' : '') + '" data-dday="' + L.dk(d) + '"><span class="dd"><b>' + L.DS[d.getDay()] + '</b><span>' + d.getDate() + '</span></span><span class="dits">' + body + '</span>' +
         '<span class="dn">' + (off ? '' : (n <= 0 ? done.filter(Boolean).length + '/' : '') + its.length) + '</span></button>';
     }).join('');

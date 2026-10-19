@@ -16,7 +16,7 @@
     const t = L.today(), start = L.addDays(L.weekStart(t), -21), days = [];
     for (let i = 0; i < 28; i++) days.push(L.addDays(start, i));
     const cells = days.map(d => { const x = dayShapes(d); return '<div class="cd ' + x.st + (L.same(d, t) ? ' now' : '') + '"><small>' + d.getDate() + '</small><span class="shp">' +
-      x.acts.map(a => '<i data-a="' + a + '">' + ic(D.ICON[a]) + '</i>').join('') + '</span></div>'; }).join('');
+      x.acts.map(a => '<i data-a="' + a + '"></i>').join('') + '</span></div>'; }).join('');
     return '<div class="streak-card"><div class="sc-top"><b>' + L.weekLit() + ' de ' + L.GOAL + ' esta semana</b><span>' + L.S.stats.weeksLit + ' semanas encendidas</span></div>' +
       '<div class="cal">' + L.WEEK.map(w => '<span class="dh">' + L.DL[w] + '</span>').join('') + cells + '</div>' +
       '<p class="fine">' + ic('sunny-outline') + 'La llama nunca se apaga: un día de gracia por semana.</p></div>';
@@ -45,7 +45,7 @@
         '<div class="sec"><h2>Logros</h2><span class="muted">' + D.ACH.filter(L.achEarned).length + ' de ' + D.ACH.length + '</span></div>' + achHTML() +
         '<div class="sec"><h2>Tu Biblia</h2></div>' + booksHTML() +
         '<div class="sec"><h2>De memoria</h2><span class="muted">' + S.memo.filter(m => m.lvl >= 3).length + ' versículos</span></div><ion-list inset="true" lines="inset">' + S.memo.map((m, i) => '<ion-item button detail="false" data-memo="' + i + '"><ion-label><h3>' + esc(m.r) + '</h3><p>' + esc(m.t) + '</p></ion-label><span slot="end">' + stars(m.lvl) + '</span></ion-item>').join('') + '</ion-list>' +
-        '<div class="sec"><h2>Lo que me llevo</h2></div><div class="keeps">' + S.keeps.slice(0, 6).map(k => '<div class="keep" data-a="' + k.a + '"><p>' + esc(k.t) + '</p><small>' + (k.r ? esc(k.r) + ' · ' : '') + L.cap(L.rel(L.diffDays(L.fromDk(k.d), L.today()))) + '</small></div>').join('') + '</div>' +
+        '<div class="sec"><h2>Lo que me llevo</h2><span class="muted">desliza</span></div><div class="journal">' + S.keeps.slice(0, 8).map(k => '<div class="jcard" data-a="' + k.a + '"><span class="k">' + ic(D.ICON[k.a] || 'bookmark') + (k.a === 'diario' ? 'Tu diario' : k.a === 'meditar' ? 'Meditaste' : 'Te llevaste') + '</span><p>' + (k.r ? '«' + esc(k.t) + '»' : esc(k.t)) + '</p><small>' + (k.r ? esc(k.r) + ' · ' : '') + L.cap(L.rel(L.diffDays(L.fromDk(k.d), L.today()))) + '</small></div>').join('') + '</div>' +
         '<div class="sec"><h2>Privacidad</h2></div><ion-list inset="true" lines="inset"><ion-item button detail="true" data-priv><div class="aic" slot="start" data-a="">' + ic('eye-outline') + '</div><ion-label><h3>Qué ve ' + esc(D.LEADER.first) + ' de ti</h3><p>' + D.SHARE[S.myShare].n + ' · ' + D.SHARE[S.myShare].d + '</p></ion-label></ion-item></ion-list>' +
         '<div class="sec"><h2>Apariencia</h2><span class="muted">' + (L.theme.get() === 'auto' ? 'Sigue a tu celular' : '') + '</span></div><div class="theme-opts">' +
           [['auto', 'Automático', 'a'], ['light', 'Claro', 'l'], ['dark', 'Oscuro', 'd']].map(x => '<button class="' + (L.theme.get() === x[0] ? 'on' : '') + '" data-theme="' + x[0] + '"><span class="sw ' + x[2] + '"><i></i></span>' + x[1] + '</button>').join('') + '</div>' +
