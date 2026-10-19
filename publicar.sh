@@ -10,6 +10,7 @@ for f in *.js *.css; do [ -e "$f" ] && rm "$f"; done
 copia v5 .
 copia v4 v4
 mkdir -p v3; for f in index.html motion.js motion.css mod-hogar.js mod-hogar.css mod-iglesia.js mod-iglesia.css; do cp "../v3/$f" v3/; done
+mkdir -p propuestas; cp ../propuestas/*.html ../propuestas/icons.js propuestas/
 touch .nojekyll
 git add -A
 git diff --cached --quiet && { echo "Sin cambios"; exit 0; }

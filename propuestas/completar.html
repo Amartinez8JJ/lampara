@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lámpara · completar y notificaciones</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..600&display=swap">
+<style>
+  :root { --bg: #0A0A0B; --surface: #161618; --surface2: #1F1F22; --surface3: #2A2A2E; --ink: #F5F5F7; --ink2: rgba(235,235,245,.8); --ink3: rgba(235,235,245,.56); --ink4: rgba(235,235,245,.3);
+    --brand: #FF8A1F; --on: #0A0A0B; --ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", Roboto, system-ui, sans-serif; --serif: "Newsreader", Georgia, serif;
+    --oracion: #FF5C4D; --adoracion: #FF5FA8; --meditar: #A27BFF; --palabra: #4B8BFF; --mensaje: #1EC8F0; --diario: #2ED69A; --encuentro: #B4E33D; --ayuno: #FFC93C;
+    --spring: cubic-bezier(.34,1.56,.64,1); --ease: cubic-bezier(.22,1,.36,1); }
+  [data-a="oracion"] { --c: var(--oracion); } [data-a="palabra"] { --c: var(--palabra); } [data-a="meditar"] { --c: var(--meditar); } [data-a="diario"] { --c: var(--diario); }
+  [data-a="mensaje"] { --c: var(--mensaje); } [data-a="encuentro"] { --c: var(--encuentro); } [data-a="adoracion"] { --c: var(--adoracion); } [data-a="brand"] { --c: var(--brand); }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #000; color: var(--ink); font-family: var(--ui); -webkit-font-smoothing: antialiased; }
+  svg.ico { width: 1em; height: 1em; fill: currentColor; display: block; }
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 32px 22px 60px; }
+  h1 { font-family: var(--serif); font-weight: 600; font-size: 42px; letter-spacing: -.015em; margin: 0 0 6px; }
+  .lead { color: var(--ink3); font-size: 15.5px; margin: 0 0 26px; max-width: 780px; line-height: 1.45; }
+  h2 { font-family: var(--serif); font-weight: 600; font-size: 30px; margin: 40px 0 6px; }
+  .sub { color: var(--ink3); margin: 0 0 18px; font-size: 14.5px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(272px, 1fr)); gap: 18px; }
+  .opt { background: var(--bg); border-radius: 30px; padding: 18px 16px 18px; box-shadow: 0 0 0 1px #222; display: flex; flex-direction: column; }
+  .opt .tt { font-family: var(--serif); font-size: 24px; font-weight: 600; margin: 0 4px; }
+  .opt .rf { color: var(--ink3); font-size: 12.5px; margin: 2px 4px 14px; line-height: 1.35; }
+  .opt .rf b { color: var(--ink2); }
+  .stage { flex: 1; background: var(--surface); border-radius: 22px; padding: 16px 14px; min-height: 380px; position: relative; overflow: hidden; }
+  .pc { margin: 14px 4px 0; font-size: 13px; line-height: 1.45; color: var(--ink2); }
+  .pc span { display: block; } .pc .g::before { content: '+ '; color: var(--diario); font-weight: 800; } .pc .b::before { content: '– '; color: var(--oracion); font-weight: 800; }
+  .tag { display: inline-block; margin: 10px 4px 0; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; background: var(--brand); color: var(--on); align-self: flex-start; }
+  .tag.now { background: var(--surface3); color: var(--ink2); }
+  .hint { color: var(--ink4); font-size: 12px; text-align: center; margin: 0 0 12px; }
+  @keyframes pop { 0% { transform: scale(.6); } 60% { transform: scale(1.14); } 100% { transform: scale(1); } }
+  .spark { position: fixed; width: 8px; height: 8px; border-radius: 2px; pointer-events: none; z-index: 99; }
+
+  /* A · Anillos */
+  .rings { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px 4px; }
+  .rb { display: flex; flex-direction: column; align-items: center; gap: 6px; border: 0; background: none; color: var(--ink); padding: 0; cursor: pointer; user-select: none; -webkit-user-select: none; touch-action: manipulation; }
+  .rb .disk { position: relative; width: 74px; height: 74px; display: grid; place-items: center; }
+  .rb svg.rg { position: absolute; inset: 0; transform: rotate(-90deg); width: 74px; height: 74px; }
+  .rb .rg circle { fill: none; stroke-width: 5; } .rb .trk { stroke: color-mix(in srgb, var(--c) 22%, transparent); }
+  .rb .bar { stroke: var(--c); stroke-linecap: round; stroke-dasharray: 213.6; stroke-dashoffset: 213.6; transition: stroke-dashoffset .3s var(--ease); }
+  .rb.holding .bar { transition: stroke-dashoffset .65s linear; stroke-dashoffset: 0; } .rb.done .bar { stroke-dashoffset: 0; }
+  .rb .core { width: 58px; height: 58px; border-radius: 50%; display: grid; place-items: center; font-size: 26px; background: var(--surface2); color: var(--c); transition: background-color .3s, color .3s, transform .3s var(--spring); }
+  .rb.holding .core { transform: scale(.88); } .rb.done .core { background: var(--c); color: var(--on); animation: pop .5s var(--spring); }
+  .rb b { font-size: 12px; }
+
+  /* B · Desliza para encender */
+  .slides { display: grid; gap: 12px; }
+  .sl { position: relative; height: 62px; border-radius: 31px; background: var(--surface2); overflow: hidden; user-select: none; -webkit-user-select: none; touch-action: none; }
+  .sl .fill { position: absolute; inset: 0; width: 62px; background: var(--c); border-radius: 31px; transition: width .4s var(--ease); }
+  .sl .lbl { position: absolute; inset: 0; display: flex; align-items: center; padding-left: 74px; font-weight: 650; font-size: 15px; color: var(--ink2); pointer-events: none; }
+  .sl .lbl small { margin-left: 6px; color: var(--ink4); font-weight: 600; }
+  .sl .knob { position: absolute; left: 4px; top: 4px; width: 54px; height: 54px; border-radius: 50%; background: var(--c); color: var(--on); display: grid; place-items: center; font-size: 24px; cursor: grab; box-shadow: 0 4px 12px rgba(0,0,0,.35); transition: left .4s var(--spring); }
+  .sl.done .fill { width: 100%; } .sl.done .lbl { color: var(--on); } .sl.done .lbl small { color: var(--on); opacity: .7; }
+  .sl.done .knob { background: var(--on); color: var(--c); }
+  .sl .shine { position: absolute; inset: 0; background: linear-gradient(90deg, transparent 30%, rgba(255,255,255,.08) 50%, transparent 70%); background-size: 200% 100%; animation: shine 2.4s linear infinite; pointer-events: none; }
+  .sl.done .shine { display: none; }
+  @keyframes shine { from { background-position: 150% 0; } to { background-position: -50% 0; } }
+
+  /* C · La lámpara se llena */
+  .lamp { position: relative; height: 196px; display: grid; place-items: center; margin-bottom: 8px; }
+  .lamp .glow { position: absolute; width: 190px; height: 190px; border-radius: 50%; background: radial-gradient(circle, color-mix(in srgb, var(--brand) 55%, transparent), transparent 65%); opacity: 0; transform: scale(.6); transition: opacity .6s, transform .8s var(--spring); }
+  .lamp.lit .glow { opacity: 1; transform: scale(1); }
+  .lamp .vessel { position: relative; width: 150px; height: 150px; font-size: 150px; color: var(--surface3); }
+  .lamp .vessel .oil { position: absolute; inset: 0; color: var(--brand); clip-path: inset(var(--lvl, 100%) 0 0 0); transition: clip-path .8s var(--ease); }
+  .lamp .pct { position: absolute; bottom: 4px; font-weight: 800; font-size: 14px; color: var(--ink2); }
+  .chipsC { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+  .cc { display: inline-flex; align-items: center; gap: 6px; height: 38px; padding: 0 14px 0 6px; border: 0; border-radius: 999px; background: var(--surface2); color: var(--ink); font-weight: 650; font-size: 13.5px; cursor: pointer; transition: transform .15s var(--ease); }
+  .cc i { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-size: 14px; background: var(--surface3); color: var(--c); font-style: normal; }
+  .cc.done { background: var(--c); color: var(--on); } .cc.done i { background: var(--on); color: var(--c); }
+  .cc:active { transform: scale(.94); }
+  .drop { position: fixed; width: 12px; height: 16px; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; pointer-events: none; z-index: 90; }
+
+  /* D · El camino del día */
+  .path { position: relative; height: 360px; }
+  .path svg.ln { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .path .ln path { fill: none; stroke-width: 10; stroke-linecap: round; }
+  .path .ln .base { stroke: var(--surface3); } .path .ln .prog { stroke: var(--brand); transition: stroke-dashoffset .7s var(--ease); }
+  .node { position: absolute; width: 66px; height: 66px; margin: -33px 0 0 -33px; border-radius: 50%; border: 0; display: grid; place-items: center; font-size: 28px; cursor: pointer;
+    background: var(--surface3); color: var(--ink4); box-shadow: 0 6px 0 #000; transition: background-color .3s, color .3s, transform .15s; }
+  .node:active { transform: translateY(5px); box-shadow: 0 1px 0 #000; }
+  .node.cur { background: var(--c); color: var(--on); box-shadow: 0 6px 0 color-mix(in srgb, var(--c) 50%, #000), 0 0 0 7px color-mix(in srgb, var(--c) 25%, transparent); animation: bob 1.6s ease-in-out infinite; }
+  .node.done { background: var(--c); color: var(--on); box-shadow: 0 6px 0 color-mix(in srgb, var(--c) 50%, #000); }
+  .node.end { background: var(--surface3); color: var(--ink4); }
+  .node.end.lit { background: var(--brand); color: var(--on); box-shadow: 0 6px 0 #9a4d06, 0 0 40px color-mix(in srgb, var(--brand) 60%, transparent); animation: pop .6s var(--spring); }
+  @keyframes bob { 50% { transform: translateY(-4px); } }
+  .bubble { position: absolute; padding: 6px 12px; border-radius: 10px; background: var(--ink); color: var(--on); font-weight: 750; font-size: 12.5px; transform: translate(-50%, -64px); white-space: nowrap; pointer-events: none; transition: left .4s var(--spring), top .4s var(--spring); }
+
+  /* Notificaciones */
+  .nots { display: grid; grid-template-columns: minmax(300px, 380px) 1fr; gap: 26px; align-items: start; }
+  @media (max-width: 760px) { .nots { grid-template-columns: 1fr; } }
+  .lock { position: relative; border-radius: 40px; padding: 14px 12px 26px; background: radial-gradient(120% 70% at 20% 0%, #2a1a40, transparent 60%), radial-gradient(90% 60% at 100% 100%, #3b1c0c, transparent 60%), #0b0a12; box-shadow: 0 0 0 1px #222; }
+  .island { margin: 0 auto 10px; width: 220px; height: 36px; border-radius: 20px; background: #000; display: flex; align-items: center; justify-content: space-between; padding: 0 10px; }
+  .island .il { display: flex; align-items: center; gap: 6px; color: var(--brand); font-size: 18px; }
+  .island .ir { width: 22px; height: 22px; }
+  .clock { text-align: center; font-weight: 300; font-size: 64px; letter-spacing: -.02em; margin: 6px 0 0; }
+  .date { text-align: center; color: var(--ink2); font-weight: 600; font-size: 15px; margin: 0 0 16px; }
+  .live { border-radius: 22px; padding: 12px 14px; background: rgba(20,20,22,.88); display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+  .live .lr { width: 46px; height: 46px; position: relative; flex: none; }
+  .live .lr svg { position: absolute; inset: 0; transform: rotate(-90deg); }
+  .live .lr circle { fill: none; stroke-width: 5; }
+  .live .lr .ic { position: absolute; inset: 0; display: grid; place-items: center; color: var(--brand); font-size: 20px; }
+  .live b { display: block; font-size: 14.5px; } .live small { color: var(--ink3); font-size: 12.5px; }
+  .live .tm { margin-left: auto; font-variant-numeric: tabular-nums; font-weight: 700; color: var(--brand); font-size: 18px; }
+  .nt { border-radius: 20px; padding: 11px 12px; background: rgba(36,36,40,.82); backdrop-filter: blur(20px); display: flex; gap: 10px; margin-bottom: 8px; position: relative; }
+  .nt .ap { width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center; flex: none; background: var(--brand); color: var(--on); font-size: 20px; position: relative; }
+  .nt .ap.av { border-radius: 50%; font-weight: 800; font-size: 14px; background: var(--c); }
+  .nt .ap.av em { position: absolute; right: -3px; bottom: -3px; width: 18px; height: 18px; border-radius: 5px; background: var(--brand); color: var(--on); display: grid; place-items: center; font-size: 11px; font-style: normal; box-shadow: 0 0 0 2px #242428; }
+  .nt div { flex: 1; min-width: 0; padding-right: 48px; } .nt b { font-size: 14px; } .nt p { margin: 1px 0 0; font-size: 14px; color: var(--ink2); line-height: 1.3; }
+  .nt time { position: absolute; right: 12px; top: 11px; color: var(--ink3); font-size: 12px; }
+  .nt .acts { display: flex; gap: 6px; margin-top: 8px; } .nt .acts span { padding: 6px 10px; border-radius: 10px; background: rgba(255,255,255,.12); font-size: 12.5px; font-weight: 650; }
+  .nt[data-n] { cursor: pointer; transition: transform .2s var(--ease); } .nt.hl { box-shadow: 0 0 0 2px var(--brand); }
+  .legend { display: grid; gap: 10px; }
+  .lg { display: grid; grid-template-columns: 30px 1fr; gap: 12px; padding: 14px 16px; border-radius: 18px; background: var(--surface); cursor: pointer; transition: background-color .2s; }
+  .lg:hover, .lg.hl { background: var(--surface2); }
+  .lg .n { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--brand); color: var(--on); font-weight: 800; font-size: 14px; }
+  .lg b { font-size: 15.5px; } .lg p { margin: 3px 0 0; color: var(--ink2); font-size: 13.5px; line-height: 1.4; } .lg small { display: block; margin-top: 4px; color: var(--ink3); font-size: 12px; }
+  .opinion { margin-top: 40px; align-items: start; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; }
+  .op { padding: 20px; border-radius: 24px; background: var(--surface); }
+  .op.c1 { background: var(--brand); color: var(--on); }
+  .op h3 { font-family: var(--serif); font-size: 24px; font-weight: 600; margin: 0 0 10px; }
+  .op p, .op li { font-size: 15px; line-height: 1.5; } .op ol { padding-left: 20px; margin: 0; } .op li { margin-bottom: 8px; }
+  .op li b { display: block; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Completar y notificaciones</h1>
+  <p class="lead">Cuatro formas de completar una práctica, todas para tocar. Las cuatro tienen vibración, chispas y su color. Abajo, las notificaciones como se verían en la pantalla bloqueada, y mi opinión.</p>
+
+  <h2>¿Cómo se completa una práctica?</h2>
+  <p class="sub">Probá cada una. Todas usan los mismos íconos (dirección «Anillos»).</p>
+  <div class="grid">
+    <section class="opt">
+      <p class="tt">A · Anillos</p><p class="rf">Lo que está hoy. Basado en <b>Streaks</b> (mantener para completar).</p>
+      <div class="stage"><p class="hint">Mantén presionado un círculo</p><div class="rings" id="A"></div></div>
+      <p class="pc"><span class="g">Rápido de ver: todo el día en una mirada.</span><span class="g">Mantener evita marcar sin querer.</span><span class="b">Con más de 6 prácticas se vuelve una grilla larga.</span></p>
+      <span class="tag now">Actual</span>
+    </section>
+    <section class="opt">
+      <p class="tt">B · Desliza para encender</p><p class="rf">Basado en <b>«Deslizar para apagar»</b> de iOS y <b>Uber</b> («desliza para confirmar»).</p>
+      <div class="stage"><p class="hint">Arrastra la llama hasta el final</p><div class="slides" id="B"></div></div>
+      <p class="pc"><span class="g">El gesto se siente: es una decisión, no un toque.</span><span class="g">Se lee como una lista: cabe mucho texto.</span><span class="b">Más lento si haces varias seguidas.</span></p>
+    </section>
+    <section class="opt">
+      <p class="tt">C · La lámpara se llena</p><p class="rf">Basado en <b>Finch</b> (la energía sube con cada meta) y <b>Apple Fitness</b> (el anillo del día que se cierra).</p>
+      <div class="stage"><div class="lamp" id="Clamp"><div class="glow"></div><div class="vessel"></div><span class="pct">0%</span></div><div class="chipsC" id="C"></div></div>
+      <p class="pc"><span class="g">Es la marca: cada práctica es aceite para tu lámpara.</span><span class="g">El final es un momento: la llama se enciende.</span><span class="b">Cada práctica pesa menos individualmente.</span></p>
+      <span class="tag">Mi recomendación</span>
+    </section>
+    <section class="opt">
+      <p class="tt">D · El camino del día</p><p class="rf">Basado en <b>Duolingo</b> (el camino de lecciones con nodos que se encienden).</p>
+      <div class="stage"><div class="path" id="D"></div></div>
+      <p class="pc"><span class="g">Te dice qué sigue, sin pensar.</span><span class="g">Muy gratificante: cada nodo salta y el camino avanza.</span><span class="b">Sugiere un orden fijo, y el día no siempre lo tiene.</span></p>
+    </section>
+  </div>
+
+  <h2>Notificaciones</h2>
+  <p class="sub">Tocá cada una para ver qué es, cuándo llega y por qué. Basado en las guías de Apple (notificaciones de comunicación, actividades en vivo, resumen programado) y en el tono amable de <b>Duolingo</b> y <b>YouVersion</b>.</p>
+  <div class="nots">
+    <div class="lock" id="lock">
+      <div class="island"><span class="il"><svg class="ico" viewBox="0 0 256 256" data-i="lampara"></svg></span><svg class="ir" viewBox="0 0 22 22"><circle cx="11" cy="11" r="8.5" fill="none" stroke="#3a2a1a" stroke-width="3"/><circle cx="11" cy="11" r="8.5" fill="none" stroke="#FF8A1F" stroke-width="3" stroke-dasharray="53.4" stroke-dashoffset="32" transform="rotate(-90 11 11)" stroke-linecap="round"/></svg></div>
+      <p class="clock">6:42</p><p class="date">martes 20 de octubre</p>
+      <div class="live nt" data-n="1"><span class="lr"><svg viewBox="0 0 46 46"><circle cx="23" cy="23" r="19" stroke="#3a2a1a"/><circle cx="23" cy="23" r="19" stroke="#FF8A1F" stroke-dasharray="119.4" stroke-dashoffset="72" stroke-linecap="round"/></svg><span class="ic"><svg class="ico" viewBox="0 0 256 256" data-i="book"></svg></span></span><div><b>Leyendo Juan 15:1–17</b><small>Tu tiempo con Dios · 2 de 5</small></div><span class="tm">08:12</span></div>
+      <div id="stack"></div>
+    </div>
+    <div class="legend" id="legend"></div>
+  </div>
+
+  <div class="opinion">
+    <div class="op c1"><h3>¿Es el formato ideal?</h3><p>Para 3 a 6 prácticas por día, <b>los anillos funcionan</b>: se ve todo y completar es rápido. Pero lo más «Lámpara» y lo más gratificante es la <b>C</b>: mantener los anillos para marcar y que <b>cada práctica llene la lámpara</b> hasta encenderla. Le da un sentido a juntar las prácticas del día, y el final se vuelve un momento.</p></div>
+    <div class="op"><h3>Qué más agregaría</h3><ol>
+      <li><b>Widget y actividad en vivo</b>El versículo del día y tu lámpara en la pantalla de inicio. Mientras lees en tu Biblia de papel, el tiempo corre en la isla dinámica.</li>
+      <li><b>Audio</b>Escuchar el pasaje y oraciones guiadas en audio, para el colectivo o el auto. Es lo central de Hallow.</li>
+      <li><b>Orar juntos en vivo</b>«María está orando ahora»: te sumas y oran a la vez, cada uno desde su casa.</li>
+      <li><b>Primer día guiado</b>Tres preguntas al empezar (qué buscas, cuánto tiempo, con quién) y tu primer plan armado. Es lo que hacen Hallow y Bible Chat.</li>
+      <li><b>La respuesta del líder</b>Esteban puede reaccionar a lo que te llevaste hoy, y te llega como notificación. Cierra el círculo del discipulado.</li>
+    </ol></div>
+  </div>
+</div>
+<script src="icons.js"></script>
+<script>
+  const ic = n => '<svg class="ico" viewBox="0 0 256 256">' + (ICONS[n] || '') + '</svg>';
+  document.querySelectorAll('[data-i]').forEach(s => { s.innerHTML = ICONS[s.dataset.i] || ''; });
+  const G = { oracion: 'hands-praying', palabra: 'book', meditar: 'water', diario: 'create', mensaje: 'chatbubble-ellipses', encuentro: 'people', adoracion: 'musical-notes' };
+  const DAY = [['oracion', 'Oración', '06:15'], ['palabra', 'Juan 15:1–17', '06:50'], ['meditar', 'Juan 15:4', '06:50'], ['mensaje', 'A mis discípulos', '12:30'], ['diario', 'Una línea', '22:00']];
+  const cssc = el => getComputedStyle(el).getPropertyValue('--c').trim() || '#FF8A1F';
+  const vib = p => { try { navigator.vibrate && navigator.vibrate(p); } catch (e) {} };
+  function sparks(el, color, n) { const r = el.getBoundingClientRect(); for (let i = 0; i < (n || 16); i++) { const s = document.createElement('i'); s.className = 'spark'; s.style.background = color; s.style.left = (r.left + r.width / 2) + 'px'; s.style.top = (r.top + r.height / 2) + 'px'; document.body.appendChild(s); const g = Math.random() * 6.28, d = 36 + Math.random() * 60; s.animate([{ transform: 'translate(-50%,-50%)', opacity: 1 }, { transform: `translate(calc(-50% + ${Math.cos(g) * d}px), calc(-50% + ${Math.sin(g) * d}px)) rotate(${Math.random() * 360}deg) scale(.3)`, opacity: 0 }], { duration: 600 + Math.random() * 400, easing: 'cubic-bezier(.2,.8,.2,1)' }).onfinish = () => s.remove(); } }
+
+  /* A · Anillos */
+  const A = document.getElementById('A');
+  A.innerHTML = DAY.map(x => '<button class="rb" data-a="' + x[0] + '"><span class="disk"><svg class="rg" viewBox="0 0 74 74"><circle class="trk" cx="37" cy="37" r="34"/><circle class="bar" cx="37" cy="37" r="34"/></svg><span class="core">' + ic(G[x[0]]) + '</span></span><b>' + x[1] + '</b></button>').join('');
+  A.querySelectorAll('.rb').forEach(b => { let t = 0;
+    b.addEventListener('pointerdown', () => { if (b.classList.contains('done')) { b.classList.remove('done'); b.querySelector('.core').innerHTML = ic(G[b.dataset.a]); return; } b.classList.add('holding'); vib(4); t = setTimeout(() => { b.classList.remove('holding'); b.classList.add('done'); b.querySelector('.core').innerHTML = ic('checkmark'); vib([12, 40, 20]); sparks(b.querySelector('.disk'), cssc(b)); }, 650); });
+    ['pointerup', 'pointerleave', 'pointercancel'].forEach(e => b.addEventListener(e, () => { clearTimeout(t); b.classList.remove('holding'); })); });
+
+  /* B · Desliza */
+  const B = document.getElementById('B');
+  B.innerHTML = DAY.slice(0, 4).map(x => '<div class="sl" data-a="' + x[0] + '"><span class="fill"></span><span class="shine"></span><span class="lbl">' + x[1] + '<small>' + x[2] + '</small></span><span class="knob">' + ic(G[x[0]]) + '</span></div>').join('');
+  B.querySelectorAll('.sl').forEach(sl => { const k = sl.querySelector('.knob'), f = sl.querySelector('.fill'); let x0 = null, max = 0;
+    k.addEventListener('pointerdown', e => { if (sl.classList.contains('done')) { sl.classList.remove('done'); k.style.left = '4px'; f.style.width = ''; k.innerHTML = ic(G[sl.dataset.a]); return; } x0 = e.clientX; max = sl.clientWidth - 58; k.setPointerCapture(e.pointerId); k.style.transition = 'none'; f.style.transition = 'none'; });
+    k.addEventListener('pointermove', e => { if (x0 == null) return; const dx = Math.max(0, Math.min(max, e.clientX - x0)); k.style.left = (4 + dx) + 'px'; f.style.width = (62 + dx) + 'px'; });
+    const end = e => { if (x0 == null) return; const dx = Math.max(0, Math.min(max, e.clientX - x0)); x0 = null; k.style.transition = ''; f.style.transition = '';
+      if (dx > max * 0.85) { k.style.left = (4 + max) + 'px'; sl.classList.add('done'); k.innerHTML = ic('checkmark'); vib([12, 40, 20]); sparks(k, cssc(sl)); } else { k.style.left = '4px'; f.style.width = ''; } };
+    k.addEventListener('pointerup', end); k.addEventListener('pointercancel', end); });
+
+  /* C · La lámpara se llena */
+  const lamp = document.getElementById('Clamp'), vessel = lamp.querySelector('.vessel');
+  vessel.innerHTML = ic('lampara') + '<div class="oil">' + ic('lampara') + '</div>';
+  const C = document.getElementById('C'); let lvl = 0;
+  C.innerHTML = DAY.map(x => '<button class="cc" data-a="' + x[0] + '"><i>' + ic(G[x[0]]) + '</i>' + x[1] + '</button>').join('');
+  const paintLamp = () => { const p = lvl / DAY.length; vessel.style.setProperty('--lvl', (100 - p * 100) + '%'); lamp.querySelector('.pct').textContent = Math.round(p * 100) + '%'; };
+  C.querySelectorAll('.cc').forEach(b => b.addEventListener('click', () => {
+    if (b.classList.contains('done')) { b.classList.remove('done'); lvl--; lamp.classList.remove('lit'); paintLamp(); return; }
+    b.classList.add('done'); vib(10);
+    const r = b.getBoundingClientRect(), t = vessel.getBoundingClientRect(), d = document.createElement('i'); d.className = 'drop'; d.style.background = cssc(b); document.body.appendChild(d);
+    d.animate([{ left: (r.left + r.width / 2) + 'px', top: r.top + 'px', transform: 'scale(1)' }, { left: (t.left + t.width * .48) + 'px', top: (t.top + t.height * .55) + 'px', transform: 'scale(.6)' }], { duration: 520, easing: 'cubic-bezier(.5,0,.75,0)' }).onfinish = () => {
+      d.remove(); lvl++; paintLamp(); sparks(vessel, cssc(b), 8);
+      if (lvl === DAY.length) setTimeout(() => { lamp.classList.add('lit'); vib([20, 60, 30, 60, 40]); sparks(vessel, '#FF8A1F', 34); }, 450);
+    };
+  }));
+  paintLamp();
+
+  /* D · El camino */
+  const D = document.getElementById('D'), xs = [50, 72, 44, 24, 50, 50], W = () => D.clientWidth, H = 360;
+  const pts = () => DAY.map((_, i) => [W() * xs[i] / 100, 36 + i * 60]).concat([[W() * xs[5] / 100, 36 + 5 * 60]]);
+  let cur = 0;
+  function drawD() {
+    const P = pts(), d = 'M' + P.map(p => p[0] + ' ' + p[1]).join(' L');
+    D.innerHTML = '<svg class="ln" viewBox="0 0 ' + W() + ' ' + H + '"><path class="base" d="' + d + '"/><path class="prog" d="' + d + '"/></svg>' +
+      DAY.map((x, i) => '<button class="node' + (i < cur ? ' done' : i === cur ? ' cur' : '') + '" data-i="' + i + '" data-a="' + x[0] + '" style="left:' + P[i][0] + 'px;top:' + P[i][1] + 'px">' + ic(i < cur ? 'checkmark' : G[x[0]]) + '</button>').join('') +
+      '<button class="node end' + (cur >= DAY.length ? ' lit' : '') + '" style="left:' + P[5][0] + 'px;top:' + P[5][1] + 'px">' + ic('lampara') + '</button>' +
+      (cur < DAY.length ? '<span class="bubble" style="left:' + P[cur][0] + 'px;top:' + P[cur][1] + 'px">' + DAY[cur][1] + '</span>' : '');
+    const pr = D.querySelector('.prog'), L = pr.getTotalLength(), segs = P.length - 1, upto = Math.min(cur, segs);
+    pr.style.strokeDasharray = L; pr.style.strokeDashoffset = L * (1 - upto / segs);
+  }
+  D.addEventListener('click', e => { const n = e.target.closest('.node[data-i]'); if (!n || +n.dataset.i !== cur) return; vib([10, 30, 16]); sparks(n, cssc(n), 18); cur++; setTimeout(() => { drawD(); if (cur >= DAY.length) { const end = D.querySelector('.node.end'); sparks(end, '#FF8A1F', 34); vib([20, 60, 30]); } }, 120); });
+  drawD(); addEventListener('resize', drawD);
+
+  /* Notificaciones */
+  const NOTS = [
+    { n: 1, live: true, t: 'Actividad en vivo', p: 'Mientras lees en tu Biblia de papel o meditas, el tiempo y el avance del día siguen en la isla dinámica y en la pantalla bloqueada. Sin abrir la app.', w: 'Mientras dura la práctica', r: 'Apple: Live Activities' },
+    { n: 2, ap: 'lampara', h: 'Lámpara', time: '6:15', b: 'Buenos días, Juan Carlos', m: 'Oración y Juan 15 te esperan · 25 min', t: 'Recordatorio amable', p: 'Uno por día, a la hora de tu primera práctica. Dice qué toca y cuánto lleva. Nunca «no te olvides».', w: 'A la hora de tu rutina', r: 'YouVersion y Hallow (recordatorio diario)' },
+    { n: 3, av: 'ER', c: '--palabra', h: 'Esteban', time: '6:30', b: 'Esteban', m: 'Oré por ti esta mañana. Ánimo con Juan 15.', t: 'Mensaje de tu líder', p: 'Notificación de comunicación: lleva su foto, como un mensaje. Es lo más gratificante del discipulado y no se agrupa con lo demás.', w: 'Cuando él ora o te escribe', r: 'Apple: notificaciones de comunicación' },
+    { n: 4, av: 'MA', c: '--mensaje', h: 'María', time: 'ayer', b: 'María completó su día', m: 'Se llevó «Somos más que vencedores» · Romanos 8:37', t: 'Tu discípulo encendió su día', p: 'Solo si María comparte «Todo». Te deja animarla con un toque. Una por persona y por día, como máximo.', w: 'Cuando completa su día', r: 'Strava y Apple Fitness (aviso de un amigo)' },
+    { n: 5, ap: 'hands-praying', apc: '--oracion', h: 'Lámpara', time: '9:00', b: '¿Cómo sigue «Sanidad de su mamá»?', m: 'Hace 3 semanas que oras por esto.', acts: ['Sigo orando', 'Dios respondió'], t: 'Seguimiento con botones', p: 'Mantienes presionado y respondes desde la notificación, sin abrir la app. Si Dios respondió, se guarda y te ofrece contarlo.', w: 'Cada 2 semanas por pedido', r: 'Apple: notificaciones con acciones' },
+    { n: 6, ap: 'flame', h: 'Lámpara', time: '20:30', b: 'Hoy tienes tu día de gracia', m: 'Un versículo alcanza para encender. La llama no se apaga.', t: 'Día de gracia, sin culpa', p: 'Si a la noche no hiciste nada, te recuerda que la llama sigue. Sin rachas en peligro ni rojo.', w: 'A las 20:30, solo si no encendiste', r: 'Duolingo (tono), sin su culpa' },
+    { n: 7, ap: 'church', h: 'El Buen Pastor', time: 'Resumen', b: 'Resumen de la tarde', m: '3 pedidos nuevos en Oración · Culto de jóvenes mañana 18:30', t: 'Resumen de la iglesia', p: 'Lo del foro llega junto, una vez por día, en el resumen programado de iOS. Nunca una notificación por publicación.', w: 'En tu resumen de la tarde', r: 'Apple: resumen programado' },
+    { n: 8, ap: 'ribbon', h: 'Lámpara', time: 'dom', b: 'Cierra tu semana', m: '6 de 7 días encendidos. Mira lo que Dios hizo.', t: 'Domingo de repaso', p: 'Un aviso el domingo a la tarde, que abre el repaso de 3 minutos.', w: 'Domingos 18:00', r: 'Apple Fitness (resumen semanal)' }
+  ];
+  document.getElementById('stack').innerHTML = NOTS.filter(x => !x.live).map(x => '<div class="nt" data-n="' + x.n + '">' +
+    (x.av ? '<span class="ap av" style="--c:var(' + x.c + ')">' + x.av + '<em>' + ic('lampara') + '</em></span>' : '<span class="ap" style="' + (x.apc ? 'background:var(' + x.apc + ')' : '') + '">' + ic(x.ap) + '</span>') +
+    '<div><b>' + x.b + '</b><p>' + x.m + '</p>' + (x.acts ? '<div class="acts">' + x.acts.map(a => '<span>' + a + '</span>').join('') + '</div>' : '') + '</div><time>' + x.time + '</time></div>').join('');
+  document.getElementById('legend').innerHTML = NOTS.map(x => '<div class="lg" data-n="' + x.n + '"><span class="n">' + x.n + '</span><div><b>' + x.t + '</b><p>' + x.p + '</p><small>Cuándo: ' + x.w + ' · Referencia: ' + x.r + '</small></div></div>').join('');
+  const hl = n => document.querySelectorAll('[data-n]').forEach(e => e.classList.toggle('hl', e.dataset.n === String(n)));
+  document.querySelectorAll('[data-n]').forEach(e => e.addEventListener('click', () => { hl(e.dataset.n); const t = document.querySelector('.lg[data-n="' + e.dataset.n + '"]'); if (e.closest('#lock') && t) t.scrollIntoView({ behavior: 'smooth', block: 'center' }); }));
+</script>
+</body>
+</html>

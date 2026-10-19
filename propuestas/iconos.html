@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lámpara · propuesta de íconos</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..600&display=swap">
+<style>
+  :root { --bg: #0A0A0B; --surface: #161618; --surface2: #1F1F22; --surface3: #2A2A2E; --ink: #F5F5F7; --ink2: rgba(235,235,245,.8); --ink3: rgba(235,235,245,.56); --ink4: rgba(235,235,245,.3);
+    --brand: #FF8A1F; --on: #0A0A0B; --ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", Roboto, system-ui, sans-serif; --serif: "Newsreader", Georgia, serif;
+    --oracion: #FF5C4D; --adoracion: #FF5FA8; --meditar: #A27BFF; --palabra: #4B8BFF; --mensaje: #1EC8F0; --diario: #2ED69A; --encuentro: #B4E33D; --ayuno: #FFC93C; --spring: cubic-bezier(.34,1.56,.64,1); --ease: cubic-bezier(.22,1,.36,1); }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #000; color: var(--ink); font-family: var(--ui); -webkit-font-smoothing: antialiased; }
+  header.top { max-width: 1100px; margin: 0 auto; padding: 36px 24px 10px; }
+  header.top h1 { font-family: var(--serif); font-weight: 600; font-size: 40px; margin: 0 0 6px; letter-spacing: -.015em; }
+  header.top p { color: var(--ink3); margin: 0; font-size: 15px; max-width: 760px; line-height: 1.45; }
+  .cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 28px; max-width: 1100px; margin: 0 auto; padding: 24px; }
+  .phone { background: var(--bg); border-radius: 40px; padding: 26px 18px 30px; box-shadow: 0 0 0 1px #222; }
+  .dir { font-family: var(--serif); font-size: 30px; font-weight: 600; margin: 0 2px 2px; }
+  .refs { color: var(--ink3); font-size: 13px; margin: 0 2px 18px; }
+  .refs b { color: var(--ink2); }
+  h3 { font-family: var(--serif); font-weight: 600; font-size: 21px; margin: 24px 2px 10px; }
+  .note { color: var(--ink3); font-size: 13px; margin: -4px 2px 12px; }
+  svg.ico { width: 1em; height: 1em; fill: currentColor; display: block; }
+  [data-a="oracion"] { --c: var(--oracion); } [data-a="palabra"] { --c: var(--palabra); } [data-a="meditar"] { --c: var(--meditar); } [data-a="diario"] { --c: var(--diario); }
+  [data-a="adoracion"] { --c: var(--adoracion); } [data-a="ayuno"] { --c: var(--ayuno); } [data-a="encuentro"] { --c: var(--encuentro); } [data-a="mensaje"] { --c: var(--mensaje); } [data-a="brand"] { --c: var(--brand); }
+  .icons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px 6px; }
+  .icons .it { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 11.5px; color: var(--ink3); font-weight: 600; }
+
+  /* ===== 1 · Anillos (Streaks + Apple Journal) ===== */
+  .ring-ic { position: relative; width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; font-size: 24px; background: var(--surface3); color: var(--c); }
+  .ring-ic.on { background: var(--c); color: var(--on); }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 10px; }
+  .hold { display: flex; flex-direction: column; align-items: center; gap: 8px; border: 0; background: none; color: var(--ink); cursor: pointer; padding: 0; user-select: none; -webkit-user-select: none; touch-action: manipulation; }
+  .hold .disk { position: relative; width: 128px; height: 128px; display: grid; place-items: center; }
+  .hold svg.rg { position: absolute; inset: 0; transform: rotate(-90deg); }
+  .hold .rg circle { fill: none; stroke-width: 8; }
+  .hold .rg .trk { stroke: color-mix(in srgb, var(--c) 22%, transparent); }
+  .hold .rg .bar { stroke: var(--c); stroke-linecap: round; stroke-dasharray: 358; stroke-dashoffset: 358; }
+  .hold.holding .rg .bar { transition: stroke-dashoffset .75s linear; stroke-dashoffset: 0; }
+  .hold .core { width: 100px; height: 100px; border-radius: 50%; display: grid; place-items: center; font-size: 44px; background: var(--surface2); color: var(--c); transition: background-color .3s, color .3s, transform .3s var(--spring); }
+  .hold.holding .core { transform: scale(.92); }
+  .hold.done .rg .bar { stroke-dashoffset: 0; }
+  .hold.done .core { background: var(--c); color: var(--on); animation: pop .5s var(--spring); }
+  .hold b { font-size: 15px; } .hold small { color: var(--ink3); font-size: 12.5px; margin-top: -6px; }
+  .journal { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; margin: 0 -18px; padding: 0 18px 4px; scrollbar-width: none; }
+  .journal::-webkit-scrollbar { display: none; }
+  .jcard { flex: none; width: 82%; scroll-snap-align: start; border-radius: 22px; padding: 18px; background: var(--c); color: var(--on); min-height: 168px; display: flex; flex-direction: column; justify-content: space-between; }
+  .jcard .k { font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; opacity: .7; }
+  .jcard p { font-family: var(--serif); font-size: 23px; line-height: 1.22; margin: 10px 0; font-weight: 550; }
+  .jcard small { font-weight: 700; opacity: .75; }
+
+  /* ===== 2 · Teclas (Duolingo + (Not Boring) Habits + Readwise) ===== */
+  .key-ic { width: 52px; height: 52px; border-radius: 16px; display: grid; place-items: center; font-size: 26px; background: var(--surface3); color: var(--c); box-shadow: 0 5px 0 #000; transform: translateY(-2px); }
+  .key-ic.on { background: var(--c); color: var(--on); box-shadow: 0 5px 0 color-mix(in srgb, var(--c) 55%, #000); }
+  .keys { display: grid; gap: 12px; }
+  .key { display: flex; align-items: center; gap: 14px; width: 100%; padding: 12px 14px; border: 0; border-radius: 18px; background: var(--surface2); color: var(--ink); text-align: left; cursor: pointer;
+    box-shadow: 0 5px 0 #000; transform: translateY(0); transition: transform .08s, box-shadow .08s, background-color .3s; user-select: none; }
+  .key:active { transform: translateY(5px); box-shadow: 0 0 0 #000; }
+  .key .tile { width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; font-size: 24px; flex: none; background: var(--surface3); color: var(--c); box-shadow: 0 4px 0 #000; transition: background-color .3s, color .3s, box-shadow .3s; }
+  .key div { flex: 1; } .key b { display: block; font-size: 16px; } .key small { color: var(--ink3); font-size: 13px; }
+  .key .tick { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-size: 16px; background: var(--surface3); color: transparent; transition: background-color .3s, color .3s; }
+  .key.done { background: color-mix(in srgb, var(--c) 18%, var(--surface2)); box-shadow: 0 5px 0 color-mix(in srgb, var(--c) 45%, #000); }
+  .key.done .tile { background: var(--c); color: var(--on); box-shadow: 0 4px 0 color-mix(in srgb, var(--c) 55%, #000); animation: pop .5s var(--spring); }
+  .key.done .tick { background: var(--c); color: var(--on); }
+  .deck { position: relative; height: 230px; margin-top: 6px; perspective: 900px; }
+  .dcard { position: absolute; left: 0; right: 0; top: 0; height: 200px; border-radius: 22px; padding: 20px; background: var(--surface2); box-shadow: 0 6px 0 #000; cursor: pointer;
+    transition: transform .5s var(--spring), opacity .4s; display: flex; flex-direction: column; justify-content: space-between; }
+  .dcard .src { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--ink3); font-weight: 600; }
+  .dcard .src i { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; font-size: 16px; background: var(--c); color: var(--on); }
+  .dcard p { font-family: var(--serif); font-size: 22px; line-height: 1.28; margin: 0; }
+  .dcard[data-pos="0"] { transform: translateY(0) scale(1); z-index: 3; }
+  .dcard[data-pos="1"] { transform: translateY(14px) scale(.95); z-index: 2; opacity: .7; }
+  .dcard[data-pos="2"] { transform: translateY(28px) scale(.9); z-index: 1; opacity: .4; }
+  .dcard.out { transform: translateX(120%) rotate(14deg) !important; opacity: 0 !important; }
+  .hint { color: var(--ink4); font-size: 12.5px; text-align: center; margin-top: 4px; }
+  @keyframes pop { 0% { transform: scale(.7); } 60% { transform: scale(1.12); } 100% { transform: scale(1); } }
+  .spark { position: fixed; width: 8px; height: 8px; border-radius: 2px; pointer-events: none; z-index: 99; }
+  footer { max-width: 1100px; margin: 0 auto; padding: 0 24px 40px; color: var(--ink3); font-size: 13.5px; line-height: 1.5; }
+</style>
+</head>
+<body>
+<header class="top">
+  <h1>Íconos e interacción: dos caminos</h1>
+  <p>Las dos direcciones sacan los íconos en contorno y las franjas de color a la izquierda. Tócalas: en la 1, <b>mantén presionado</b> un círculo; en la 2, <b>toca</b> una tecla y pasa las tarjetas.</p>
+</header>
+<div class="cols">
+  <section class="phone" id="d1">
+    <p class="dir">1 · Anillos</p>
+    <p class="refs">Basado en <b>Streaks</b> (mantener para completar, glifos blancos en círculos) y <b>Apple Journal</b> (tarjetas de color pleno)</p>
+    <h3>Las 8 actividades</h3><p class="note">Arriba pendiente, abajo hecho</p>
+    <div class="icons" id="i1"></div>
+    <h3>Hoy</h3><p class="note">Mantén presionado para completar</p>
+    <div class="grid2" id="h1"></div>
+    <h3>Lo que me llevo</h3><p class="note">Desliza</p>
+    <div class="journal" id="j1"></div>
+  </section>
+  <section class="phone" id="d2">
+    <p class="dir">2 · Teclas</p>
+    <p class="refs">Basado en <b>Duolingo</b> (botones con relieve que se hunden), <b>(Not Boring) Habits</b> (objetos con volumen) y <b>Readwise</b> (mazo de citas)</p>
+    <h3>Las 8 actividades</h3><p class="note">Arriba pendiente, abajo hecho</p>
+    <div class="icons" id="i2"></div>
+    <h3>Hoy</h3><p class="note">Toca para completar</p>
+    <div class="keys" id="h2"></div>
+    <h3>Lo que me llevo</h3><p class="note">Toca la tarjeta para pasar a la siguiente</p>
+    <div class="deck" id="j2"></div>
+  </section>
+</div>
+<footer>En los dos casos, al completar el día sigue la celebración grande en color pleno. Los glifos son de Phosphor (rellenos); la lámpara es propia.</footer>
+<script src="icons.js"></script>
+<script>
+  const ic = n => '<svg class="ico" viewBox="0 0 256 256">' + (ICONS[n] || '') + '</svg>';
+  const A = [['oracion', 'hands-praying', 'Oración'], ['palabra', 'book', 'Palabra'], ['meditar', 'water', 'Meditar'], ['diario', 'create', 'Diario'], ['adoracion', 'musical-notes', 'Adoración'], ['ayuno', 'hourglass', 'Ayuno'], ['encuentro', 'people', 'Encuentro'], ['mensaje', 'chatbubble-ellipses', 'Mensaje']];
+  const TODAY = [['oracion', 'Oración', '06:15'], ['palabra', 'Juan 15:1–17', '06:50'], ['meditar', 'Juan 15:4', '06:50'], ['mensaje', 'A mis discípulos', '12:30']];
+  const KEEPS = [['palabra', 'Yo soy el camino, y la verdad, y la vida', 'Juan 14:6'], ['diario', 'Permanecer no es esfuerzo, es estar pegado.', 'Tu diario · hace 2 días'], ['oracion', 'Que os améis unos a otros', 'Juan 13:34']];
+  const glyph = a => A.find(x => x[0] === a)[1];
+  const sparks = (el, color) => { const r = el.getBoundingClientRect(); for (let i = 0; i < 16; i++) { const s = document.createElement('i'); s.className = 'spark'; s.style.background = color; s.style.left = (r.left + r.width / 2) + 'px'; s.style.top = (r.top + r.height / 2) + 'px'; document.body.appendChild(s); const g = Math.random() * 6.28, d = 40 + Math.random() * 60; s.animate([{ transform: 'translate(-50%,-50%)', opacity: 1 }, { transform: `translate(calc(-50% + ${Math.cos(g) * d}px), calc(-50% + ${Math.sin(g) * d}px)) rotate(${Math.random() * 360}deg) scale(.3)`, opacity: 0 }], { duration: 600 + Math.random() * 400, easing: 'cubic-bezier(.2,.8,.2,1)' }).onfinish = () => s.remove(); } };
+  const vib = p => { try { navigator.vibrate && navigator.vibrate(p); } catch (e) {} };
+  const col = a => getComputedStyle(document.querySelector('[data-a="' + a + '"]') || document.body).getPropertyValue('--c') || '#FF8A1F';
+
+  /* 1 · Anillos */
+  document.getElementById('i1').innerHTML = A.map(x => '<div class="it" data-a="' + x[0] + '"><span class="ring-ic">' + ic(x[1]) + '</span>' + x[2] + '</div>').join('') + A.map(x => '<div class="it" data-a="' + x[0] + '"><span class="ring-ic on">' + ic(x[1]) + '</span></div>').join('');
+  document.getElementById('h1').innerHTML = TODAY.map(x => '<button class="hold" data-a="' + x[0] + '"><span class="disk"><svg class="rg" viewBox="0 0 128 128"><circle class="trk" cx="64" cy="64" r="57"/><circle class="bar" cx="64" cy="64" r="57"/></svg><span class="core">' + ic(glyph(x[0])) + '</span></span><b>' + x[1] + '</b><small>' + x[2] + '</small></button>').join('');
+  document.querySelectorAll('#h1 .hold').forEach(b => {
+    let t = 0;
+    const start = e => { if (b.classList.contains('done')) { b.classList.remove('done'); return; } b.classList.add('holding'); vib(5); t = setTimeout(() => { b.classList.remove('holding'); b.classList.add('done'); b.querySelector('.core').innerHTML = ic('checkmark'); vib([12, 40, 20]); sparks(b.querySelector('.disk'), getComputedStyle(b).getPropertyValue('--c')); }, 750); };
+    const stop = () => { clearTimeout(t); if (!b.classList.contains('done')) b.classList.remove('holding'); };
+    b.addEventListener('pointerdown', start); ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => b.addEventListener(ev, stop));
+  });
+  document.getElementById('j1').innerHTML = KEEPS.map(x => '<div class="jcard" data-a="' + x[0] + '"><span class="k">Lo que me llevo</span><p>«' + x[1] + '»</p><small>' + x[2] + '</small></div>').join('');
+
+  /* 2 · Teclas */
+  document.getElementById('i2').innerHTML = A.map(x => '<div class="it" data-a="' + x[0] + '"><span class="key-ic">' + ic(x[1]) + '</span>' + x[2] + '</div>').join('') + A.map(x => '<div class="it" data-a="' + x[0] + '"><span class="key-ic on">' + ic(x[1]) + '</span></div>').join('');
+  document.getElementById('h2').innerHTML = TODAY.map(x => '<button class="key" data-a="' + x[0] + '"><span class="tile">' + ic(glyph(x[0])) + '</span><div><b>' + x[1] + '</b><small>' + x[2] + '</small></div><span class="tick">' + ic('checkmark') + '</span></button>').join('');
+  document.querySelectorAll('#h2 .key').forEach(b => b.addEventListener('click', () => { b.classList.toggle('done'); if (b.classList.contains('done')) { vib([10, 30, 16]); sparks(b.querySelector('.tile'), getComputedStyle(b).getPropertyValue('--c')); } }));
+  const deck = document.getElementById('j2');
+  let order = KEEPS.map((_, i) => i);
+  const paint = () => { deck.innerHTML = order.map((k, pos) => { const x = KEEPS[k]; return '<div class="dcard" data-pos="' + pos + '" data-a="' + x[0] + '"><span class="src"><i>' + ic(glyph(x[0])) + '</i>' + x[2] + '</span><p>«' + x[1] + '»</p></div>'; }).join('') + ''; };
+  paint();
+  deck.addEventListener('click', () => { const top = deck.querySelector('[data-pos="0"]'); top.classList.add('out'); vib(8); setTimeout(() => { order.push(order.shift()); paint(); }, 380); });
+</script>
+</body>
+</html>
