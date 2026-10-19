@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lights · color de la app</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..600&display=swap">
+<style>
+  :root { --ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", Roboto, system-ui, sans-serif; --serif: "Newsreader", Georgia, serif; --pg: #000; --pgi: #F5F5F7; --pgi3: rgba(235,235,245,.56); --card: #0E0E10; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--pg); color: var(--pgi); font-family: var(--ui); -webkit-font-smoothing: antialiased; }
+  a { color: inherit; }
+  svg.ico { width: 1em; height: 1em; fill: currentColor; display: block; flex: none; }
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 32px 16px 60px; }
+  h1 { font-family: var(--serif); font-weight: 600; font-size: 42px; letter-spacing: -.015em; margin: 0 0 6px; }
+  .lead { color: var(--pgi3); font-size: 15.5px; margin: 0 0 28px; max-width: 800px; line-height: 1.45; }
+  .opts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 560px), 1fr)); gap: 18px; }
+  .opt { background: var(--card); border-radius: 28px; padding: 20px 16px; box-shadow: 0 0 0 1px #1f1f22; }
+  .oh { display: flex; align-items: center; gap: 12px; margin: 0 4px 6px; }
+  .oh h2 { font-family: var(--serif); font-weight: 600; font-size: 28px; margin: 0; flex: 1; }
+  .sw { display: flex; gap: 6px; }
+  .sw i { width: 26px; height: 26px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(255,255,255,.18); }
+  .why { margin: 0 4px 6px; font-size: 14px; line-height: 1.45; color: rgba(235,235,245,.8); }
+  .why b { color: var(--pgi); }
+  .refs { margin: 0 4px 6px; font-size: 12.5px; color: var(--pgi3); line-height: 1.5; }
+  .refs a { color: rgba(235,235,245,.8); text-decoration-color: rgba(235,235,245,.3); }
+  .crash { margin: 0 4px 14px; font-size: 12.5px; color: var(--pgi3); line-height: 1.45; }
+  .crash b { color: #FFB4A8; font-weight: 700; }
+  .crash.ok b { color: #9FE6B8; }
+  .tiersel { display: flex; gap: 6px; margin: 0 4px 12px; flex-wrap: wrap; }
+  .tiersel button { display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px 0 6px; border-radius: 999px; border: 0; background: #1F1F22; color: var(--pgi); font: 600 13px var(--ui); cursor: pointer; }
+  .tiersel button span { width: 18px; height: 22px; }
+  .tiersel button.on { background: #F5F5F7; color: #0A0A0B; }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  /* el teléfono */
+  .ph { --bg: #0A0A0B; --surface: #161618; --surface3: #2A2A2E; --ink: #F5F5F7; --ink3: rgba(235,235,245,.56); --ink4: rgba(235,235,245,.3);
+    --oracion: #FF5C4D; --palabra: #4B8BFF; --encuentro: #B4E33D; --meditar: #A27BFF;
+    background: var(--bg); color: var(--ink); border-radius: 30px; padding: 12px 10px 10px; overflow: hidden; box-shadow: 0 0 0 1px #26262a; min-width: 0; transition: background-color .4s; }
+  .ph.l { --bg: #F2F2F6; --surface: #FFFFFF; --surface3: #E7E7EC; --ink: #111114; --ink3: rgba(60,60,67,.62); --ink4: rgba(60,60,67,.32);
+    --oracion: #F0533F; --palabra: #2F6FE4; --encuentro: #5E9C12; --meditar: #7C5CE6; box-shadow: none; }
+  .ph * { transition: background-color .4s, color .4s; }
+  .lab { font-size: 11px; font-weight: 700; color: var(--ink3); text-align: center; margin: 0 0 8px; letter-spacing: .02em; }
+  .nt { display: flex; gap: 8px; padding: 9px; border-radius: 16px; background: rgba(40,40,44,.9); color: #F5F5F7; margin-bottom: 12px; position: relative; }
+  .ph.l .nt { background: rgba(255,255,255,.92); color: #111114; box-shadow: 0 1px 0 rgba(0,0,0,.04); }
+  .nt .ap { width: 34px; height: 34px; border-radius: 9px; flex: none; display: grid; place-items: center; background: var(--b); color: var(--ob); font-size: 21px; }
+  .nt .ap .llama { width: 24px; height: 28px; }
+  .nt b { display: block; font-size: 12px; line-height: 1.25; padding-right: 26px; }
+  .nt p { margin: 1px 0 0; font-size: 11.5px; line-height: 1.25; opacity: .78; }
+  .nt time { position: absolute; right: 9px; top: 9px; font-size: 10.5px; opacity: .6; }
+  .hd { display: flex; align-items: center; gap: 6px; margin: 0 2px 10px; }
+  .hd b { flex: 1; font-family: var(--serif); font-size: 26px; font-weight: 600; letter-spacing: -.01em; }
+  .chip { display: flex; align-items: center; gap: 3px; height: 26px; padding: 0 8px 0 6px; border-radius: 999px; background: var(--surface3); font-size: 12px; font-weight: 700; }
+  .chip span { width: 13px; height: 16px; }
+  .av { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; background: #FF5C4D; color: #fff; font-size: 10px; font-weight: 800; }
+  .ctx { border-radius: 16px; padding: 12px; background: var(--b); color: var(--ob); margin-bottom: 8px; }
+  .ctx small { display: block; font-size: 10.5px; font-weight: 600; opacity: .8; }
+  .ctx h4 { margin: 1px 0 4px; font-family: var(--serif); font-size: 17px; font-weight: 600; line-height: 1.1; }
+  .ctx p { margin: 0 0 9px; font-size: 11px; line-height: 1.3; opacity: .85; }
+  .ctx .cb { display: inline-flex; align-items: center; gap: 5px; height: 28px; padding: 0 12px 0 10px; border-radius: 999px; background: var(--ob); color: var(--b); font-size: 11.5px; font-weight: 700; }
+  .ctx .cb .ico { font-size: 11px; }
+  .tcd { border-radius: 16px; padding: 12px; background: var(--surface); margin-bottom: 10px; }
+  .tcd h4 { margin: 0; font-family: var(--serif); font-size: 16px; font-weight: 600; }
+  .tcd small { display: block; color: var(--ink3); font-size: 11px; font-weight: 600; margin: 1px 0 9px; }
+  .btn { display: flex; align-items: center; justify-content: center; gap: 6px; height: 38px; border-radius: 999px; background: var(--b); color: var(--ob); font-size: 13.5px; font-weight: 700; }
+  .btn .ico { font-size: 13px; }
+  .rg { display: flex; justify-content: space-around; margin: 2px 0 12px; }
+  .rg div { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 9.5px; font-weight: 700; color: var(--ink3); }
+  .rg i { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-size: 18px; color: var(--c); box-shadow: inset 0 0 0 3px color-mix(in srgb, var(--c) 30%, transparent); font-style: normal; }
+  .tab { display: flex; justify-content: space-between; padding: 5px; border-radius: 999px; background: var(--surface); box-shadow: 0 0 0 1px color-mix(in srgb, var(--ink) 8%, transparent); }
+  .tab div { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 5px 0 4px; border-radius: 999px; font-size: 9px; font-weight: 700; color: var(--ink4); }
+  .tab div .ico { font-size: 16px; }
+  .tab div.on { background: color-mix(in srgb, var(--b) 16%, transparent); color: var(--bt, var(--b)); }
+
+  .op { margin-top: 26px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 18px; }
+  .op > div { padding: 20px; border-radius: 24px; background: var(--card); box-shadow: 0 0 0 1px #1f1f22; }
+  .op h3 { font-family: var(--serif); font-size: 24px; font-weight: 600; margin: 0 0 10px; }
+  .op p { font-size: 15px; line-height: 1.5; margin: 0 0 10px; color: rgba(235,235,245,.85); }
+  .op p b { color: var(--pgi); }
+  .llama { display: block; width: 100%; height: 100%; overflow: visible; }
+  @media (max-width: 560px) { .pair { gap: 8px; } .ph { padding: 10px 7px 8px; border-radius: 24px; } .tab div { font-size: 0; gap: 0; padding: 7px 0; } .nt p { display: none; } .hd b { font-size: 22px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>El color de Lights</h1>
+  <p class="lead">Sin el naranja. Cinco alternativas aplicadas a lo que más se ve: la notificación, la tarjeta de color, el botón principal y la barra de abajo, en oscuro y en claro. Debajo del botón van tres prácticas, para ver con qué color de actividad choca cada una.</p>
+  <div class="opts" id="opts"></div>
+  <div class="op">
+    <div><h3>Mi recomendación: A · Tinta</h3>
+      <p>La app ya tiene <b>ocho colores de actividad y diez de la llama</b>. Cualquier color de marca termina pisando a alguno: el cobalto a Palabra, el granate a Oración, el olivo a Encuentro.</p>
+      <p>Con tinta, la interfaz queda en blanco y negro y <b>el único fuego es tu llama</b>. Cada color que aparece significa algo: una práctica, una persona o tu etapa. Es lo que hace How We Feel con las emociones.</p></div>
+    <div><h3>Si quieres más personalidad: B · Tu llama</h3>
+      <p>El color de la app es el de tu llama y cambia cuando cambia de etapa. Es lo más propio de Lights, y cada etapa nueva se siente también en la app.</p>
+      <p>Cuidado: Aurora (dorado) y Brote (verde) en el tema claro necesitan un tono más oscuro para que el texto se lea, y hay semanas en que el botón choca con alguna actividad.</p></div>
+    <div><h3>Una cosa más</h3>
+      <p>La primera llama, <b>Chispa</b>, también es naranja (es la que ve toda persona nueva los primeros 10 días). Si el naranja te molesta, la cambio por otro color: ¿cuál preferirías para empezar?</p></div>
+  </div>
+</div>
+<script src="icons.js"></script>
+<script>
+  const ic = n => '<svg class="ico" viewBox="0 0 256 256">' + (ICONS[n] || '') + '</svg>';
+  const TIERS = [
+    { d: 0, n: 'Chispa', c: '#FF8A1F', l: '#FFE2A8', t: 0, sc: 0.74 },
+    { d: 10, n: 'Brote', c: '#22C98A', l: '#C6F6DF', t: 1, sc: 0.8 },
+    { d: 20, n: 'Vela', c: '#9B6CFF', l: '#E6DBFF', t: 2, sc: 0.85 },
+    { d: 30, n: 'Antorcha', c: '#3F84FF', l: '#D6E5FF', t: 2, sc: 0.9, tall: 1 },
+    { d: 50, n: 'Lámpara', c: '#FF4FA0', l: '#FFD5E8', t: 4, sc: 0.93, halo: 1 },
+    { d: 75, n: 'Faro', c: '#12C2EC', l: '#CCF5FF', t: 4, sc: 0.96, halo: 1, twin: 1 },
+    { d: 100, n: 'Fuego', c: '#FF4B3E', l: '#FFD6D1', t: 4, sc: 1, halo: 1, twin: 1, sp: 1 },
+    { d: 150, n: 'Aurora', c: '#F5B70F', l: '#FFF3C9', t: 4, sc: 1, halo: 2, twin: 1, sp: 1 },
+    { d: 200, n: 'Estrella', c: '#8F8BFF', l: '#FFFFFF', t: 5, sc: 1, halo: 2, twin: 1, sp: 1, star: 1 },
+    { d: 365, n: 'Lumbrera', c: '#FF8A1F', l: '#FFFFFF', t: 5, sc: 1, halo: 2, twin: 1, sp: 1, star: 1, rb: 1 }
+  ];
+  const tierOf = n => { let i = 0; TIERS.forEach((t, k) => { if (n >= t.d) i = k; }); return i; };
+  const TD = 'M60 8C76 46 100 66 100 100A40 40 0 0 1 20 100C20 66 44 46 60 8Z';
+  const TONGUES = [[-24, 14, -22, 0.56], [24, 18, 20, 0.52], [-36, 38, -36, 0.42], [36, 40, 34, 0.4], [0, 2, 0, 1.1]];
+  let lid = 0;
+  /* la llama de una etapa, en SVG: lenguas, halo, corazón, chispas y estrella según el nivel */
+  function llama(ti, o) {
+    o = o || {}; const T = TIERS[ti], id = 'll' + (++lid);
+    const g = 'url(#' + id + 'g)', gi = 'url(#' + id + 'i)';
+    const tr = (x, y, r, k) => 'translate(' + x + ' ' + y + ') rotate(' + r + ' 60 140) translate(60 140) scale(' + k + ') translate(-60 -140)';
+    const defs = '<defs>' + (T.rb
+      ? '<linearGradient id="' + id + 'g" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#FFC93C"/><stop offset=".3" stop-color="#FF5C4D"/><stop offset=".55" stop-color="#FF5FA8"/><stop offset=".78" stop-color="#9B6CFF"/><stop offset="1" stop-color="#3F84FF"/></linearGradient>'
+      : '<radialGradient id="' + id + 'g" cx="50%" cy="80%" r="75%"><stop offset="0" stop-color="' + T.l + '"/><stop offset=".55" stop-color="' + T.c + '"/><stop offset="1" stop-color="' + T.c + '"/></radialGradient>') +
+      '<radialGradient id="' + id + 'i" cx="50%" cy="80%" r="70%"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="' + T.l + '"/></radialGradient>' +
+      '<radialGradient id="' + id + 'h"><stop offset="0" stop-color="' + T.c + '" stop-opacity=".5"/><stop offset="1" stop-color="' + T.c + '" stop-opacity="0"/></radialGradient></defs>';
+    let b = '';
+    if (T.halo) b += '<circle class="halo" cx="60" cy="96" r="' + (T.halo > 1 ? 80 : 64) + '" fill="url(#' + id + 'h)"/>';
+    TONGUES.slice(0, T.t).forEach((q, k) => { b += '<g class="tw tw' + k + '"><path d="' + TD + '" fill="' + g + '" transform="' + tr(q[0], q[1] - (T.tall ? 8 : 0), q[2], q[3]) + '"/></g>'; });
+    b += '<g class="mw"><path d="' + TD + '" fill="' + g + '" transform="' + tr(0, 0, 0, T.sc) + '"/>';
+    if (T.twin) b += '<path d="' + TD + '" fill="' + T.l + '" opacity=".5" transform="' + tr(-7, -4, -10, T.sc * 0.48) + '"/>';
+    b += '<path class="coref" d="' + TD + '" fill="' + gi + '" transform="' + tr(0, 4, 0, T.sc * 0.5) + '"/></g>';
+    if (T.sp) b += '<circle class="sp sp0" cx="24" cy="44" r="4" fill="' + T.l + '"/><circle class="sp sp1" cx="98" cy="34" r="3" fill="' + T.l + '"/><circle class="sp sp2" cx="80" cy="14" r="2.5" fill="' + (T.rb ? '#fff' : T.c) + '"/>';
+    if (T.star) b += '<path class="star" d="M100 2l3 9 9 3-9 3-3 9-3-9-9-3 9-3z" fill="#fff"/>';
+    return '<svg class="llama ' + (o.cls || '') + '" viewBox="-12 -8 144 158" aria-hidden="true" style="--tc:' + T.c + '">' + defs + '<g class="ll-all">' + b + '</g></svg>';
+  }
+
+  const mix = (hex, pct, to) => 'color-mix(in srgb, ' + hex + ' ' + pct + '%, ' + (to || '#000') + ')';
+  /* cada opción: color de marca y su texto encima, en oscuro (d) y en claro (l) */
+  const OPTS = [
+    { id: 'A', n: 'Tinta', sw: ['#F5F5F7', '#111114'],
+      d: { b: '#F5F5F7', ob: '#0A0A0B' }, l: { b: '#111114', ob: '#FFFFFF' }, iconFlame: true,
+      why: 'Sin color de marca: los botones y la tarjeta van en blanco (oscuro) o negro (claro). <b>El color queda solo para lo que significa algo</b>: las actividades, las personas y tu llama. El ícono de la app es la llama en su color, sobre negro.',
+      refs: '<a href="https://apps.apple.com/story/id1638393948" target="_blank" rel="noopener">How We Feel</a> (el color es un código: solo para las emociones) · <a href="https://www.americamagazine.org/arts-culture/2021/07/30/catholic-prayer-apps-ranking-hallow-laudate-241144/" target="_blank" rel="noopener">Hallow</a> (minimalista, al estilo de Spotify; el color lo ponen las imágenes) · <a href="https://www.macstories.net/?p=48965" target="_blank" rel="noopener">Things 3</a> (mucho blanco y «toques de color» medidos)',
+      crash: ['ok', '<b>No choca</b> con ningún color de actividad.'] },
+    { id: 'B', n: 'Tu llama', sw: ['#3F84FF', '#FF4FA0', '#22C98A'], dyn: true,
+      why: 'El color de la app es el de <b>tu etapa</b>: azul en Antorcha, rosa en Lámpara, verde en Brote. Cuando tu llama evoluciona, cambia toda la app. Probá las etapas acá arriba.',
+      refs: '<a href="https://source.android.com/docs/core/display/material" target="_blank" rel="noopener">Material You</a> (Android saca el color de la interfaz de tu fondo de pantalla) · <a href="https://9to5google.com/2021/07/28/spotify-miniplayer-android-test/" target="_blank" rel="noopener">Spotify</a> (el reproductor toma el color de la tapa del disco) · Duolingo (la racha cambia con los hitos)',
+      crash: ['', 'Choca por etapas: Antorcha con Palabra, Fuego con Oración, Vela con Meditar.'] },
+    { id: 'C', n: 'Cobalto', sw: ['#4D6BFF', '#2B4EE6'],
+      d: { b: '#4D6BFF', ob: '#FFFFFF' }, l: { b: '#2B4EE6', ob: '#FFFFFF' },
+      why: 'Un azul profundo y frío, el opuesto del naranja. Se lee como calma y noche, y le da protagonismo a la llama cálida.',
+      refs: '<a href="https://www.macstories.net/reviews/things-38-brings-dark-modes-to-the-ios-task-manager/" target="_blank" rel="noopener">Things 3</a> (un solo color de acento, azul cobalto, en el botón principal y en nada más)',
+      crash: ['', 'Choca con <b>Palabra</b> (azul): habría que pasarla a otro color.'] },
+    { id: 'D', n: 'Granate', sw: ['#D43A58', '#A8213B'],
+      d: { b: '#D43A58', ob: '#FFFFFF' }, l: { b: '#A8213B', ob: '#FFFFFF' },
+      why: 'Un rojo vino, más oscuro y sobrio que el naranja. Es el color con más historia en las apps de la Biblia.',
+      refs: '<a href="https://dribbble.com/designbyremedy/projects/5305519-YouVersion?page=1" target="_blank" rel="noopener">YouVersion</a> (su «YouVersion Red», rebrand de 2021) · <a href="https://bear.app/faq/about-free-and-pro-themes-in-bear/" target="_blank" rel="noopener">Bear</a> (tema por defecto Red Graphite: un rojo para todo lo que se toca)',
+      crash: ['', 'Choca con <b>Oración</b> (rojo coral): se distinguen, pero de lejos se parecen.'] },
+    { id: 'E', n: 'Olivo', sw: ['#AFC25A', '#5F7419'],
+      d: { b: '#AFC25A', ob: '#0A0A0B' }, l: { b: '#5F7419', ob: '#FFFFFF' },
+      why: 'El color del aceite de la lámpara: «aceite puro de olivas machacadas, para el alumbrado» (Éxodo 27:20). Verde apagado, terroso, nada de IA.',
+      refs: '<b>Sin referencia de una app real:</b> la justificación es bíblica, no de diseño.',
+      crash: ['', 'Choca con <b>Encuentro</b> (verde lima), sobre todo en oscuro.'] }
+  ];
+  const DYN = [3, 4, 1, 7]; let dynT = 3;   // etapas para probar en B
+  const tierBrand = (ti, th) => { const c = TIERS[ti].c; return th === 'd' ? { b: c, ob: '#0A0A0B' } : { b: mix(c, 80), ob: '#FFFFFF' }; };
+  function phone(o, th) {
+    const t = o.dyn ? tierBrand(dynT, th) : o[th];
+    const icon = o.iconFlame ? '<span class="ap" style="background:#0E0C13">' + llama(3) + '</span>' : '<span class="ap">' + ic('llama') + '</span>';
+    return '<div class="ph' + (th === 'l' ? ' l' : '') + '" style="--b:' + t.b + ';--ob:' + t.ob + (o.id === 'A' && th === 'd' ? ';--bt:#F5F5F7' : '') + '"><p class="lab">' + (th === 'd' ? 'Oscuro' : 'Claro') + '</p>' +
+      '<div class="nt">' + icon + '<div><b>Buenos días, Juan Carlos</b><p>Oración y Juan 15 te esperan · 25 min</p></div><time>6:15</time></div>' +
+      '<div class="hd"><b>Hoy</b><span class="chip"><span>' + llama(o.dyn ? dynT : 3) + '</span>' + (o.dyn ? TIERS[dynT].d + 4 : 49) + '</span><span class="av">JC</span></div>' +
+      '<div class="ctx"><small>La semana pasada</small><h4>Cierra tu semana</h4><p>Lo que te llevaste y lo que Dios hizo. Tres minutos.</p><span class="cb">' + ic('play') + 'Empezar el repaso</span></div>' +
+      '<div class="tcd"><h4>Tu tiempo con Dios</h4><small>0 de 5 · 50 min</small><div class="btn">' + ic('play') + 'Empezar</div></div>' +
+      '<div class="rg"><div><i style="--c:var(--oracion)">' + ic('hands-praying') + '</i>Oración</div><div><i style="--c:var(--palabra)">' + ic('book') + '</i>Palabra</div><div><i style="--c:var(--encuentro)">' + ic('people') + '</i>Encuentro</div></div>' +
+      '<div class="tab"><div class="on">' + ic('llama') + 'Hoy</div><div>' + ic('hands-praying') + 'Oración</div><div>' + ic('people') + 'Personas</div><div>' + ic('calendar') + 'Planes</div></div></div>';
+  }
+  function render() {
+    document.getElementById('opts').innerHTML = OPTS.map(o => '<section class="opt" id="o' + o.id + '"><div class="oh"><h2>' + o.id + ' · ' + o.n + '</h2><span class="sw">' + o.sw.map(c => '<i style="background:' + c + '"></i>').join('') + '</span></div>' +
+      '<p class="why">' + o.why + '</p><p class="refs">' + o.refs + '</p><p class="crash ' + o.crash[0] + '">' + o.crash[1] + '</p>' +
+      (o.dyn ? '<div class="tiersel">' + DYN.map(i => '<button data-t="' + i + '" class="' + (i === dynT ? 'on' : '') + '"><span>' + llama(i) + '</span>' + TIERS[i].n + '</button>').join('') + '</div>' : '') +
+      '<div class="pair">' + phone(o, 'd') + phone(o, 'l') + '</div></section>').join('');
+  }
+  document.addEventListener('click', e => { const b = e.target.closest('.tiersel [data-t]'); if (!b) return; dynT = +b.dataset.t; const o = OPTS.find(x => x.dyn), sec = document.getElementById('oB');
+    sec.querySelector('.pair').innerHTML = phone(o, 'd') + phone(o, 'l'); sec.querySelectorAll('.tiersel button').forEach(x => x.classList.toggle('on', +x.dataset.t === dynT)); });
+  render();
+</script>
+</body>
+</html>

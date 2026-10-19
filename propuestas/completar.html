@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Lámpara · completar y notificaciones</title>
+<title>Lights · completar y notificaciones</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..600&display=swap">
 <style>
   :root { --bg: #0A0A0B; --surface: #161618; --surface2: #1F1F22; --surface3: #2A2A2E; --ink: #F5F5F7; --ink2: rgba(235,235,245,.8); --ink3: rgba(235,235,245,.56); --ink4: rgba(235,235,245,.3);
@@ -59,13 +59,50 @@
   .sl.done .shine { display: none; }
   @keyframes shine { from { background-position: 150% 0; } to { background-position: -50% 0; } }
 
-  /* C · La lámpara se llena */
-  .lamp { position: relative; height: 196px; display: grid; place-items: center; margin-bottom: 8px; }
-  .lamp .glow { position: absolute; width: 190px; height: 190px; border-radius: 50%; background: radial-gradient(circle, color-mix(in srgb, var(--brand) 55%, transparent), transparent 65%); opacity: 0; transform: scale(.6); transition: opacity .6s, transform .8s var(--spring); }
-  .lamp.lit .glow { opacity: 1; transform: scale(1); }
-  .lamp .vessel { position: relative; width: 150px; height: 150px; font-size: 150px; color: var(--surface3); }
-  .lamp .vessel .oil { position: absolute; inset: 0; color: var(--brand); clip-path: inset(var(--lvl, 100%) 0 0 0); transition: clip-path .8s var(--ease); }
-  .lamp .pct { position: absolute; bottom: 4px; font-weight: 800; font-size: 14px; color: var(--ink2); }
+  /* C · Tu llama se aviva: la llama de Lights, que crece con cada práctica y cambia de color con los días */
+  .llama { display: block; width: 100%; height: 100%; overflow: visible; }
+  .llama g, .llama circle, .llama .star { transform-box: view-box; }
+  .llama .ll-all { transform-origin: 60px 140px; animation: ll-sway 3.2s ease-in-out infinite; }
+  .llama .mw { transform-origin: 60px 140px; animation: ll-flick 1.9s ease-in-out infinite; }
+  .llama .tw { transform-origin: 60px 140px; animation: ll-flick 1.5s ease-in-out infinite; }
+  .llama .tw1 { animation-duration: 1.7s; animation-delay: -0.4s; }
+  .llama .tw2 { animation-duration: 1.3s; animation-delay: -0.8s; }
+  .llama .tw3 { animation-duration: 1.6s; animation-delay: -0.2s; }
+  .llama .tw4 { animation-duration: 1.2s; animation-delay: -0.6s; }
+  .llama .coref { animation: ll-core 2.4s ease-in-out infinite; }
+  .llama .halo { animation: ll-halo 3s ease-in-out infinite; }
+  .llama .tw4 { opacity: 0.45; }
+  .llama .sp { animation: ll-spark 2.4s ease-out infinite; }
+  .llama .sp1 { animation-delay: -0.8s; } .llama .sp2 { animation-delay: -1.6s; }
+  .llama .star { transform-origin: 100px 14px; animation: ll-star 2.8s ease-in-out infinite; }
+  @keyframes ll-sway { 0%, 100% { transform: rotate(-1.2deg); } 50% { transform: rotate(1.2deg); } }
+  @keyframes ll-flick { 0%, 100% { transform: scale(1, 1); } 35% { transform: scale(0.97, 1.05); } 70% { transform: scale(1.02, 0.97); } }
+  @keyframes ll-core { 0%, 100% { opacity: 1; } 50% { opacity: 0.78; } }
+  @keyframes ll-halo { 0%, 100% { opacity: 0.65; } 50% { opacity: 1; } }
+  @keyframes ll-spark { 0% { transform: translateY(8px); opacity: 0; } 30% { opacity: 1; } 100% { transform: translateY(-18px); opacity: 0; } }
+  @keyframes ll-star { 0%, 100% { transform: scale(0.7) rotate(0); opacity: 0.6; } 50% { transform: scale(1.15) rotate(45deg); opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { .llama * { animation: none !important; } }
+  .stage.fire { background: #0E0C13; display: flex; flex-direction: column; }
+  .fz { position: relative; height: 236px; display: flex; align-items: flex-end; justify-content: center; }
+  .fglow { position: absolute; left: 50%; bottom: 0; width: 280px; height: 280px; margin-left: -140px; border-radius: 50%; pointer-events: none;
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--tc) 50%, transparent), transparent); opacity: var(--go, .08); transform: scale(var(--gs, .45)); transform-origin: 50% 75%; transition: opacity 1s, transform 1.1s var(--spring); }
+  .fl { position: relative; width: 150px; height: 165px; margin-bottom: 32px; transform: scale(var(--s, .34)); transform-origin: 50% 94%; filter: saturate(var(--sat, .12)) brightness(var(--br, .72)); transition: transform 1s var(--spring), filter 1s; }
+  .fl-in, .fl-in > span { position: absolute; inset: 0; transform-origin: 50% 94%; }
+  .fz.blaze .fl { filter: saturate(1) brightness(1) drop-shadow(0 0 20px color-mix(in srgb, var(--tc) 70%, transparent)); }
+  .fz .ring { position: absolute; left: 50%; bottom: 66px; width: 84px; height: 84px; margin-left: -42px; border-radius: 50%; border: 3px solid; pointer-events: none; }
+  .fz .ember { position: absolute; bottom: 58px; width: 5px; height: 5px; border-radius: 50%; pointer-events: none; }
+  .orb { position: fixed; left: 0; top: 0; width: 18px; height: 18px; margin: -9px 0 0 -9px; border-radius: 50%; pointer-events: none; z-index: 95; }
+  .trail { position: fixed; left: 0; top: 0; width: 8px; height: 8px; margin: -4px 0 0 -4px; border-radius: 50%; pointer-events: none; z-index: 94; }
+  .flash { position: absolute; inset: 0; pointer-events: none; opacity: 0; background: radial-gradient(55% 40% at 50% 30%, rgba(255,255,255,.5), transparent 70%); }
+  .fcap { text-align: center; margin: 4px 0 12px; min-height: 46px; }
+  .fcap b { display: block; font-family: var(--serif); font-size: 22px; font-weight: 600; letter-spacing: -.01em; }
+  .fcap b em { color: var(--tc); }
+  .fcap small { color: var(--ink3); font-size: 12.5px; font-weight: 600; }
+  .tplbl { color: var(--ink4); font-size: 11.5px; text-align: center; margin: auto 0 4px; padding-top: 14px; }
+  .tierpick { display: flex; gap: 2px; }
+  .tierpick button { flex: 1; height: 36px; border: 0; background: none; padding: 3px 0; border-radius: 9px; cursor: pointer; opacity: .4; transition: opacity .2s, background-color .2s; }
+  .tierpick button.on { opacity: 1; background: var(--surface2); }
+  .tierpick .llama * { animation: none !important; }
   .chipsC { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
   .cc { display: inline-flex; align-items: center; gap: 6px; height: 38px; padding: 0 14px 0 6px; border: 0; border-radius: 999px; background: var(--surface2); color: var(--ink); font-weight: 650; font-size: 13.5px; cursor: pointer; transition: transform .15s var(--ease); }
   .cc i { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-size: 14px; background: var(--surface3); color: var(--c); font-style: normal; }
@@ -145,9 +182,10 @@
       <p class="pc"><span class="g">El gesto se siente: es una decisión, no un toque.</span><span class="g">Se lee como una lista: cabe mucho texto.</span><span class="b">Más lento si haces varias seguidas.</span></p>
     </section>
     <section class="opt">
-      <p class="tt">C · La lámpara se llena</p><p class="rf">Basado en <b>Finch</b> (la energía sube con cada meta) y <b>Apple Fitness</b> (el anillo del día que se cierra).</p>
-      <div class="stage"><div class="lamp" id="Clamp"><div class="glow"></div><div class="vessel"></div><span class="pct">0%</span></div><div class="chipsC" id="C"></div></div>
-      <p class="pc"><span class="g">Es la marca: cada práctica es aceite para tu lámpara.</span><span class="g">El final es un momento: la llama se enciende.</span><span class="b">Cada práctica pesa menos individualmente.</span></p>
+      <p class="tt">C · Tu llama se aviva</p><p class="rf">Basado en <b>Duolingo</b> (la racha que cambia con los hitos), <b>Finch</b> (la energía sube con cada meta) y <b>Apple Fitness</b> (el anillo del día que se cierra).</p>
+      <div class="stage fire" id="Cst"><div class="flash"></div><div class="fz" id="Cfz"><div class="fglow"></div><div class="fl"><div class="fl-in" id="Cfl"></div></div></div><div class="fcap" id="Ccap"></div><div class="chipsC" id="C"></div>
+        <p class="tplbl">Elige a qué llama llegar al completar el día</p><div class="tierpick" id="Ctp"></div></div>
+      <p class="pc"><span class="g">Es la marca: cada práctica aviva tu llama, con su color.</span><span class="g">El final es un momento: se enciende entera y, en los hitos, cambia de color y de forma.</span><span class="b">Cada práctica pesa menos individualmente.</span><span class="b">Falta decidir cuándo cuenta el día: acá, al completarlo todo; en la app, desde la primera práctica.</span></p>
       <span class="tag">Mi recomendación</span>
     </section>
     <section class="opt">
@@ -161,7 +199,7 @@
   <p class="sub">Tocá cada una para ver qué es, cuándo llega y por qué. Basado en las guías de Apple (notificaciones de comunicación, actividades en vivo, resumen programado) y en el tono amable de <b>Duolingo</b> y <b>YouVersion</b>.</p>
   <div class="nots">
     <div class="lock" id="lock">
-      <div class="island"><span class="il"><svg class="ico" viewBox="0 0 256 256" data-i="lampara"></svg></span><svg class="ir" viewBox="0 0 22 22"><circle cx="11" cy="11" r="8.5" fill="none" stroke="#3a2a1a" stroke-width="3"/><circle cx="11" cy="11" r="8.5" fill="none" stroke="#FF8A1F" stroke-width="3" stroke-dasharray="53.4" stroke-dashoffset="32" transform="rotate(-90 11 11)" stroke-linecap="round"/></svg></div>
+      <div class="island"><span class="il"><svg class="ico" viewBox="0 0 256 256" data-i="llama"></svg></span><svg class="ir" viewBox="0 0 22 22"><circle cx="11" cy="11" r="8.5" fill="none" stroke="#3a2a1a" stroke-width="3"/><circle cx="11" cy="11" r="8.5" fill="none" stroke="#FF8A1F" stroke-width="3" stroke-dasharray="53.4" stroke-dashoffset="32" transform="rotate(-90 11 11)" stroke-linecap="round"/></svg></div>
       <p class="clock">6:42</p><p class="date">martes 20 de octubre</p>
       <div class="live nt" data-n="1"><span class="lr"><svg viewBox="0 0 46 46"><circle cx="23" cy="23" r="19" stroke="#3a2a1a"/><circle cx="23" cy="23" r="19" stroke="#FF8A1F" stroke-dasharray="119.4" stroke-dashoffset="72" stroke-linecap="round"/></svg><span class="ic"><svg class="ico" viewBox="0 0 256 256" data-i="book"></svg></span></span><div><b>Leyendo Juan 15:1–17</b><small>Tu tiempo con Dios · 2 de 5</small></div><span class="tm">08:12</span></div>
       <div id="stack"></div>
@@ -170,9 +208,9 @@
   </div>
 
   <div class="opinion">
-    <div class="op c1"><h3>¿Es el formato ideal?</h3><p>Para 3 a 6 prácticas por día, <b>los anillos funcionan</b>: se ve todo y completar es rápido. Pero lo más «Lámpara» y lo más gratificante es la <b>C</b>: mantener los anillos para marcar y que <b>cada práctica llene la lámpara</b> hasta encenderla. Le da un sentido a juntar las prácticas del día, y el final se vuelve un momento.</p></div>
+    <div class="op c1"><h3>¿Es el formato ideal?</h3><p>Para 3 a 6 prácticas por día, <b>los anillos funcionan</b>: se ve todo y completar es rápido. Pero lo más «Lights» y lo más gratificante es la <b>C</b>: mantener los anillos para marcar y que <b>cada práctica avive tu llama</b> hasta encenderla entera. Le da un sentido a juntar las prácticas del día, y el final se vuelve un momento.</p></div>
     <div class="op"><h3>Qué más agregaría</h3><ol>
-      <li><b>Widget y actividad en vivo</b>El versículo del día y tu lámpara en la pantalla de inicio. Mientras lees en tu Biblia de papel, el tiempo corre en la isla dinámica.</li>
+      <li><b>Widget y actividad en vivo</b>El versículo del día y tu llama en la pantalla de inicio. Mientras lees en tu Biblia de papel, el tiempo corre en la isla dinámica.</li>
       <li><b>Audio</b>Escuchar el pasaje y oraciones guiadas en audio, para el colectivo o el auto. Es lo central de Hallow.</li>
       <li><b>Orar juntos en vivo</b>«María está orando ahora»: te sumas y oran a la vez, cada uno desde su casa.</li>
       <li><b>Primer día guiado</b>Tres preguntas al empezar (qué buscas, cuánto tiempo, con quién) y tu primer plan armado. Es lo que hacen Hallow y Bible Chat.</li>
@@ -207,22 +245,121 @@
       if (dx > max * 0.85) { k.style.left = (4 + max) + 'px'; sl.classList.add('done'); k.innerHTML = ic('checkmark'); vib([12, 40, 20]); sparks(k, cssc(sl)); } else { k.style.left = '4px'; f.style.width = ''; } };
     k.addEventListener('pointerup', end); k.addEventListener('pointercancel', end); });
 
-  /* C · La lámpara se llena */
-  const lamp = document.getElementById('Clamp'), vessel = lamp.querySelector('.vessel');
-  vessel.innerHTML = ic('lampara') + '<div class="oil">' + ic('lampara') + '</div>';
-  const C = document.getElementById('C'); let lvl = 0;
+  /* C · Tu llama se aviva */
+  const TIERS = [
+    { d: 0, n: 'Chispa', c: '#FF8A1F', l: '#FFE2A8', t: 0, sc: 0.74 },
+    { d: 10, n: 'Brote', c: '#22C98A', l: '#C6F6DF', t: 1, sc: 0.8 },
+    { d: 20, n: 'Vela', c: '#9B6CFF', l: '#E6DBFF', t: 2, sc: 0.85 },
+    { d: 30, n: 'Antorcha', c: '#3F84FF', l: '#D6E5FF', t: 2, sc: 0.9, tall: 1 },
+    { d: 50, n: 'Lámpara', c: '#FF4FA0', l: '#FFD5E8', t: 4, sc: 0.93, halo: 1 },
+    { d: 75, n: 'Faro', c: '#12C2EC', l: '#CCF5FF', t: 4, sc: 0.96, halo: 1, twin: 1 },
+    { d: 100, n: 'Fuego', c: '#FF4B3E', l: '#FFD6D1', t: 4, sc: 1, halo: 1, twin: 1, sp: 1 },
+    { d: 150, n: 'Aurora', c: '#F5B70F', l: '#FFF3C9', t: 4, sc: 1, halo: 2, twin: 1, sp: 1 },
+    { d: 200, n: 'Estrella', c: '#8F8BFF', l: '#FFFFFF', t: 5, sc: 1, halo: 2, twin: 1, sp: 1, star: 1 },
+    { d: 365, n: 'Lumbrera', c: '#FF8A1F', l: '#FFFFFF', t: 5, sc: 1, halo: 2, twin: 1, sp: 1, star: 1, rb: 1 }
+  ];
+  const tierOf = n => { let i = 0; TIERS.forEach((t, k) => { if (n >= t.d) i = k; }); return i; };
+  const TD = 'M60 8C76 46 100 66 100 100A40 40 0 0 1 20 100C20 66 44 46 60 8Z';
+  const TONGUES = [[-24, 14, -22, 0.56], [24, 18, 20, 0.52], [-36, 38, -36, 0.42], [36, 40, 34, 0.4], [0, 2, 0, 1.1]];
+  let lid = 0;
+  /* la llama de una etapa, en SVG: lenguas, halo, corazón, chispas y estrella según el nivel */
+  function llama(ti, o) {
+    o = o || {}; const T = TIERS[ti], id = 'll' + (++lid);
+    const g = 'url(#' + id + 'g)', gi = 'url(#' + id + 'i)';
+    const tr = (x, y, r, k) => 'translate(' + x + ' ' + y + ') rotate(' + r + ' 60 140) translate(60 140) scale(' + k + ') translate(-60 -140)';
+    const defs = '<defs>' + (T.rb
+      ? '<linearGradient id="' + id + 'g" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#FFC93C"/><stop offset=".3" stop-color="#FF5C4D"/><stop offset=".55" stop-color="#FF5FA8"/><stop offset=".78" stop-color="#9B6CFF"/><stop offset="1" stop-color="#3F84FF"/></linearGradient>'
+      : '<radialGradient id="' + id + 'g" cx="50%" cy="80%" r="75%"><stop offset="0" stop-color="' + T.l + '"/><stop offset=".55" stop-color="' + T.c + '"/><stop offset="1" stop-color="' + T.c + '"/></radialGradient>') +
+      '<radialGradient id="' + id + 'i" cx="50%" cy="80%" r="70%"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="' + T.l + '"/></radialGradient>' +
+      '<radialGradient id="' + id + 'h"><stop offset="0" stop-color="' + T.c + '" stop-opacity=".5"/><stop offset="1" stop-color="' + T.c + '" stop-opacity="0"/></radialGradient></defs>';
+    let b = '';
+    if (T.halo) b += '<circle class="halo" cx="60" cy="96" r="' + (T.halo > 1 ? 80 : 64) + '" fill="url(#' + id + 'h)"/>';
+    TONGUES.slice(0, T.t).forEach((q, k) => { b += '<g class="tw tw' + k + '"><path d="' + TD + '" fill="' + g + '" transform="' + tr(q[0], q[1] - (T.tall ? 8 : 0), q[2], q[3]) + '"/></g>'; });
+    b += '<g class="mw"><path d="' + TD + '" fill="' + g + '" transform="' + tr(0, 0, 0, T.sc) + '"/>';
+    if (T.twin) b += '<path d="' + TD + '" fill="' + T.l + '" opacity=".5" transform="' + tr(-7, -4, -10, T.sc * 0.48) + '"/>';
+    b += '<path class="coref" d="' + TD + '" fill="' + gi + '" transform="' + tr(0, 4, 0, T.sc * 0.5) + '"/></g>';
+    if (T.sp) b += '<circle class="sp sp0" cx="24" cy="44" r="4" fill="' + T.l + '"/><circle class="sp sp1" cx="98" cy="34" r="3" fill="' + T.l + '"/><circle class="sp sp2" cx="80" cy="14" r="2.5" fill="' + (T.rb ? '#fff' : T.c) + '"/>';
+    if (T.star) b += '<path class="star" d="M100 2l3 9 9 3-9 3-3 9-3-9-9-3 9-3z" fill="#fff"/>';
+    return '<svg class="llama ' + (o.cls || '') + '" viewBox="-12 -8 144 158" aria-hidden="true" style="--tc:' + T.c + '">' + defs + '<g class="ll-all">' + b + '</g></svg>';
+  }
+  const Cst = document.getElementById('Cst'), fz = document.getElementById('Cfz'), flIn = document.getElementById('Cfl'), cap = document.getElementById('Ccap'), tp = document.getElementById('Ctp');
+  const C = document.getElementById('C'), N = DAY.length, RMC = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let base = 49, k = 0, shown = 0, gen = 0;   // base: días encendidos antes de hoy
   C.innerHTML = DAY.map(x => '<button class="cc" data-a="' + x[0] + '"><i>' + ic(G[x[0]]) + '</i>' + x[1] + '</button>').join('');
-  const paintLamp = () => { const p = lvl / DAY.length; vessel.style.setProperty('--lvl', (100 - p * 100) + '%'); lamp.querySelector('.pct').textContent = Math.round(p * 100) + '%'; };
-  C.querySelectorAll('.cc').forEach(b => b.addEventListener('click', () => {
-    if (b.classList.contains('done')) { b.classList.remove('done'); lvl--; lamp.classList.remove('lit'); paintLamp(); return; }
-    b.classList.add('done'); vib(10);
-    const r = b.getBoundingClientRect(), t = vessel.getBoundingClientRect(), d = document.createElement('i'); d.className = 'drop'; d.style.background = cssc(b); document.body.appendChild(d);
-    d.animate([{ left: (r.left + r.width / 2) + 'px', top: r.top + 'px', transform: 'scale(1)' }, { left: (t.left + t.width * .48) + 'px', top: (t.top + t.height * .55) + 'px', transform: 'scale(.6)' }], { duration: 520, easing: 'cubic-bezier(.5,0,.75,0)' }).onfinish = () => {
-      d.remove(); lvl++; paintLamp(); sparks(vessel, cssc(b), 8);
-      if (lvl === DAY.length) setTimeout(() => { lamp.classList.add('lit'); vib([20, 60, 30, 60, 40]); sparks(vessel, '#FF8A1F', 34); }, 450);
-    };
-  }));
-  paintLamp();
+  const setFlame = ti => { shown = ti; flIn.innerHTML = '<span>' + llama(ti) + '</span>'; Cst.style.setProperty('--tc', TIERS[ti].c); };
+  const level = () => { const p = k / N; fz.style.setProperty('--s', (.34 + .66 * p).toFixed(3)); fz.style.setProperty('--sat', (.12 + .88 * p).toFixed(2)); fz.style.setProperty('--br', (.72 + .28 * p).toFixed(2)); fz.style.setProperty('--go', (.08 + .5 * p).toFixed(2)); fz.style.setProperty('--gs', (.45 + .55 * p).toFixed(2)); };
+  const caption = () => { const T = TIERS[shown];
+    cap.innerHTML = k === N ? '<b>Tu llama está encendida</b><small>' + (base + 1) + ' días encendidos · ' + T.n + '</small>'
+      : k ? '<b>' + k + ' de ' + N + '</b><small>tu llama se aviva</small>' : '<b>' + T.n + '</b><small>' + base + ' días encendidos · hoy, en brasa</small>'; };
+  const paintPick = () => { const to = tierOf(base + 1); tp.querySelectorAll('button').forEach(x => x.classList.toggle('on', +x.dataset.t === to)); };
+  /* brasas que suben: más seguido cuanto más viva está */
+  function ember(color, o) { o = o || {}; const e = document.createElement('i'); e.className = 'ember'; const sz = o.size || 3 + Math.random() * 3; e.style.width = e.style.height = sz + 'px'; e.style.background = color;
+    e.style.left = (fz.clientWidth / 2 - sz / 2 + (Math.random() - .5) * (o.w || 60)) + 'px'; if (o.bottom) e.style.bottom = o.bottom + 'px'; fz.appendChild(e);
+    const g = -Math.PI / 2 + (Math.random() - .5) * (o.spread || .5), d = (o.d || 120) + Math.random() * (o.dv || 90);
+    e.animate([{ transform: 'translate(0,0) scale(1)', opacity: 0 }, { opacity: o.op || 1, offset: .12 }, { transform: 'translate(' + Math.cos(g) * d + 'px,' + Math.sin(g) * d + 'px) scale(.2)', opacity: 0 }], { duration: (o.t || 1500) + Math.random() * 800, easing: 'cubic-bezier(.2,.65,.35,1)' }).onfinish = () => e.remove(); }
+  (function emberLoop() { const T = TIERS[shown], p = k / N;
+    if (!document.hidden && !RMC) { if (p) ember(Math.random() < .5 ? T.c : T.l, { w: 30 + 50 * p }); else if (Math.random() < .4) ember('#8a5a3a', { w: 16, d: 40, dv: 30, op: .6, size: 3 }); }
+    setTimeout(emberLoop, k === N ? 130 : p ? 820 - 560 * p : 1100); })();
+  const ring = (color, sc, dl) => { const r = document.createElement('i'); r.className = 'ring'; r.style.borderColor = color; fz.appendChild(r);
+    r.animate([{ transform: 'scale(.3)', opacity: .9 }, { transform: 'scale(' + sc + ')', opacity: 0 }], { duration: 800, delay: dl || 0, easing: 'cubic-bezier(.2,.7,.3,1)', fill: 'backwards' }).onfinish = () => r.remove(); };
+  const burst = (colors, n, spread) => { for (let i = 0; i < n; i++) ember(colors[i % colors.length], { bottom: 88, w: 10, spread: spread, d: 60, dv: 120, t: 700, size: 3 + Math.random() * 5 }); };
+  /* la práctica viaja hasta la llama: una bola de su color con estela, en curva */
+  function orb(from, color, cb) {
+    if (RMC) { cb(); return; }
+    const a = from.getBoundingClientRect(), b = fz.getBoundingClientRect();
+    const x0 = a.left + a.width / 2, y0 = a.top + a.height / 2, x2 = b.left + b.width / 2, y2 = b.bottom - 86;
+    const x1 = (x0 + x2) / 2 + (x0 < x2 ? -50 : 50), y1 = Math.min(y0, y2) - 80;
+    const o = document.createElement('i'); o.className = 'orb'; o.style.background = 'radial-gradient(circle, #fff 0 22%, ' + color + ' 62%)'; o.style.boxShadow = '0 0 18px 5px ' + color; document.body.appendChild(o);
+    const D = 620, t0 = performance.now(); let last = 0;
+    const ease = t => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+    (function step(now) {
+      const t = Math.min(1, (now - t0) / D), e = ease(t), u = 1 - e, x = u * u * x0 + 2 * u * e * x1 + e * e * x2, y = u * u * y0 + 2 * u * e * y1 + e * e * y2;
+      o.style.transform = 'translate(' + x + 'px,' + y + 'px) scale(' + (1 - .4 * e) + ')';
+      if (now - last > 14) { last = now; const tr = document.createElement('i'); tr.className = 'trail'; tr.style.background = color; document.body.appendChild(tr);
+        tr.animate([{ transform: 'translate(' + x + 'px,' + y + 'px) scale(1)', opacity: .65 }, { transform: 'translate(' + x + 'px,' + (y + 8) + 'px) scale(.15)', opacity: 0 }], { duration: 420, easing: 'ease-out' }).onfinish = () => tr.remove(); }
+      if (t < 1) requestAnimationFrame(step); else { o.remove(); cb(); }
+    })(t0);
+  }
+  /* al llegar: se aplasta, rebota, toma el color de la práctica un instante y suelta chispas */
+  function impact(color) {
+    flIn.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.14,.82)', offset: .22 }, { transform: 'scale(.93,1.12)', offset: .55 }, { transform: 'scale(1.02,.98)', offset: .8 }, { transform: 'scale(1)' }], { duration: 700, easing: 'ease-out' });
+    flIn.animate([{ filter: 'none' }, { filter: 'drop-shadow(0 0 16px ' + color + ') brightness(1.35)', offset: .3 }, { filter: 'none' }], { duration: 900 });
+    ring(color, 2.3); burst([color, '#fff'], 14, 1.6); vib([10, 30, 14]);
+  }
+  /* todo hecho: inspira, se enciende entera con destello y anillos; en un hito, evoluciona */
+  function blaze() {
+    const my = gen, T = TIERS[shown];
+    flIn.animate([{ transform: 'scale(1)' }, { transform: 'scale(.84)', offset: .28 }, { transform: 'scale(1.26)', offset: .52 }, { transform: 'scale(.96)', offset: .78 }, { transform: 'scale(1)' }], { duration: 1150, easing: 'ease-out' });
+    setTimeout(() => { if (my !== gen) return;
+      fz.classList.add('blaze'); Cst.querySelector('.flash').animate([{ opacity: 0 }, { opacity: 1, offset: .2 }, { opacity: 0 }], { duration: 800 });
+      ring(T.c, 3.6); ring(T.l, 2.8, 140); burst([T.c, T.l, '#fff'], 42, 2.8); vib([20, 60, 30, 60, 40]);
+      if (tierOf(base + 1) > shown) setTimeout(() => my === gen && evolve(), 1300);
+    }, 320);
+  }
+  function evolve() {
+    const to = tierOf(base + 1), T = TIERS[to];
+    const old = flIn.firstElementChild, nu = document.createElement('span'); nu.innerHTML = llama(to); flIn.appendChild(nu); shown = to;
+    old.animate([{ transform: 'none', filter: 'none', opacity: 1 }, { transform: 'scale(1.16,.86)', filter: 'brightness(2.6)', opacity: 1, offset: .5 }, { transform: 'scale(.1)', filter: 'brightness(3)', opacity: 0 }], { duration: 900, easing: 'cubic-bezier(.5,0,.75,0)', fill: 'forwards' }).onfinish = () => old.remove();
+    nu.animate([{ transform: 'scale(.1) translateY(30px)', filter: 'brightness(3)', opacity: 0 }, { opacity: 1, offset: .35 }, { transform: 'none', filter: 'none', opacity: 1 }], { duration: 1150, delay: 650, easing: 'cubic-bezier(.34,1.56,.64,1)', fill: 'backwards' });
+    setTimeout(() => Cst.style.setProperty('--tc', T.c), 700);
+    setTimeout(() => { ring(T.c, 3.8); ring(T.l, 3, 160); burst([T.c, T.l, '#fff'], 46, 3); vib([20, 60, 30, 60, 40]);
+      cap.innerHTML = '<b>Ahora es <em>' + T.n + '</em></b><small>' + (base + 1) + ' días · cambió de color y de forma</small>'; }, 1150);
+  }
+  C.addEventListener('click', e => { const b = e.target.closest('.cc'); if (!b || b.classList.contains('flying')) return;
+    if (b.classList.contains('done')) {
+      b.classList.remove('done'); b.querySelector('i').innerHTML = ic(G[b.dataset.a]);
+      if (k === N) { gen++; fz.classList.remove('blaze'); if (shown !== tierOf(base)) setFlame(tierOf(base)); }
+      k--; level(); caption(); return;
+    }
+    b.classList.add('done', 'flying'); b.querySelector('i').innerHTML = ic('checkmark'); vib(8);
+    b.animate([{ transform: 'scale(1)' }, { transform: 'scale(.9)', offset: .3 }, { transform: 'scale(1.08)', offset: .7 }, { transform: 'scale(1)' }], { duration: 420, easing: 'ease-out' });
+    const color = cssc(b), my = gen;
+    orb(b, color, () => { b.classList.remove('flying'); if (my !== gen) return; k++; level(); impact(color); caption(); if (k === N) blaze(); });
+  });
+  tp.innerHTML = TIERS.map((t, i) => i ? '<button data-t="' + i + '" title="Llegar a ' + t.n + ' (' + t.d + ' días)" aria-label="' + t.n + '">' + llama(i) + '</button>' : '').join('');
+  tp.addEventListener('click', e => { const b = e.target.closest('[data-t]'); if (!b) return; base = TIERS[+b.dataset.t].d - 1; resetC(); });
+  function resetC() { gen++; k = 0; C.querySelectorAll('.cc').forEach(b => { b.classList.remove('done', 'flying'); b.querySelector('i').innerHTML = ic(G[b.dataset.a]); }); fz.classList.remove('blaze'); setFlame(tierOf(base)); level(); caption(); paintPick(); }
+  resetC();
 
   /* D · El camino */
   const D = document.getElementById('D'), xs = [50, 72, 44, 24, 50, 50], W = () => D.clientWidth, H = 360;
@@ -232,7 +369,7 @@
     const P = pts(), d = 'M' + P.map(p => p[0] + ' ' + p[1]).join(' L');
     D.innerHTML = '<svg class="ln" viewBox="0 0 ' + W() + ' ' + H + '"><path class="base" d="' + d + '"/><path class="prog" d="' + d + '"/></svg>' +
       DAY.map((x, i) => '<button class="node' + (i < cur ? ' done' : i === cur ? ' cur' : '') + '" data-i="' + i + '" data-a="' + x[0] + '" style="left:' + P[i][0] + 'px;top:' + P[i][1] + 'px">' + ic(i < cur ? 'checkmark' : G[x[0]]) + '</button>').join('') +
-      '<button class="node end' + (cur >= DAY.length ? ' lit' : '') + '" style="left:' + P[5][0] + 'px;top:' + P[5][1] + 'px">' + ic('lampara') + '</button>' +
+      '<button class="node end' + (cur >= DAY.length ? ' lit' : '') + '" style="left:' + P[5][0] + 'px;top:' + P[5][1] + 'px">' + ic('llama') + '</button>' +
       (cur < DAY.length ? '<span class="bubble" style="left:' + P[cur][0] + 'px;top:' + P[cur][1] + 'px">' + DAY[cur][1] + '</span>' : '');
     const pr = D.querySelector('.prog'), L = pr.getTotalLength(), segs = P.length - 1, upto = Math.min(cur, segs);
     pr.style.strokeDasharray = L; pr.style.strokeDashoffset = L * (1 - upto / segs);
@@ -243,16 +380,16 @@
   /* Notificaciones */
   const NOTS = [
     { n: 1, live: true, t: 'Actividad en vivo', p: 'Mientras lees en tu Biblia de papel o meditas, el tiempo y el avance del día siguen en la isla dinámica y en la pantalla bloqueada. Sin abrir la app.', w: 'Mientras dura la práctica', r: 'Apple: Live Activities' },
-    { n: 2, ap: 'lampara', h: 'Lámpara', time: '6:15', b: 'Buenos días, Juan Carlos', m: 'Oración y Juan 15 te esperan · 25 min', t: 'Recordatorio amable', p: 'Uno por día, a la hora de tu primera práctica. Dice qué toca y cuánto lleva. Nunca «no te olvides».', w: 'A la hora de tu rutina', r: 'YouVersion y Hallow (recordatorio diario)' },
+    { n: 2, ap: 'llama', h: 'Lights', time: '6:15', b: 'Buenos días, Juan Carlos', m: 'Oración y Juan 15 te esperan · 25 min', t: 'Recordatorio amable', p: 'Uno por día, a la hora de tu primera práctica. Dice qué toca y cuánto lleva. Nunca «no te olvides».', w: 'A la hora de tu rutina', r: 'YouVersion y Hallow (recordatorio diario)' },
     { n: 3, av: 'ER', c: '--palabra', h: 'Esteban', time: '6:30', b: 'Esteban', m: 'Oré por ti esta mañana. Ánimo con Juan 15.', t: 'Mensaje de tu líder', p: 'Notificación de comunicación: lleva su foto, como un mensaje. Es lo más gratificante del discipulado y no se agrupa con lo demás.', w: 'Cuando él ora o te escribe', r: 'Apple: notificaciones de comunicación' },
     { n: 4, av: 'MA', c: '--mensaje', h: 'María', time: 'ayer', b: 'María completó su día', m: 'Se llevó «Somos más que vencedores» · Romanos 8:37', t: 'Tu discípulo encendió su día', p: 'Solo si María comparte «Todo». Te deja animarla con un toque. Una por persona y por día, como máximo.', w: 'Cuando completa su día', r: 'Strava y Apple Fitness (aviso de un amigo)' },
-    { n: 5, ap: 'hands-praying', apc: '--oracion', h: 'Lámpara', time: '9:00', b: '¿Cómo sigue «Sanidad de su mamá»?', m: 'Hace 3 semanas que oras por esto.', acts: ['Sigo orando', 'Dios respondió'], t: 'Seguimiento con botones', p: 'Mantienes presionado y respondes desde la notificación, sin abrir la app. Si Dios respondió, se guarda y te ofrece contarlo.', w: 'Cada 2 semanas por pedido', r: 'Apple: notificaciones con acciones' },
-    { n: 6, ap: 'flame', h: 'Lámpara', time: '20:30', b: 'Hoy tienes tu día de gracia', m: 'Un versículo alcanza para encender. La llama no se apaga.', t: 'Día de gracia, sin culpa', p: 'Si a la noche no hiciste nada, te recuerda que la llama sigue. Sin rachas en peligro ni rojo.', w: 'A las 20:30, solo si no encendiste', r: 'Duolingo (tono), sin su culpa' },
+    { n: 5, ap: 'hands-praying', apc: '--oracion', h: 'Lights', time: '9:00', b: '¿Cómo sigue «Sanidad de su mamá»?', m: 'Hace 3 semanas que oras por esto.', acts: ['Sigo orando', 'Dios respondió'], t: 'Seguimiento con botones', p: 'Mantienes presionado y respondes desde la notificación, sin abrir la app. Si Dios respondió, se guarda y te ofrece contarlo.', w: 'Cada 2 semanas por pedido', r: 'Apple: notificaciones con acciones' },
+    { n: 6, ap: 'flame', h: 'Lights', time: '20:30', b: 'Hoy tienes tu día de gracia', m: 'Un versículo alcanza para encender. La llama no se apaga.', t: 'Día de gracia, sin culpa', p: 'Si a la noche no hiciste nada, te recuerda que la llama sigue. Sin rachas en peligro ni rojo.', w: 'A las 20:30, solo si no encendiste', r: 'Duolingo (tono), sin su culpa' },
     { n: 7, ap: 'church', h: 'El Buen Pastor', time: 'Resumen', b: 'Resumen de la tarde', m: '3 pedidos nuevos en Oración · Culto de jóvenes mañana 18:30', t: 'Resumen de la iglesia', p: 'Lo del foro llega junto, una vez por día, en el resumen programado de iOS. Nunca una notificación por publicación.', w: 'En tu resumen de la tarde', r: 'Apple: resumen programado' },
-    { n: 8, ap: 'ribbon', h: 'Lámpara', time: 'dom', b: 'Cierra tu semana', m: '6 de 7 días encendidos. Mira lo que Dios hizo.', t: 'Domingo de repaso', p: 'Un aviso el domingo a la tarde, que abre el repaso de 3 minutos.', w: 'Domingos 18:00', r: 'Apple Fitness (resumen semanal)' }
+    { n: 8, ap: 'ribbon', h: 'Lights', time: 'dom', b: 'Cierra tu semana', m: '6 de 7 días encendidos. Mira lo que Dios hizo.', t: 'Domingo de repaso', p: 'Un aviso el domingo a la tarde, que abre el repaso de 3 minutos.', w: 'Domingos 18:00', r: 'Apple Fitness (resumen semanal)' }
   ];
   document.getElementById('stack').innerHTML = NOTS.filter(x => !x.live).map(x => '<div class="nt" data-n="' + x.n + '">' +
-    (x.av ? '<span class="ap av" style="--c:var(' + x.c + ')">' + x.av + '<em>' + ic('lampara') + '</em></span>' : '<span class="ap" style="' + (x.apc ? 'background:var(' + x.apc + ')' : '') + '">' + ic(x.ap) + '</span>') +
+    (x.av ? '<span class="ap av" style="--c:var(' + x.c + ')">' + x.av + '<em>' + ic('llama') + '</em></span>' : '<span class="ap" style="' + (x.apc ? 'background:var(' + x.apc + ')' : '') + '">' + ic(x.ap) + '</span>') +
     '<div><b>' + x.b + '</b><p>' + x.m + '</p>' + (x.acts ? '<div class="acts">' + x.acts.map(a => '<span>' + a + '</span>').join('') + '</div>' : '') + '</div><time>' + x.time + '</time></div>').join('');
   document.getElementById('legend').innerHTML = NOTS.map(x => '<div class="lg" data-n="' + x.n + '"><span class="n">' + x.n + '</span><div><b>' + x.t + '</b><p>' + x.p + '</p><small>Cuándo: ' + x.w + ' · Referencia: ' + x.r + '</small></div></div>').join('');
   const hl = n => document.querySelectorAll('[data-n]').forEach(e => e.classList.toggle('hl', e.dataset.n === String(n)));
