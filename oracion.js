@@ -101,8 +101,9 @@
           const b = e.target.closest('[data-tell]'); if (!b || b.disabled) return;
           b.disabled = true; L.haptic(8);
           if (b.dataset.tell === 'iglesia') {
-            L.S.posts.push({ id: Date.now(), ch: 'testimonios', by: 'JC', w: 0, t: '¡Dios respondió! ' + p.t + '. Gracias a todos los que oraron.', rx: { gloria: 0, amen: 0 } });
-            L.save(); L.toast('Publicado en Testimonios', { icon: 'sparkles' });
+            const txt = '¡Dios respondió! ' + p.t + '. Gracias a todos los que oraron.';
+            if (window.Iglesia && Iglesia.post) Iglesia.post('testimonios', txt); else { L.S.posts.push({ id: Date.now(), ch: 'testimonios', by: 'JC', w: 0, t: txt, rx: { gloria: 0, amen: 0 } }); L.save(); }
+            L.toast('Publicado en Testimonios', { icon: 'sparkles' });
           } else L.toast('Se lo contaste a ' + (other || D.LEADER.first), { icon: 'chatbubble' });
         });
         setTimeout(() => L.sparks(el.querySelector('.coin'), 22), 300);
@@ -126,7 +127,7 @@
         m.dismiss();
         if (b.dataset.a2 === 'pray') pray(id);
         if (b.dataset.a2 === 'answer') m.onDidDismiss().then(() => answer(id));
-        if (b.dataset.a2 === 'share') L.toast('Publicado en el canal Oración, sin datos personales', { icon: 'people' });
+        if (b.dataset.a2 === 'share') { if (window.Iglesia && Iglesia.post) Iglesia.post('oracion', 'Oren por ' + whoName(p.who) + ': ' + p.t + '.'); L.toast('Publicado en el canal Oración', { icon: 'people' }); }
       })
     });
   }

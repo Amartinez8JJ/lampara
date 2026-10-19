@@ -52,7 +52,7 @@
       '<path fill="#fff6d2" opacity=".9" d="M12 30c-2.4 0-4-2-4-4.5 0-2.5 2-4 3-6.5 1 2 4.8 3.5 4.8 6.6 0 2.6-1.6 4.4-3.8 4.4Z"/></svg>'; };
 
   /* ================= estado ================= */
-  const KEY = 'lampara-v4';
+  const KEY = 'lampara-v5';
   const clone = o => JSON.parse(JSON.stringify(o));
   /* cómo vino cada discípulo los últimos 14 días (L encendido, G gracia, E pábilo) */
   const DPAST = { MA: 'LLGLLLLLLGLLLL', DV: 'LELLLLGLLELLLL', SR: 'LGEELGLLEEGLLE', LO: 'LLLLLLLLLLLLLL' };
@@ -126,9 +126,10 @@
 
   function setDone(id, on, o) {
     o = o || {};
-    const k = tk(), wasLit = litToday(), wasAll = allDone();
+    const k = tk(), wasLit = litToday(), wasAll = allDone(), wk0 = weekLit();
     S.done[k] = S.done[k] || {};
     if (on) S.done[k][id] = o.at || nowHM(); else delete S.done[k][id];
+    emit(on ? 'itemDone' : 'itemUndone', id);
     if (on && o.paper) S.stats.paper++;
     save(); refresh();
     if (!on) return;
@@ -138,6 +139,9 @@
       toast('Encendiste tu día · ' + weekLit() + ' de ' + GOAL + ' esta semana', { icon: 'flame' });
     }
     if (!wasAll && allDone() && !o.quiet) setTimeout(celebrate, 380);
+    const wkKey = dk(weekStart(today()));
+    S.summit = S.summit || {};
+    if (wk0 < GOAL && weekLit() >= GOAL && !S.summit[wkKey]) { S.summit[wkKey] = 1; save(); setTimeout(summitWhenFree, 1200); }
     checkAch();
   }
   function skipToday(id, on) {
@@ -290,7 +294,7 @@
     t.message = msg; t.duration = o.undo ? 4200 : 2300; t.cssClass = 'tst';
     /* con una pantalla completa o tarjeta abierta, el aviso va arriba para no tapar su botón */
     if (document.querySelector('ion-modal.full, ion-modal.card')) t.position = 'top';
-    else { t.position = 'bottom'; if (document.getElementById('tabbar')) t.positionAnchor = 'tabbar'; }
+    else { t.position = 'bottom'; if (document.getElementById('tabbar') && !document.querySelector('ion-tabs.notabs')) t.positionAnchor = 'tabbar'; }
     if (o.icon) t.icon = o.icon;
     if (o.undo) t.buttons = [{ text: 'Deshacer', handler: o.undo }];
     app().appendChild(t);
@@ -337,6 +341,7 @@
   function press(root, sel, fn) {
     let t = 0, x = 0, y = 0, el = null, fired = false;
     root.addEventListener('pointerdown', e => {
+      fired = false;
       el = e.target.closest(sel); if (!el || e.target.closest('[data-chk], button.chk')) { el = null; return; }
       x = e.clientX; y = e.clientY; fired = false;
       clearTimeout(t); t = setTimeout(() => { fired = true; haptic(14); fn(el); }, 430);
@@ -397,6 +402,18 @@
     }, { cls: 'celeb' });
   }
 
+  /* la meta de la semana (5 de 7): una celebración propia, cuando no hay nada abierto */
+  function summitWhenFree() {
+    if (document.querySelector('ion-modal, ion-action-sheet, ion-alert')) { setTimeout(summitWhenFree, 700); return; }
+    full((el, m) => {
+      const wk = weekDates(today()).map(d => { const st = dayStatus(d); return '<span class="cw ' + st + '"><i></i>' + DL[d.getDay()] + '</span>'; }).join('');
+      el.innerHTML = '<div class="celeb-in"><span class="lampa">' + ic('flame') + '</span><h1>Semana<br>encendida</h1><p class="cv">Llegaste a ' + GOAL + ' de 7 días. «La senda de los justos es como la luz de la aurora, que va en aumento.»<small>Proverbios 4:18</small></p>' +
+        '<div class="cweek">' + wk + '</div><p class="wk-note">' + (S.stats.weeksLit + 1) + ' semanas encendidas este año</p><button class="btn big" data-close>Amén</button></div>';
+      el.querySelector('[data-close]').onclick = () => m.dismiss();
+      haptic([12, 60, 20, 60, 30]);
+    }, { cls: 'celeb' });
+  }
+
   /* ================= demo: pasar al día siguiente ================= */
   function nextDay() {
     const t = today(), k = dk(t);
@@ -410,10 +427,10 @@
     if (t.getDay() === 0 && weekLit() >= GOAL) S.stats.weeksLit++;
     S.off++;
     S.prayedToday = {};
-    save(); refresh();
+    save(); emit('nextDay', today()); refresh();
     toast(longDate(today()), { icon: 'sunny' });
   }
-  function reset() { S = fresh(); try { localStorage.removeItem(KEY); } catch (e) {} refresh(); toast('Demo reiniciada'); }
+  function reset() { S = fresh(); try { localStorage.removeItem(KEY); } catch (e) {} emit('reset'); refresh(); toast('Demo reiniciada'); }
 
   /* ================= pestañas ================= */
   let curTab = 'hoy';
@@ -449,6 +466,7 @@
     /* día */ itemsFor, todayItems, isDone, doneCount, litToday, allDone, dayStatus, weekLit, GOAL, setDone, skipToday, planDay,
     /* personas */ person, discItems, discDone, discStatus,
     /* logros */ achProg, achEarned, checkAch, medal,
+    /* módulos de Personas (familia.js, iglesia.js) */ pseg: {},
     /* ui */ press, context, stagger, slide, ctxCard, topCtx, Page, shell, define, refresh, on, emit, sheet, card, full, toast, actions, prompt, haptic, sparks, RM, celebrate, go, tab, setBadge,
     /* demo */ nextDay, reset
   };

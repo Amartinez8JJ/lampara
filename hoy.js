@@ -8,6 +8,7 @@
   const canFlow = it => FLOWABLE.includes(it.a) && !it.with;
   const CHK = '<span><svg class="ck" viewBox="0 0 24 24"><path d="M6 12.5l4 4L18 8"/></svg></span>';
   const MOMENTS = [['Mañana', 'sunny-outline', 0, 720], ['Tarde', 'cafe-outline', 720, 1140], ['Noche', 'moon-outline', 1140, 1441]];
+  const tipSeen = () => { try { return localStorage.getItem('lampara-tip-hoy') === '1'; } catch (e) { return true; } };
   const verseOfDay = () => { const t = L.today(); return D.VERSES[(t.getDate() + t.getMonth()) % D.VERSES.length]; };
 
   function withName(it) { return it.with === 'ER' ? D.LEADER.first : (L.person(it.with) || {}).first || ''; }
@@ -58,8 +59,11 @@
       this.onNow = new Set(its.filter(i => L.isDone(i.id)).map(i => i.id));
       const cta = pend.length ? '<button class="btn" data-start>' + ic('play') + (k ? 'Seguir · ' + pend.length + ' más' : 'Empezar') + '</button>'
         : n && k === n ? '<div class="done-line">' + ic('lampara') + 'Tu lámpara está encendida</div>' : n ? '<p class="muted">Lo que queda es con otras personas.</p>' : '<p class="muted">Nada planeado para hoy.</p>';
+      /* lo que sigue (la tarjeta «Ahora» de v3): la próxima práctica pendiente, a un toque */
+      const nx = its.find(i => !L.isDone(i.id));
+      const nextRow = nx && pend.length ? '<button class="nextrow" data-open="' + nx.id + '" data-a="' + nx.a + '"><span class="aic">' + actIc(nx.a) + '</span><span class="nr-t"><small>' + (L.mins(nx.h) < new Date().getHours() * 60 + new Date().getMinutes() ? 'Te quedó' : 'Sigue') + ' · ' + esc(nx.h) + '</small><b>' + esc(nx.t) + '</b></span>' + ic('chevron-forward', 'chev') + '</button>' : '';
       const tcd = '<div class="tcd"><div class="tcd-top"><h2>Tu tiempo con Dios</h2><span>' + k + ' de ' + n + (min ? ' · ' + min + ' min' : '') + '</span></div>' +
-        (n ? '<div class="segbar">' + its.map(i => '<i data-a="' + i.a + '" data-seg="' + i.id + '" class="' + (this.prevOn.has(i.id) && this.onNow.has(i.id) ? 'on' : '') + '"></i>').join('') + '</div>' : '') + cta + '</div>';
+        (n ? '<div class="segbar">' + its.map(i => '<i data-a="' + i.a + '" data-seg="' + i.id + '" class="' + (this.prevOn.has(i.id) && this.onNow.has(i.id) ? 'on' : '') + '"></i>').join('') + '</div>' : '') + nextRow + cta + '</div>';
       const groups = MOMENTS.map(([name, icon, a, b]) => {
         const g = its.filter(i => L.mins(i.h) >= a && L.mins(i.h) < b);
         return g.length ? '<p class="moment">' + ic(icon) + name + '</p><ion-list inset="true" lines="inset">' + g.map(i => row(i, this.just)).join('') + '</ion-list>' : '';
@@ -71,8 +75,9 @@
         '<div class="vacts"><button data-vact="keep" class="' + (saved ? 'on' : '') + '">' + ic(saved ? 'bookmark' : 'bookmark-outline') + (saved ? 'Guardado' : 'Guardar') + '</button>' +
         '<button data-vact="memo">' + ic('leaf-outline') + 'Memorizar</button><button data-vact="share">' + ic('paper-plane-outline') + 'Compartir</button></div></div>' +
         '<div class="sec"></div>' + tcd + groups +
+        (tipSeen() ? '' : '<div class="tip">' + ic('information-circle-outline') + '<span><b>Atajos:</b> mantén presionada una práctica para ver opciones, o deslízala a la derecha para marcarla.</span><button class="iconbtn" data-tipx aria-label="Cerrar">' + ic('close') + '</button></div>') +
         '<button class="link add-today" data-addtoday>' + ic('add-circle') + ' Agregar algo a hoy</button>' +
-        '<div class="sec"><h2>Tu gente</h2><button class="more" data-go="personas">Ver todos</button></div><div class="stories">' + ppl.map(p => {
+        '<div class="sec"><h2>Tu gente</h2><button class="more" data-anotar>' + ic('add') + ' Anotar</button></div><div class="stories">' + ppl.map(p => {
           const cls = p.lead || p.fam ? 'dim' : p.signal === 'hablar' || p.signal === 'cuesta' ? 'talk' : p.share >= 2 && p.dToday > 0 ? 'lit' : 'dim';
           return '<button class="story" data-who="' + p.id + '">' + av(p.id, p.name, 56, cls) + '<small>' + esc(p.first) + '</small></button>';
         }).join('') + '</div>';
@@ -117,6 +122,8 @@
       if ((el = t.closest('[data-who]'))) { whoActions(el.dataset.who, this); return; }
       if ((el = t.closest('[data-go]'))) { L.go(el.dataset.go); return; }
       if (t.closest('[data-addtoday]')) { addToday(); return; }
+      if (t.closest('[data-anotar]')) { L.anotar(); return; }
+      if (t.closest('[data-tipx]')) { try { localStorage.setItem('lampara-tip-hoy', '1'); } catch (e2) {} const tp = this.pg.querySelector('.tip'); if (tp) tp.remove(); return; }
     }
   }
   L.define('page-hoy', PageHoy);
@@ -145,11 +152,13 @@
       (it.n ? '<div class="note">' + ic('document-text-outline') + '<span>' + esc(it.n) + '</span></div>' : '') +
       (withP ? '<div class="mini-list"><div class="mini">' + av(withP.id, withP.name, 34) + '<div><b>' + esc(withP.name) + '</b><small>' + esc(it.h) + '</small></div></div></div>' : '') +
       '<div class="why"><p>' + esc(inf.why) + '</p><small>' + esc(inf.ref) + '</small></div>' +
-      '<div class="steps">' + inf.how.map(s => '<div>' + esc(s) + '</div>').join('') + '</div>' +
+      '<div class="steps">' + inf.how.map(s => '<div>' + esc(s) + '</div>').join('') + '</div>' + extras(it) +
       '<div class="row2"><button class="btn ghost" data-m>' + (done ? 'Desmarcar' : ic('checkmark') + 'Hecho') + '</button><button class="btn c" data-g>' + ic(go[0]) + go[1] + '</button></div></div>';
     L.sheet(html, {
       mount: (el, m) => {
         el.querySelector('[data-m]').onclick = () => { m.dismiss(); page ? page.mark(id, !done) : L.setDone(id, !done); };
+        const nb = el.querySelector('[data-note]');
+        if (nb) nb.onclick = () => { m.dismiss(); L.prompt('Anotar sobre ' + it.t, { ph: '¿Qué te quedó?' }, v => { L.S.keeps.unshift({ a: it.a, t: v, r: it.src === 'p' ? it.t : '', d: L.tk() }); L.save(); L.refresh(); L.toast('Anotado', { icon: 'create' }); }); };
         el.querySelector('[data-g]').onclick = () => {
           m.dismiss();
           if (disc) { m.onDidDismiss().then(() => Encuentro.open(it.with)); return; }
@@ -158,6 +167,20 @@
         };
       }
     });
+  }
+
+  /* lo anotado hoy, con quién la haces y qué toca mañana (el despliegue de v3) */
+  function extras(it) {
+    const rows = [];
+    const notes = L.S.keeps.filter(k => k.d === L.tk() && k.a === it.a);
+    notes.slice(0, 2).forEach(k => rows.push('<div class="mini"><span class="aic">' + ic('create-outline') + '</span><div><b>«' + esc(k.t) + '»</b><small>Anotaste hoy</small></div></div>'));
+    if (it.src === 'p') {
+      const p = L.S.plans.find(x => x.id === it.plan);
+      const others = (p && p.people || []).filter(x => x !== 'JC');
+      if (others.length) rows.push('<div class="mini">' + L.av(others[0], (L.person(others[0]) || { name: D.MEMBERS[others[0]] || others[0] }).name, 26) + '<div><b>Juntos</b><small>' + esc(others.map(x => (L.person(x) || { first: (D.MEMBERS[x] || x).split(' ')[0] }).first).join(', ')) + ' también ' + (others.length > 1 ? 'lo hacen' : 'lo hace') + ' hoy</small></div></div>');
+      if (p && it.day < it.len) rows.push('<div class="mini"><span class="aic">' + actIc(it.a) + '</span><div><b>Mañana</b><small>' + esc(D.SEQ[p.seq](it.a, it.day + 1)) + '</small></div></div>');
+    }
+    return (rows.length ? '<div class="mini-list">' + rows.join('') + '</div>' : '') + '<button class="link center-link note-link" data-note>' + ic('create-outline') + ' Anotar algo de esto</button>';
   }
 
   /* ---------- un día de la semana ---------- */

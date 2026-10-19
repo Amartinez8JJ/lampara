@@ -1,0 +1,258 @@
+/* Lámpara v5 · Familia (dueño: agente Familia)
+   Todo con los tokens de styles.css. Prefijos propios: fam-, fh- (casa), fm- (mesa), fp-/fq- (Ana y tú),
+   fk-/fv- (los chicos), fn- (noche de familia), fa- (álbum), fj- (juego del versículo), fd-/fo- (página de pareja). */
+
+.fam { padding-top: 4px; }
+
+/* ---------- figurita: círculo del color de la historia con una forma plana ---------- */
+.fam-stk { --s: 44px; width: var(--s); height: var(--s); flex: none; border-radius: 50%; display: inline-grid; place-items: center; background: var(--c); color: var(--on-fill); }
+.fam-stk .fam-g { width: 72%; height: 72%; }
+.fam-g { display: block; overflow: visible; }
+
+/* ---------- casa encendida: 4 ventanas = la meta de 4 noches ---------- */
+.fam-casa { padding: 16px 12px 12px; border-radius: var(--r); background: var(--surface); transition: background-color 0.4s var(--ease), color 0.4s; }
+.fh-top { display: flex; align-items: center; gap: 14px; margin: 0 4px 14px; }
+.fam-house { width: 66px; height: 66px; flex: none; display: block; }
+.fam-house .h-b { fill: var(--surface3); transition: fill 0.4s; }
+.fam-house .h-w, .fam-house .h-d { fill: var(--surface); transition: fill 0.4s; }
+.fam-house .h-l { fill: var(--brand); }
+.fam-casa h2 { margin: 0; font-family: var(--serif); font-optical-sizing: auto; font-size: 27px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.1; }
+.fam-casa .fh-top p { margin: 3px 0 0; color: var(--ink3); font-size: 14.5px; }
+.fh-week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+.fh-n { display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 4px 0; border: 0; border-radius: 12px; background: none; cursor: pointer; }
+.fh-n small { font-size: 12px; font-weight: 600; color: var(--ink3); }
+.fh-n span { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; font-size: 15px; font-weight: 650; color: var(--ink2); box-shadow: inset 0 0 0 1.5px var(--line2); transition: background-color 0.25s, color 0.25s, transform 0.35s var(--spring); }
+.fh-n span .ico { font-size: 19px; }
+.fh-n.on span { background: var(--brand); color: var(--on-brand); box-shadow: none; }
+.fh-n.now small { color: var(--ink); }
+.fh-n.now:not(.on) span { box-shadow: inset 0 0 0 2px var(--ink); color: var(--ink); }
+.fh-n.fut { cursor: default; }
+.fh-n.fut span { box-shadow: none; color: var(--ink4); }
+.fh-n:not(.fut):active span { transform: scale(0.86); }
+.fh-hint { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 10px 0 2px; color: var(--ink3); font-size: 13px; }
+.fh-hint .ico { color: var(--brand); }
+/* meta cumplida: la casa pasa a color pleno (celebración, como el cierre del día) */
+.fam-casa.full { background: var(--brand); color: var(--on-brand); }
+.fam-casa.full .fh-top p, .fam-casa.full .fh-n small { color: inherit; opacity: 0.78; }
+.fam-casa.full .h-b { fill: var(--on-brand); }
+.fam-casa.full .h-w, .fam-casa.full .h-d, .fam-casa.full .h-l { fill: var(--brand); }
+.fam-casa.full .fh-n span { color: var(--on-brand); box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--on-brand) 38%, transparent); }
+.fam-casa.full .fh-n.on span { background: var(--on-brand); color: var(--brand); box-shadow: none; }
+.fam-casa.full .fh-n.now:not(.on) span { box-shadow: inset 0 0 0 2px var(--on-brand); }
+.fam-casa.full .fh-n.fut span { box-shadow: none; opacity: 0.55; }
+
+/* ---------- esta noche en la mesa ---------- */
+.fam-mesa { position: relative; overflow: hidden; padding: 16px; }
+.fam-mesa .fm-art { position: absolute; right: -26px; top: -26px; --s: 128px; }
+.fam-mesa .eyebrow { position: relative; display: flex; align-items: center; gap: 5px; color: var(--c); }
+.fam-mesa h3 { position: relative; margin: 0 0 12px; padding-right: 96px; font-family: var(--serif); font-optical-sizing: auto; font-size: 25px; font-weight: 600; line-height: 1.15; letter-spacing: -0.01em; }
+.fm-steps { position: relative; display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.fm-steps span { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 11px 0 8px; border-radius: 999px; background: var(--c-soft); color: var(--ink); font-size: 13.5px; font-weight: 600; }
+.fm-steps .ico { color: var(--c); font-size: 17px; }
+.fm-win { display: flex; align-items: center; gap: 10px; margin: 0 0 14px; color: var(--ink2); font-size: 14.5px; line-height: 1.3; }
+.fm-win b { color: var(--ink); }
+.fm-next { margin: 0; color: var(--ink3); font-size: 14.5px; }
+.fm-next b { color: var(--ink); }
+.fam-mesa.done h3 { color: var(--ink2); }
+
+/* ---------- Ana y tú ---------- */
+.fam-pareja { padding: 4px 16px 14px; }
+.fp-head { display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 0 12px; margin-bottom: 14px; border: 0; border-bottom: 0.5px solid var(--line); background: none; text-align: left; cursor: pointer; }
+.fp-avs { display: inline-flex; flex: none; }
+.fp-avs .av + .av { margin-left: -12px; box-shadow: 0 0 0 2.5px var(--surface); }
+ion-modal .fp-avs .av + .av { box-shadow: 0 0 0 2.5px var(--ion-background-color); }
+.fp-avs.sm .av + .av { margin-left: -9px; }
+.fp-avs.big .av + .av { margin-left: -18px; box-shadow: 0 0 0 4px var(--bg); }
+.fp-t { flex: 1; min-width: 0; }
+.fp-t b { display: block; font-size: 16px; }
+.fp-t small { color: var(--ink3); font-size: 13.5px; }
+.fq .tag { margin-bottom: 8px; }
+.fq-q { margin: 0 0 14px; font-family: var(--serif); font-optical-sizing: auto; font-size: 22px; font-weight: 500; line-height: 1.25; }
+/* la respuesta de Ana espera escondida hasta que respondes (Paired: «Answer to unlock») */
+.fq-lock { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; padding: 10px 14px 10px 10px; border-radius: 18px 18px 18px 6px; background: var(--c-soft); color: var(--c); }
+.fq-lock > span:not(.av) { flex: 1; display: grid; gap: 5px; }
+.fq-lock b { font-size: 14px; color: var(--ink); }
+.fq-lock i { display: block; height: 7px; width: 92%; border-radius: 4px; background: var(--c-line); }
+.fq-lock i + i { width: 58%; }
+.fq-lock > .ico { font-size: 18px; }
+.fq-acts { display: grid; grid-template-columns: auto 1fr; gap: 10px; }
+.fq-acts .btn.sm { height: 50px; }
+.fq-b { display: flex; align-items: flex-end; gap: 8px; margin-bottom: 8px; }
+.fq-b p { margin: 0; max-width: 84%; padding: 10px 14px; border-radius: 18px; background: var(--bc); color: var(--on-fill); font-size: 15.5px; line-height: 1.35; }
+.fq-b.me { justify-content: flex-end; }
+.fq-b.me p { border-bottom-right-radius: 6px; }
+.fq-b.ana p { border-bottom-left-radius: 6px; }
+.fq-mine { display: block; width: 100%; padding: 0; border: 0; background: none; text-align: left; cursor: pointer; }
+.link.fp-pray { display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%; margin-top: 10px; padding: 6px 0; color: var(--c); }
+
+/* ---------- los chicos ---------- */
+.fam-kids { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.fk { display: flex; flex-direction: column; gap: 12px; padding: 14px; border: 0; border-radius: var(--r); background: var(--surface); text-align: left; cursor: pointer; transition: transform 0.15s var(--ease); }
+.fk:active { transform: scale(0.97); }
+.fk-top { display: flex; align-items: center; gap: 10px; }
+.fk-top b { display: block; font-size: 16px; }
+.fk-top small { color: var(--ink3); font-size: 13px; }
+.fk-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.fk-grid .fam-stk, .fk-e { width: 100%; height: auto; aspect-ratio: 1; }
+.fk-e { border-radius: 50%; box-shadow: inset 0 0 0 1.5px var(--line2); }
+.fk-n { color: var(--ink3); font-size: 13.5px; }
+.fk-n b { color: var(--kc); font-size: 18px; font-weight: 750; margin-right: 2px; }
+
+.fam-verse { margin-top: 10px; padding: 16px; }
+.fam-verse .eyebrow { color: var(--c); }
+.fv-t { margin: 4px 0 14px; font-family: var(--serif); font-optical-sizing: auto; font-size: 22px; line-height: 1.38; }
+.fj-blank { display: inline-block; height: 1em; vertical-align: -0.16em; border-radius: 7px; background: var(--c-soft); box-shadow: inset 0 0 0 1.5px var(--c-line); }
+.fv-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.fv-kids { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.fv-kids small { color: var(--ink3); font-size: 13px; line-height: 1.25; }
+.fv-k { position: relative; display: inline-flex; }
+.fv-k + .fv-k { margin-left: -6px; }
+.fv-k .av { box-shadow: 0 0 0 2px var(--surface); }
+.fv-k:not(.on) .av { opacity: 0.5; }
+.fv-k i { position: absolute; right: -3px; bottom: -3px; width: 15px; height: 15px; border-radius: 50%; display: grid; place-items: center; font-size: 9px; font-style: normal; background: var(--c); color: var(--on-fill); box-shadow: 0 0 0 2px var(--surface); }
+.fam-verse .btn.sm { flex: none; }
+
+/* ---------- noche de familia ---------- */
+.fam-noche { padding: 4px 16px 16px; }
+.fn-row { display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 0 12px; border: 0; background: none; text-align: left; cursor: pointer; }
+.fn-row .aic { margin: 0; }
+.fn-t { flex: 1; min-width: 0; }
+.fn-t b { display: block; font-size: 16px; }
+.fn-t small { color: var(--ink3); font-size: 13.5px; }
+.fam-noche.on .tg { background: var(--c); }
+.fam-noche.on .tg i { transform: translateX(18px); }
+.fn-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-bottom: 12px; }
+.fn-days button { height: 36px; border: 0; border-radius: var(--r-sm); background: var(--surface3); color: var(--ink2); font-weight: 700; cursor: pointer; transition: background-color 0.2s, color 0.2s, transform 0.15s var(--ease); }
+.fn-days button:active { transform: scale(0.92); }
+.fn-days button.on { background: var(--c); color: var(--on-fill); }
+.fn-idea { display: flex; gap: 10px; margin: 0; padding: 12px; border-radius: var(--r-sm); background: var(--c-soft); color: var(--ink2); font-size: 14.5px; line-height: 1.35; }
+.fn-idea .ico { flex: none; margin-top: 1px; font-size: 18px; color: var(--c); }
+.fn-idea b { display: block; color: var(--ink); font-size: 13px; }
+.fn-go { margin-top: 12px; }
+
+.fam-coins .coin-b { width: 78px; }
+
+/* ---------- hojas de celebración ---------- */
+.fam-coin .fam-g { width: 64px; height: 64px; }
+.fam-coin .fam-house { width: 64px; height: 64px; }
+.fam-coin .fam-house .h-b { fill: var(--on-brand); }
+.fam-coin .fam-house .h-w, .fam-coin .fam-house .h-d, .fam-coin .fam-house .h-l { fill: var(--brand); }
+.fam-lit { display: inline-flex; align-items: center; gap: 6px; margin: -8px 0 20px; padding: 6px 12px; border-radius: 999px; background: color-mix(in srgb, var(--brand) 15%, transparent); color: var(--brand); font-size: 14px; font-weight: 700; }
+.fam-quote { margin: -6px 0 20px; font-family: var(--serif); font-optical-sizing: auto; font-size: 19px; line-height: 1.35; }
+.fam-quote small { display: block; margin-top: 4px; font-family: var(--ui); font-size: 13px; font-weight: 700; color: var(--ink3); }
+.medal .share-pill .av { margin-left: -6px; }
+.fam-orar .sh-head .fp-avs { margin-right: 2px; }
+.fam-orar .turns { margin-bottom: 16px; }
+.fam-orar .turn { width: 100%; }
+
+/* ---------- pantalla completa: la mesa ---------- */
+.fm-hero { margin-bottom: 14px; }
+.fam-lbl { margin: 22px 2px 10px; color: var(--ink3); font-size: 14px; font-weight: 600; }
+.fam-flow .to-list .to { background: var(--surface); }
+.fam-who { display: flex; align-items: center; gap: 10px; margin: 0 0 14px; color: var(--ink2); font-size: 15.5px; }
+.fam-who b { color: var(--ink); }
+.fam-flow .reader .vs { cursor: default; }
+.fam-turn { display: flex; flex-direction: column; align-items: center; text-align: center; padding-top: 18px; }
+.fam-turn .av { margin-bottom: 18px; animation: pop 0.55s var(--spring); }
+.fam-turn .eyebrow { color: var(--c); }
+.fam-turn h1 { margin: 0 0 10px; font-family: var(--serif); font-optical-sizing: auto; font-size: 38px; font-weight: 600; letter-spacing: -0.015em; }
+.fam-ask { margin: 0 8px; font-family: var(--serif); font-optical-sizing: auto; font-size: 23px; line-height: 1.35; color: var(--ink2); }
+.fam-order { display: flex; justify-content: center; gap: 12px; margin-top: 30px; }
+/* turnos: pendiente = anillo de su color · ahora = lleno con aro · hecho = lleno con tilde */
+.fam-order span { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; font-size: 13.5px; font-weight: 700; color: var(--c); box-shadow: inset 0 0 0 2px var(--c); }
+.fam-order span.now, .fam-order span.done { background: var(--c); color: var(--on-fill); box-shadow: none; }
+.fam-order span.now { box-shadow: 0 0 0 3px var(--bg), 0 0 0 5px var(--c); }
+.fam-order span .ico { font-size: 18px; }
+
+/* ---------- pantalla completa: el versículo ---------- */
+.fj-kids { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.fj-kid { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 20px 10px 16px; border: 0; border-radius: var(--r); background: var(--surface); cursor: pointer; transition: transform 0.15s var(--ease); }
+.fj-kid:active { transform: scale(0.96); }
+.fj-kid .av { margin-bottom: 4px; box-shadow: 0 0 0 3px var(--surface), 0 0 0 5px var(--kc); }
+.fj-kid b { font-size: 18px; }
+.fj-kid small { color: var(--ink3); font-size: 13.5px; }
+.fam-prize { display: flex; align-items: center; gap: 12px; margin: 18px 2px 0; color: var(--ink2); font-size: 15px; }
+.fam-prize b { color: var(--ink); }
+.fj-foothint { text-align: center; margin: 6px 0 10px; }
+.fj-eye { display: flex; align-items: center; gap: 8px; margin: 6px 0 14px; color: var(--c); }
+.fj-stars { display: flex; gap: 6px; margin-bottom: 18px; }
+.fj-stars i { width: 34px; height: 34px; display: grid; place-items: center; font-style: normal; font-size: 30px; color: var(--ink4); }
+.fj-stars i.on { color: var(--ayuno); }
+.fj-v { margin: 0 0 18px; font-family: var(--serif); font-optical-sizing: auto; font-size: 31px; line-height: 1.5; font-weight: 500; letter-spacing: -0.005em; }
+.fj-v .fj-blank { height: 1.05em; vertical-align: -0.2em; border-radius: 9px; }
+.fj-v .fj-blank.now { background: var(--c-soft); box-shadow: inset 0 0 0 2.5px var(--c); animation: fjpulse 1.4s ease-in-out infinite; }
+@keyframes fjpulse { 50% { box-shadow: inset 0 0 0 2.5px var(--c-line); } }
+.fj-w { display: inline-block; padding: 0 8px; border-radius: 9px; background: var(--c); color: var(--on-fill); line-height: 1.25; }
+.fj-hint { margin: 0; color: var(--ink3); font-size: 15px; font-weight: 600; }
+.fj-opts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; padding-bottom: 6px; }
+.fj-opt { height: 58px; padding: 0 6px; border: 0; border-radius: var(--r); background: var(--surface); color: var(--ink); font-family: var(--serif); font-optical-sizing: auto; font-size: 21px; font-weight: 600; cursor: pointer; box-shadow: inset 0 0 0 1.5px var(--c-line); transition: transform 0.15s var(--ease), opacity 0.2s; }
+.fj-opt:active { transform: scale(0.95); }
+.fj-opt.miss, .fj-opt[disabled] { opacity: 0.32; }
+.fj-end { text-align: center; padding-top: 16px; }
+.fj-end .fj-stars { justify-content: center; }
+.fj-end h1 { margin: 0 0 14px; font-family: var(--serif); font-optical-sizing: auto; font-size: 40px; font-weight: 600; letter-spacing: -0.015em; }
+.fj-v.done { font-size: 27px; line-height: 1.35; margin-bottom: 6px; }
+.fj-ref { margin: 0 0 22px; color: var(--c); font-weight: 700; font-size: 14px; }
+.fj-end .note { text-align: left; }
+
+/* ---------- página: Ana y tú ---------- */
+.fam-prof .fp-avs { margin-bottom: 14px; }
+.fam-prof .fp-avs .av { margin-bottom: 0; }
+.fam-together { margin-top: 18px; padding: 14px 16px 16px; border-radius: var(--r); background: var(--c); color: var(--on-fill); }
+.fam-together .eyebrow { color: inherit; opacity: 0.75; }
+.fam-together > div { display: grid; grid-template-columns: repeat(3, 1fr); }
+.fam-together span { display: flex; flex-direction: column; align-items: center; }
+.fam-together span + span { border-left: 1px solid color-mix(in srgb, var(--on-fill) 25%, transparent); }
+.fam-together b { font-family: var(--serif); font-optical-sizing: auto; font-size: 40px; font-weight: 600; line-height: 1.05; font-variant-numeric: tabular-nums; }
+.fam-together small { font-size: 13.5px; font-weight: 600; opacity: 0.8; }
+.fam-pray .btn { margin-top: 14px; }
+.fo-week { display: flex; justify-content: space-between; }
+.fo-week span { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: var(--ink3); }
+.fo-week i { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-style: normal; font-size: 15px; box-shadow: inset 0 0 0 1.5px var(--line2); }
+.fo-week .on i { background: var(--c); color: var(--on-fill); box-shadow: none; }
+.fo-week .now { color: var(--ink); }
+.fo-week .now:not(.on) i { box-shadow: inset 0 0 0 2px var(--ink); }
+.fam-dates { padding: 4px 16px; }
+.fd-row { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 0.5px solid var(--line); }
+.fd-row:last-child { border-bottom: 0; }
+.fd-tile { width: 48px; height: 52px; flex: none; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--c); color: var(--on-fill); line-height: 1; }
+.fd-tile b { font-size: 21px; font-weight: 750; }
+.fd-tile small { margin-top: 3px; font-size: 11.5px; font-weight: 700; text-transform: uppercase; opacity: 0.85; }
+.fd-t { flex: 1; min-width: 0; }
+.fd-t b { display: block; font-size: 16px; }
+.fd-t small { color: var(--ink3); font-size: 13.5px; }
+.fd-left { color: var(--c); font-size: 14px; font-weight: 700; white-space: nowrap; }
+.fam-past { padding: 14px 16px 8px; margin-bottom: 8px; }
+.fam-past .eyebrow { color: var(--c); }
+.fp-q { margin: 0 0 12px; font-family: var(--serif); font-optical-sizing: auto; font-size: 19px; font-weight: 500; line-height: 1.3; }
+.fam-past .fq-b p { font-size: 14.5px; }
+
+/* ---------- página: álbum ---------- */
+.fa-kids { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px; }
+.fa-kid { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 0; border-radius: var(--r); background: var(--surface); text-align: left; cursor: pointer; transition: background-color 0.2s, color 0.2s; }
+.fa-kid b { display: block; font-size: 16px; }
+.fa-kid small { color: var(--ink3); font-size: 13px; }
+.fa-kid.on { background: var(--kc); color: var(--on-fill); }
+.fa-kid.on small { color: inherit; opacity: 0.8; }
+.fa-kid.on .av { box-shadow: 0 0 0 2px var(--on-fill); }
+.fa-head { margin: 18px 2px 14px; }
+.fa-sum { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+.fa-sum b { font-family: var(--serif); font-optical-sizing: auto; font-size: 34px; font-weight: 600; line-height: 1; }
+.fa-sum b small { font-family: var(--ui); font-size: 16px; font-weight: 600; color: var(--ink3); }
+.fa-sum span { color: var(--ink3); font-size: 14px; font-weight: 600; }
+.fa-bar { height: 8px; border-radius: 4px; background: var(--surface3); overflow: hidden; }
+.fa-bar i { display: block; height: 100%; border-radius: 4px; background: var(--kc); transition: width 0.6s var(--ease); }
+.fa-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+/* casilla de figurita (como un álbum de figuritas: número arriba, la figurita pegada o el lugar vacío) */
+.fa-slot { position: relative; display: flex; flex-direction: column; align-items: flex-start; min-height: 172px; padding: 12px 14px 14px; border: 0; border-radius: var(--r); background: transparent; color: var(--ink3); text-align: left; cursor: pointer; box-shadow: inset 0 0 0 1.5px var(--line2); transition: transform 0.15s var(--ease); }
+.fa-slot:active { transform: scale(0.97); }
+.fa-slot.on { background: var(--c); color: var(--on-fill); box-shadow: none; }
+.fa-n { font-size: 12px; font-weight: 800; opacity: 0.75; }
+.fa-slot .fam-g { width: 72px; height: 72px; margin: 6px auto 12px; }
+.fa-lock { width: 72px; height: 72px; margin: 6px auto 12px; border-radius: 50%; display: grid; place-items: center; font-size: 24px; color: var(--ink4); box-shadow: inset 0 0 0 1.5px var(--line2); }
+.fa-slot b { display: block; font-size: 15.5px; line-height: 1.2; }
+.fa-slot:not(.on) b { color: var(--ink2); }
+.fa-slot small { font-size: 12.5px; font-weight: 600; opacity: 0.8; margin-top: 2px; }
+
+/* ---------- tarjeta en Hoy ---------- */
+.fam-ctx .fam-stk { box-shadow: 0 0 0 2px var(--on-fill); }

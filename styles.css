@@ -753,3 +753,37 @@ ion-footer.compose { background: var(--tabbar); backdrop-filter: blur(20px); -we
 .ctxc.soft .btn { background: var(--c); color: var(--on-fill); }
 .ctxc.soft .btn.ghost { background: var(--surface3); color: var(--ink); }
 .ctxc.soft .av { box-shadow: none; }
+
+/* ================= v5 ================= */
+/* lo que sigue en Hoy */
+.nextrow { display: flex; align-items: center; gap: 12px; width: 100%; margin: 0 0 12px; padding: 10px 12px; border: 0; border-radius: var(--r-sm); background: var(--c-soft); text-align: left; cursor: pointer; }
+.nextrow .aic { margin: 0; width: 28px; height: 28px; font-size: 28px; }
+.nextrow .nr-t { flex: 1; min-width: 0; }
+.nextrow small { display: block; color: var(--c); font-size: 12.5px; font-weight: 700; }
+.nextrow b { display: block; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nextrow:active { transform: scale(0.98); }
+.note-link { margin: 0 0 14px; }
+/* Anotar */
+.who-pick { display: flex; gap: 10px; overflow-x: auto; margin: 0 -20px 16px; padding: 4px 20px; scrollbar-width: none; }
+.who-pick::-webkit-scrollbar { display: none; }
+.who-pick button { flex: none; display: flex; flex-direction: column; align-items: center; gap: 6px; border: 0; background: none; padding: 0; cursor: pointer; width: 56px; }
+.who-pick small { font-size: 12px; font-weight: 600; color: var(--ink2); }
+.who-pick .av { opacity: 0.45; transition: opacity 0.2s, transform 0.2s var(--spring); }
+.who-pick button.on .av { opacity: 1; transform: scale(1.06); }
+.who-pick button.on .av::after { content: ''; position: absolute; inset: -4px; border-radius: 50%; border: 2.5px solid var(--ink); }
+.who-pick button.on small { color: var(--ink); }
+.what-pick { margin-bottom: 14px; }
+.what-pick .tile.on { box-shadow: inset 0 0 0 2px var(--c); background: var(--c-soft); color: var(--ink); }
+/* ficha del discípulo */
+.contact-pills { display: flex; justify-content: center; flex-wrap: wrap; gap: 6px; margin: -6px 0 14px; }
+.contact-pills .pdot { width: 8px; height: 8px; border-radius: 50%; background: var(--c); display: inline-block; }
+.together { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.together .aic { margin: 0; }
+.together b { display: block; font-family: var(--serif); font-size: 19px; font-weight: 600; }
+.together small { color: var(--ink3); font-size: 13.5px; }
+.tip { display: flex; align-items: flex-start; gap: 10px; margin: 12px 0 0; padding: 12px 10px 12px 14px; border-radius: var(--r-sm); background: var(--surface3); color: var(--ink2); font-size: 14px; line-height: 1.35; }
+.tip > .ico { font-size: 18px; color: var(--brand); margin-top: 1px; }
+.tip span { flex: 1; }
+.tip b { color: var(--ink); }
+.tip .iconbtn { width: 26px; height: 26px; font-size: 13px; background: none; color: var(--ink3); }
+.ctxc .av b { font-family: var(--ui); font-size: inherit; font-weight: 700; display: inline; line-height: 1; }

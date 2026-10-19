@@ -1,0 +1,294 @@
+/* Lámpara v5 · Iglesia (iglesia.js). Clases con prefijo ig-; todo color sale de los tokens de styles.css.
+   Cada canal lleva el color de su actividad (data-a → --c) y cada persona el suyo (L.avColor → --pc).
+   Referencias: Church Center (agenda horizontal con «Voy», página de grupo), WhatsApp (nombres de color en el grupo,
+   reacciones bajo el mensaje, barra de reacciones al mantener), Discord (cabecera de la comunidad, canales por categoría). */
+
+/* ================= cabecera de la iglesia ================= */
+.ig-head { padding: 14px; border-radius: var(--r); background: var(--surface); margin-top: 4px; }
+.ig-head-top { display: flex; align-items: center; gap: 12px; }
+.ig-logo { width: 52px; height: 52px; flex: none; border-radius: 16px; display: grid; place-items: center; font-size: 28px; background: var(--brand); color: var(--on-brand); }
+.ig-hn { flex: 1; min-width: 0; }
+.ig-hn h2 { margin: 0; font-family: var(--serif); font-optical-sizing: auto; font-size: 24px; font-weight: 600; letter-spacing: -0.01em; line-height: 1.1; }
+.ig-hn p { margin: 3px 0 0; color: var(--ink3); font-size: 13.5px; }
+.ig-prompt { display: flex; align-items: center; gap: 10px; width: 100%; margin-top: 14px; padding: 5px; border: 0; border-radius: 999px; background: var(--surface3); color: var(--ink3); font-size: 15.5px; text-align: left; cursor: pointer; transition: transform 0.15s var(--ease); }
+.ig-prompt:active { transform: scale(0.98); }
+.ig-prompt .ig-pt { flex: 1; }
+.ig-prompt i { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; font-size: 18px; font-style: normal; background: var(--brand); color: var(--on-brand); }
+
+/* ================= filas horizontales (Church Center: «Schedule») ================= */
+.ig-row { display: flex; gap: 10px; overflow-x: auto; margin: 0 -16px; padding: 0 16px 4px; scroll-snap-type: x mandatory; scroll-padding-left: 16px; scrollbar-width: none; }
+.ig-row::-webkit-scrollbar { display: none; }
+
+/* orar hoy: la oración es color pleno */
+.ig-pc { flex: none; width: 80%; max-width: 330px; scroll-snap-align: start; display: flex; flex-direction: column; padding: 14px 14px 12px; border-radius: var(--r); background: var(--c); color: var(--on-fill); cursor: pointer; transition: transform 0.15s var(--ease); }
+.ig-pc:active { transform: scale(0.98); }
+.ig-row.one .ig-pc { width: 100%; max-width: none; }
+.ig-pc header { display: flex; align-items: center; gap: 8px; font-size: 14px; margin-bottom: 8px; min-width: 0; }
+.ig-pc header b { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ig-pc header small { margin-left: auto; opacity: 0.72; font-size: 13px; white-space: nowrap; }
+.ig-pc .av { box-shadow: 0 0 0 2px var(--on-fill); }
+.ig-pc .av.anon { background: color-mix(in srgb, var(--on-fill) 18%, transparent); color: inherit; box-shadow: none; font-size: 16px; }
+.ig-pc > p { margin: 0 0 12px; font-family: var(--serif); font-optical-sizing: auto; font-size: 19px; font-weight: 500; line-height: 1.28; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.ig-pc > p.ig-pc-thx { display: flex; align-items: center; gap: 6px; margin: -4px 0 10px; font-family: var(--ui); font-size: 13px; font-weight: 650; opacity: 0.85; }
+.ig-pc footer { margin-top: auto; display: flex; align-items: center; gap: 10px; }
+.ig-pc .ig-rc { color: inherit; opacity: 0.8; }
+.ig-pc .ig-float { color: var(--on-fill); }
+
+/* esta semana */
+.ig-wk { flex: none; width: 154px; scroll-snap-align: start; display: flex; flex-direction: column; align-items: flex-start; padding: 12px; border-radius: var(--r); background: var(--surface); cursor: pointer; transition: transform 0.15s var(--ease); }
+.ig-wk:active { transform: scale(0.97); }
+.ig-wk .ig-date { margin-bottom: 10px; }
+.ig-wk > b { font-size: 15.5px; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.ig-wk > small { color: var(--ink3); font-size: 13px; margin: 3px 0 12px; }
+.ig-wk > .ig-go, .ig-wk > .ig-wkst { margin-top: auto; }
+.ig-wkst { display: inline-flex; align-items: center; gap: 5px; height: 30px; padding: 0 11px; border-radius: 999px; background: var(--c-soft); color: var(--c); font-size: 13px; font-weight: 700; white-space: nowrap; }
+.ig-wkst .ico { font-size: 15px; }
+
+/* fecha: un bloque del color del evento */
+.ig-date { width: 46px; height: 50px; flex: none; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--c); color: var(--on-fill); line-height: 1; }
+.ig-date small { font-size: 11px; font-weight: 700; letter-spacing: 0.02em; opacity: 0.85; }
+.ig-date b { font-size: 21px; font-weight: 700; margin-top: 3px; font-variant-numeric: tabular-nums; }
+.ig-date.big { width: 64px; height: 70px; border-radius: 16px; }
+.ig-date.big small { font-size: 12.5px; }
+.ig-date.big b { font-size: 30px; }
+.ctxc .ig-date { background: var(--on-fill); color: var(--c); }
+
+/* «Voy», «Me sumo», «Unirme» */
+.ig-go { position: relative; display: inline-flex; align-items: center; gap: 5px; height: 32px; padding: 0 13px; border: 0; border-radius: 999px; background: var(--c-soft); color: var(--c); font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap; transition: transform 0.15s var(--spring), background-color 0.2s, color 0.2s; }
+.ig-go .ico { font-size: 15px; }
+.ig-go.on { background: var(--c); color: var(--on-fill); }
+.ig-go:active { transform: scale(0.93); }
+.ig-go[disabled] { opacity: 0.4; pointer-events: none; }
+
+/* ================= canales (Discord: categorías; WhatsApp: «Nombre: texto», hora y contador) ================= */
+.ig-chic { width: 38px; height: 38px; margin-right: 12px; flex: none; border-radius: 12px; display: grid; place-items: center; font-size: 21px; background: var(--c); color: var(--on-fill); }
+.ig-chic.big { width: 56px; height: 56px; margin: 0; border-radius: 17px; font-size: 30px; }
+ion-item .ig-lk { font-size: 12px; color: var(--ink4); margin-left: 6px; vertical-align: 0; }
+ion-item[data-igch] p b { color: var(--ink2); font-weight: 600; }
+ion-item[data-igch].unread p { color: var(--ink2) !important; }
+.ig-chend { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; margin: 0 0 0 8px; }
+.ig-chend small { color: var(--ink4); font-size: 12.5px; min-height: 15px; white-space: nowrap; }
+ion-item.unread .ig-chend small { color: var(--c); font-weight: 650; }
+.ig-ub { min-width: 22px; height: 22px; padding: 0 7px; border-radius: 11px; display: inline-flex; align-items: center; justify-content: center; gap: 3px; background: var(--c); color: var(--on-fill); font-size: 12.5px; font-weight: 700; flex: none; }
+.ig-ub.mut { background: var(--surface3); color: var(--ink3); }
+.ig-ub .ico { font-size: 13px; }
+
+/* ================= publicaciones ================= */
+.ig-post { position: relative; padding: 14px 14px 12px; margin-bottom: 8px; border-radius: var(--r); background: var(--surface); cursor: pointer; transition: transform 0.15s var(--ease); -webkit-user-select: none; user-select: none; }
+.ig-post:active { transform: scale(0.985); }
+.ig-post.mine { box-shadow: inset 3px 0 0 var(--c); }
+.ig-post.just, .ig-re.just { animation: igIn 0.6s var(--ease) both; }
+@keyframes igIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+.ig-pinned { display: flex; align-items: center; gap: 5px; margin: 0 0 10px; color: var(--c); font-size: 12.5px; font-weight: 700; }
+.ig-by { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; min-width: 0; }
+.ig-who { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; align-items: center; column-gap: 6px; row-gap: 2px; }
+.ig-who small { margin-left: auto; color: var(--ink3); font-size: 12.5px; white-space: nowrap; }
+/* el nombre en el color de la persona (WhatsApp), mezclado con la tinta para que se lea en los dos temas */
+.ig-nm { font-size: 15px; font-weight: 700; color: color-mix(in srgb, var(--pc, var(--ink)) 76%, var(--ink)); }
+.ig-nm.anon { color: var(--ink2); }
+.ig-by .ig-role { display: inline-flex; align-items: center; height: 19px; padding: 0 7px; border-radius: 6px; background: color-mix(in srgb, var(--brand) 15%, transparent); color: var(--brand); font-size: 11.5px; font-weight: 700; }
+.ig-new { display: inline-flex; align-items: center; height: 19px; padding: 0 7px; border-radius: 6px; background: var(--brand); color: var(--on-brand); font-size: 11.5px; font-weight: 700; }
+.ig-new.abs { position: absolute; top: 10px; right: 10px; }
+.ig-t { margin: 0 0 10px; font-size: 16px; line-height: 1.45; }
+.ig-tag { display: flex; align-items: center; gap: 6px; margin: 0 0 10px; padding: 7px 10px; border-radius: var(--r-sm); background: var(--c-soft); color: var(--c); font-size: 13px; font-weight: 650; }
+.ig-tag .ico { flex: none; font-size: 15px; }
+.ig-tag span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ig-mod { display: flex; gap: 8px; align-items: flex-start; margin: 0 0 10px; padding: 9px 11px; border-radius: var(--r-sm); background: var(--surface2); color: var(--ink2); font-size: 13.5px; line-height: 1.35; }
+.ig-mod .ico { flex: none; color: var(--brand); font-size: 16px; margin-top: 1px; }
+.ig-golink { display: flex; align-items: center; gap: 8px; width: 100%; margin: 0 0 10px; padding: 10px 12px; border: 0; border-radius: var(--r-sm); background: var(--surface2); color: var(--ink); font-size: 14.5px; font-weight: 600; text-align: left; cursor: pointer; }
+.ig-golink .ico { font-size: 18px; color: var(--brand); }
+.ig-golink .ico:last-child { margin-left: auto; font-size: 15px; color: var(--ink4); }
+.ig-apv { margin: 0 0 10px; padding: 10px 12px; border-radius: var(--r-sm); background: var(--surface2); box-shadow: inset 3px 0 0 var(--c); }
+.ig-apv small { display: flex; align-items: center; gap: 5px; margin-bottom: 3px; color: var(--c); font-size: 12.5px; font-weight: 700; }
+.ig-apv p { margin: 0; font-size: 14.5px; color: var(--ink2); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.ig-thx { display: flex; gap: 10px; align-items: flex-start; margin: 0 0 10px; padding: 10px 12px; border-radius: var(--r-sm); background: var(--surface2); }
+.ig-thx p { margin: 0; font-size: 13px; color: var(--ink3); line-height: 1.35; }
+.ig-thx p .ig-nm { font-size: 13px; }
+.ig-thx p span { display: block; margin-top: 2px; color: var(--ink); font-size: 14.5px; }
+
+/* reacciones: dicen algo (Amén, Gracias, ¡Gloria a Dios!) y toman el color del canal */
+.ig-acts { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.ig-rx { position: relative; display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px 0 10px; border: 0; border-radius: 999px; background: var(--surface3); color: var(--ink2); font-size: 13.5px; font-weight: 650; cursor: pointer; transition: transform 0.15s var(--spring), background-color 0.2s, color 0.2s; }
+.ig-rx .ico { font-size: 16px; color: var(--c); }
+.ig-rx b { font-weight: 700; color: var(--ink3); }
+.ig-rx.on { background: var(--c); color: var(--on-fill); }
+.ig-rx.on .ico, .ig-rx.on b { color: inherit; }
+.ig-rx:active { transform: scale(0.92); }
+.ig-acts.big { margin-top: 2px; }
+.ig-acts.big .ig-rx { height: 38px; padding: 0 14px 0 12px; font-size: 15px; }
+.ig-rc { margin-left: auto; display: inline-flex; align-items: center; gap: 5px; color: var(--ink3); font-size: 13.5px; font-weight: 600; }
+.ig-rc .ico { font-size: 17px; }
+/* «Estoy orando» */
+.ig-pray { position: relative; display: inline-flex; align-items: center; gap: 7px; height: 36px; padding: 0 5px 0 12px; border: 0; border-radius: 999px; background: var(--c-soft); color: var(--c); font-size: 14.5px; font-weight: 700; cursor: pointer; transition: transform 0.15s var(--spring), background-color 0.2s, color 0.2s; }
+.ig-pray .ico { font-size: 18px; }
+.ig-pray b { min-width: 26px; height: 26px; padding: 0 7px; border-radius: 13px; display: grid; place-items: center; background: color-mix(in srgb, var(--c) 18%, transparent); font-size: 13px; font-variant-numeric: tabular-nums; }
+.ig-pray.on { background: var(--c); color: var(--on-fill); }
+.ig-pray.on b { background: color-mix(in srgb, var(--on-fill) 22%, transparent); }
+.ig-pray:active { transform: scale(0.94); }
+.ig-pray.mine { padding: 0 13px; cursor: default; }
+.ig-pray.inv { background: var(--on-fill); color: var(--c); }
+.ig-pray.inv b { background: var(--c-soft); }
+.ig-pray.inv.on { background: color-mix(in srgb, var(--on-fill) 18%, transparent); color: var(--on-fill); box-shadow: inset 0 0 0 1.5px var(--on-fill); }
+.ig-pray.inv.on b { background: color-mix(in srgb, var(--on-fill) 22%, transparent); }
+.ig-pray.big { width: 100%; height: 54px; justify-content: center; margin: 2px 0 10px; padding: 0 16px; font-size: 17px; }
+.ig-pray.big .ico { font-size: 22px; }
+.ig-pray.big b { margin-left: 4px; }
+.ig-pray.mine.big { cursor: default; }
+/* respuesta visual: el botón salta y su ícono sube */
+.ig-float { position: absolute; left: 50%; top: -6px; font-size: 22px; color: var(--c); pointer-events: none; z-index: 2; }
+.ig-gone { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; margin: 0 0 8px; padding: 12px 14px; border: 1px dashed var(--line2); border-radius: var(--r); background: none; color: var(--ink3); font-size: 13.5px; cursor: pointer; }
+.ig-gone.big { margin-top: 20px; padding: 22px 16px; }
+
+/* ================= eventos, servicio y grupos ================= */
+.ig-evc, .ig-grc { position: relative; display: flex; gap: 12px; padding: 14px; margin-bottom: 8px; border-radius: var(--r); background: var(--surface); cursor: pointer; transition: transform 0.15s var(--ease); }
+.ig-evc:active, .ig-grc:active { transform: scale(0.985); }
+.ig-evx { flex: 1; min-width: 0; }
+.ig-evx > b { display: block; font-size: 16.5px; line-height: 1.25; margin-bottom: 4px; padding-right: 44px; }
+.ig-grc .ig-evx > b { padding-right: 0; }
+.ig-meta { display: flex; flex-wrap: wrap; gap: 4px 12px; margin: 0 0 10px; color: var(--ink3); font-size: 13.5px; }
+.ig-meta span { display: inline-flex; align-items: center; gap: 5px; }
+.ig-meta .ico { font-size: 15px; color: var(--c); flex: none; }
+.ig-meta.col { flex-direction: column; gap: 7px; font-size: 15px; color: var(--ink2); }
+.ig-meta.col .ico { font-size: 18px; }
+.ig-cupo { display: flex; align-items: center; gap: 10px; margin: 0 0 10px; }
+.ig-cupo .pbar { flex: 1; margin: 0; }
+.ig-cupo small { color: var(--c); font-size: 12.5px; font-weight: 700; white-space: nowrap; }
+.ig-evrow { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.ig-goes { display: inline-flex; align-items: center; gap: 5px; color: var(--ink3); font-size: 13px; font-weight: 600; }
+.ig-grc { flex-direction: column; gap: 10px; }
+.ig-grtop { display: flex; gap: 12px; align-items: flex-start; }
+.ig-grtop .ig-meta { margin: 0; }
+.ig-gtile { width: 46px; height: 46px; flex: none; border-radius: 14px; display: grid; place-items: center; font-size: 24px; background: var(--c); color: var(--on-fill); }
+.ig-gtile.big { width: 60px; height: 60px; border-radius: 18px; font-size: 32px; margin-bottom: 12px; }
+.ig-now { display: flex; align-items: center; gap: 6px; margin: 0; font-size: 14px; color: var(--ink2); }
+.ig-now .ico { color: var(--c); font-size: 16px; }
+.ig-evrow .ig-role { display: inline-flex; align-items: center; height: 30px; padding: 0 12px; border-radius: 999px; background: var(--c-soft); color: var(--c); font-size: 13px; font-weight: 700; white-space: nowrap; }
+.ig-evrow .ig-role.on { background: var(--c); color: var(--on-fill); }
+.ig-stack { display: inline-flex; align-items: center; gap: 3px; }
+.ig-plus { width: var(--s); height: var(--s); border-radius: 50%; display: inline-grid; place-items: center; flex: none; background: var(--surface3); color: var(--ink2); font-size: 11px; font-weight: 700; }
+
+/* ================= páginas ================= */
+ion-tabs.notabs .pg.ig-pg { padding-bottom: 40px; }
+.ig-banner { display: flex; align-items: center; gap: 14px; margin: 8px 2px 18px; }
+.ig-banner > div { min-width: 0; }
+.ig-banner h1 { margin: 0; font-family: var(--serif); font-optical-sizing: auto; font-size: 28px; font-weight: 600; letter-spacing: -0.015em; line-height: 1.1; }
+.ig-banner p { margin: 4px 0 0; color: var(--ink3); font-size: 14px; }
+.ig-mutepill { margin-left: auto; flex: none; display: inline-flex; align-items: center; gap: 5px; height: 30px; padding: 0 11px; border: 0; border-radius: 999px; background: var(--surface3); color: var(--ink3); font-size: 13px; font-weight: 650; cursor: pointer; }
+/* el campo de abajo */
+ion-footer.ig-foot .cbar .send { background: var(--c, var(--brand)); color: var(--on-fill); }
+ion-footer.ig-foot .cbar .send[disabled] { opacity: 0.35; }
+ion-footer.ig-foot .ig-line { margin: 8px 12px 0; }
+ion-footer.ig-foot[hidden] { display: none; }
+.ig-fake { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; height: 42px; padding: 0 14px 0 7px; border: 0; border-radius: 999px; background: var(--surface3); color: var(--ink3); font-size: 15.5px; text-align: left; cursor: pointer; }
+.ig-fake .ig-pt { min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ig-footnote { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 0; padding: 14px 16px calc(14px + env(safe-area-inset-bottom, 0px)); color: var(--ink3); font-size: 14px; font-weight: 600; }
+
+/* hilo */
+.ig-th { display: block; padding-top: 6px; }
+.ig-where { display: inline-flex; align-items: center; gap: 6px; margin: 0 0 14px; padding: 5px 11px 5px 9px; border-radius: 999px; background: var(--c-soft); color: var(--c); font-size: 13px; font-weight: 700; }
+.ig-where .ico { font-size: 15px; }
+.ig-th .ig-by { margin-bottom: 12px; }
+.ig-th .ig-nm { font-size: 16.5px; }
+.ig-th-t { margin: 0 0 16px; font-size: 19px; line-height: 1.45; }
+.ig-ansbtn { margin-bottom: 10px; }
+.ig-priv { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 14px 0 0; color: var(--ink3); font-size: 13px; text-align: center; }
+.ig-ansdone { text-align: center; padding: 18px 16px; margin: 0 0 12px; border-radius: var(--r); background: var(--surface); }
+.ig-ansdone .coin { width: 64px; height: 64px; margin-bottom: 10px; font-size: 30px; }
+.ig-ansdone b { display: block; font-family: var(--serif); font-optical-sizing: auto; font-size: 22px; font-weight: 600; }
+.ig-ansdone small { display: block; margin: 2px 0 14px; color: var(--ink3); font-size: 13.5px; }
+.ig-re { position: relative; padding: 12px 14px; margin-bottom: 8px; border-radius: var(--r); background: var(--surface); -webkit-user-select: none; user-select: none; }
+.ig-re.ofi { box-shadow: inset 3px 0 0 var(--c); }
+.ig-re.mine { background: color-mix(in srgb, var(--c) 9%, var(--surface)); }
+.ig-re .ig-by { margin-bottom: 6px; }
+.ig-ey { display: flex; align-items: center; gap: 5px; margin: 0 0 8px; color: var(--c); font-size: 12.5px; font-weight: 700; }
+.ig-rt { margin: 0 0 8px; font-size: 15.5px; line-height: 1.45; }
+.ig-none { margin: 4px 0; color: var(--ink3); text-align: center; font-size: 14.5px; }
+
+/* grupo (Church Center: próximos encuentros, conversación y miembros) */
+.ig-ghero { padding: 18px 16px 16px; margin-top: 6px; border-radius: var(--r); background: var(--surface); }
+.ig-ghero h1 { margin: 0 0 12px; font-family: var(--serif); font-optical-sizing: auto; font-size: 30px; font-weight: 600; letter-spacing: -0.015em; line-height: 1.1; }
+.ig-ghero .ig-meta { margin-bottom: 16px; }
+.ig-next { display: flex; align-items: center; gap: 12px; margin-top: 10px; padding: 12px 14px; border-radius: var(--r); background: var(--surface); }
+.ig-next > div { flex: 1; min-width: 0; }
+.ig-next > div small { display: block; color: var(--ink3); font-size: 12.5px; font-weight: 600; }
+.ig-next > div b { display: block; font-size: 16.5px; margin: 1px 0; }
+.ig-next > div span { display: block; color: var(--ink3); font-size: 13.5px; }
+.ig-mt { margin-top: 12px; }
+.ig-mems { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px 6px; padding: 16px 8px; border-radius: var(--r); background: var(--surface); }
+.ig-mems > span { position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.ig-mems small { max-width: 72px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink2); font-size: 12.5px; font-weight: 600; }
+.ig-mems i { position: absolute; top: 36px; left: 50%; transform: translateX(-50%); padding: 1px 6px; border-radius: 6px; background: var(--c); color: var(--on-fill); font-size: 10px; font-weight: 700; font-style: normal; box-shadow: 0 0 0 2px var(--surface); }
+
+/* evento o servicio */
+.ig-evd { display: block; padding-top: 6px; }
+.ig-evtop { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+.ig-evtop > div { min-width: 0; }
+.ig-evtop .eyebrow { color: var(--c); margin: 0 0 2px; }
+.ig-evtop h1 { margin: 0; font-family: var(--serif); font-optical-sizing: auto; font-size: 27px; font-weight: 600; letter-spacing: -0.015em; line-height: 1.12; }
+.ig-evd .ig-meta.col { margin-bottom: 14px; }
+.ig-note { margin: 0 0 14px; padding: 12px 14px; border-radius: var(--r-sm); background: var(--surface); font-family: var(--serif); font-optical-sizing: auto; font-size: 18px; line-height: 1.35; }
+.ig-evd > .ig-goes { display: block; margin: -4px 0 12px; }
+.ig-gobig { margin-top: 4px; }
+.ig-gobig.on { background: var(--c-soft); color: var(--c); }
+.ig-org { margin-top: 18px; padding: 12px 14px; border-radius: var(--r); background: var(--surface); }
+.ig-org > small { display: block; margin-bottom: 8px; color: var(--ink3); font-size: 12.5px; font-weight: 600; }
+.ig-org .ig-by { margin: 0; }
+.ig-vol { display: flex; align-items: center; gap: 12px; margin: 0 0 12px; }
+.ig-vol small { color: var(--ink3); font-size: 13.5px; }
+
+/* ================= hojas: publicar y normas ================= */
+.ig-types { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
+.ig-type { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 4px 10px; border: 0; border-radius: var(--r-sm); background: var(--surface); color: var(--ink2); font-size: 13px; font-weight: 650; cursor: pointer; transition: transform 0.15s var(--ease), background-color 0.2s, color 0.2s; }
+.ig-type .ico { font-size: 24px; color: var(--c); }
+.ig-type.on { background: var(--c); color: var(--on-fill); }
+.ig-type.on .ico { color: inherit; }
+.ig-type:active { transform: scale(0.95); }
+.ig-type[disabled] { opacity: 0.35; pointer-events: none; }
+.ig-grps { margin: -2px 0 12px; }
+.ig-cmp [hidden] { display: none !important; }
+.ig-cmp .fl-text:focus { box-shadow: inset 0 0 0 2px var(--c); }
+.ig-anon { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; padding: 10px 12px; border-radius: var(--r-sm); background: var(--surface); }
+.ig-anon > div { flex: 1; min-width: 0; }
+.ig-anon b { display: block; font-size: 15.5px; }
+.ig-anon small { display: block; color: var(--ink3); font-size: 12.5px; line-height: 1.3; }
+.ig-anic { width: 34px; height: 34px; flex: none; border-radius: 50%; display: grid; place-items: center; background: var(--surface3); color: var(--ink2); font-size: 18px; }
+.ig-anon ion-toggle { flex: none; --track-background-checked: var(--c); }
+.ig-line { display: flex; align-items: flex-start; gap: 7px; margin: 0 2px 14px; color: var(--ink3); font-size: 13.5px; line-height: 1.35; }
+.ig-line .ico { flex: none; font-size: 16px; margin-top: 1px; }
+/* aviso suave: en el naranja de la marca, nunca en rojo */
+.ig-line.warn { padding: 10px 12px; border-radius: var(--r-sm); background: color-mix(in srgb, var(--brand) 14%, transparent); color: var(--ink); }
+.ig-line.warn .ico { color: var(--brand); }
+.ig-line[hidden] { display: none; }
+.ig-norms .sh-head .ig-logo { width: 48px; height: 48px; border-radius: 14px; font-size: 26px; }
+.ig-rules { display: grid; gap: 1px; margin-bottom: 16px; border-radius: var(--r); overflow: hidden; }
+.ig-rule { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; background: var(--surface); }
+.ig-rule > span { flex: none; font-size: 22px; color: var(--brand); margin-top: 1px; }
+.ig-rule b { display: block; font-size: 15.5px; }
+.ig-rule small { display: block; color: var(--ink3); font-size: 13.5px; line-height: 1.35; }
+.ig-lab { margin: 4px 2px 8px; }
+.ig-whos { margin-bottom: 16px; border-radius: var(--r); background: var(--surface); }
+.ig-whos > div { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 11px 14px; border-bottom: 0.5px solid var(--line); font-size: 14.5px; }
+.ig-whos > div:last-child { border-bottom: 0; }
+.ig-whos span { display: inline-flex; align-items: center; gap: 8px; color: var(--ink2); }
+.ig-whos span .ico { font-size: 18px; color: var(--ink3); }
+.ig-whos b { font-weight: 650; text-align: right; }
+.ig-norms .chips { margin-bottom: 16px; }
+.ig-ump { padding-left: 4px; }
+
+/* ================= mantener presionado ================= */
+.ig-rxbar { display: flex; flex-wrap: wrap; gap: 6px; margin: -2px 0 12px; }
+.ig-rxbar button { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 13px 0 11px; border: 0; border-radius: 999px; background: var(--c-soft); color: var(--c); font-size: 14px; font-weight: 700; cursor: pointer; }
+.ig-rxbar button .ico { font-size: 17px; }
+.ig-rxbar button.on { background: var(--c); color: var(--on-fill); }
+.ig-cxp .ig-by { margin-bottom: 6px; }
+.ig-cxp p { margin: 0; font-size: 15px; line-height: 1.4; color: var(--ink2); }
+.ig-cxch { display: flex; align-items: center; gap: 12px; }
+.ig-cxch .ig-chic { margin: 0; }
+.ig-cxch b { display: block; font-size: 17px; }
+.ig-cxch small { color: var(--ink3); font-size: 13.5px; }
+
+/* ================= Hoy ================= */
+/* .ctxc b pone la serif grande también en las iniciales del avatar y en la fecha */
+.ig-ctx .av b, .ig-ctx .ig-date b { display: inline; font-family: var(--ui); font-size: inherit; line-height: 1; }
+.ig-ctx .ig-date b { font-size: 21px; }
+.ig-ctx .ig-clamp { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }

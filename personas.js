@@ -4,9 +4,6 @@
 (() => {
   const { esc, ic, actIc, av } = L;
   const SEGS = [['discipulado', 'Discipulado'], ['familia', 'Familia'], ['iglesia', 'Iglesia']];
-  const memberName = id => id === 'JC' ? 'Tú' : id === 'anon' ? 'Anónimo' : D.MEMBERS[id] || (L.person(id) || {}).name || id;
-  const unread = ch => L.S.posts.filter(p => p.ch === ch && !L.S.seen[p.id] && p.by !== 'JC').length;
-  const unreadAll = () => D.CHANNELS.reduce((s, c) => s + unread(c.id), 0);
 
   /* ---------- discípulos: lo que se ve depende de lo que cada uno comparte ---------- */
   function statusLine(p) {
@@ -41,45 +38,9 @@
       '<p class="hint-swipe">' + ic('lock-closed-outline') + 'Cada uno decide qué ves de su progreso</p>';
   }
 
-  /* ---------- familia ---------- */
-  function familiaHTML() {
-    const F = L.S.fam, wk = L.weekDates(L.today());
-    const lit = wk.filter(d => F.nights[L.dk(d)]).length;
-    const mesa = D.MESAS[F.mesa % D.MESAS.length];
-    const q = D.COUPLE_Q[F.q % D.COUPLE_Q.length], ans = F.ans[L.tk()];
-    const tonight = !!F.nights[L.tk()];
-    return '<div class="home-hero"><div class="hh-top">' + ic('home') + '<div><h2>Casa encendida</h2><p>' + lit + ' de 4 noches juntos esta semana</p></div></div>' +
-      '<div class="hdots">' + wk.map(d => '<span class="' + (F.nights[L.dk(d)] ? 'on' : '') + (L.same(d, L.today()) ? ' now' : '') + '"><i></i>' + L.DL[d.getDay()] + '</span>').join('') + '</div></div>' +
-      '<div class="sec"><h2>Esta noche en la mesa</h2></div><div class="box pad mesa" data-a="palabra"><p class="eyebrow">' + esc(mesa.r) + '</p><h3>' + esc(mesa.t) + '</h3><p class="muted">Leer · conversar · orar · 10 min</p>' +
-      (tonight ? '<button class="btn ghost" disabled>' + ic('checkmark') + 'Hecho esta noche</button>' : '<button class="btn c" data-mesa>' + ic('restaurant') + 'Empezar en la mesa</button>') + '</div>' +
-      '<div class="sec"><h2>Ana y tú</h2></div><div class="box pad couple" data-a="adoracion"><p class="eyebrow">Pregunta de hoy</p><h3>' + esc(q) + '</h3>' +
-      (ans ? '<div class="bubble">' + esc(ans) + '</div>' : '') +
-      '<div class="row2"><button class="btn ghost" data-q-next>' + ic('shuffle') + 'Otra</button><button class="btn c" data-q-ans>' + ic('chatbubble-ellipses') + (ans ? 'Cambiar' : 'Responder') + '</button></div>' +
-      '<button class="link center-link" data-couple-pray>' + ic('heart-outline') + ' Orar juntos esta noche</button></div>' +
-      '<div class="sec"><h2>En casa</h2></div><ion-list inset="true" lines="inset">' + D.FAMILY.map(f => '<ion-item button detail="false" data-fam="' + f.id + '"><div slot="start" class="avs">' + av(f.id, f.name, 40) + '</div><ion-label><h3>' + esc(f.name) + '</h3><p>' + esc(f.role) + '</p></ion-label>' + ic('ellipsis-horizontal', 'endic') + '</ion-item>').join('') + '</ion-list>';
-  }
-
-  /* ---------- iglesia ---------- */
-  function nextDate(dow) { const t = L.today(); return L.addDays(t, (dow - t.getDay() + 7) % 7); }
-  function iglesiaHTML() {
-    const C = D.CHURCH, S = L.S;
-    const evs = D.EVENTS.map(e => ({ ...e, d: nextDate(e.dow) })).sort((a, b) => a.d - b.d);
-    return '<div class="church"><div class="ch-ic">' + ic('church') + '</div><div><h2>' + esc(C.name) + '</h2><p>' + esc(C.place) + ' · ' + C.members + ' miembros</p></div></div>' +
-      '<div class="sec"><h2>Esta semana</h2></div><div class="evs">' + evs.map(e => {
-        const n = L.diffDays(e.d, L.today()), on = !!S.going[e.id];
-        return '<div class="ev"><p class="eyebrow">' + (n === 0 ? 'Hoy' : n === 1 ? 'Mañana' : L.cap(L.DN[e.d.getDay()])) + ' · ' + e.h + '</p><b>' + esc(e.t) + '</b><small>' + esc(e.place) + '</small>' +
-          '<button class="chip' + (on ? ' on' : '') + '" data-going="' + e.id + '">' + ic(on ? 'checkmark' : 'add') + (on ? 'Voy' : 'Ir') + '</button></div>';
-      }).join('') + '</div>' +
-      '<div class="sec"><h2>Canales</h2></div><ion-list inset="true" lines="inset">' + D.CHANNELS.map(c => {
-        const last = S.posts.filter(p => p.ch === c.id).sort((a, b) => a.w - b.w)[0], u = unread(c.id);
-        return '<ion-item button detail="false" data-canal="' + c.id + '" data-a="' + c.a + '"><div class="chan-ic" slot="start">' + ic(c.i) + '</div><ion-label><h3>' + esc(c.n) + '</h3><p>' + esc(last ? last.t : c.d) + '</p></ion-label>' +
-          (u ? '<ion-badge slot="end" class="ub">' + u + '</ion-badge>' : '<span slot="end" class="ago">' + (last ? L.ago(last.w).replace('hace ', '') : '') + '</span>') + '</ion-item>';
-      }).join('') + '</ion-list><p class="hint-swipe">' + ic('shield-checkmark-outline') + 'Solo miembros de ' + esc(C.name) + '</p>';
-  }
-
   class PagePersonas extends L.Page {
     shell() {
-      return L.shell({ title: 'Personas', top: '<div class="segw"><ion-segment value="discipulado" data-seg>' + SEGS.map(s => '<ion-segment-button value="' + s[0] + '"><ion-label>' + s[1] + '</ion-label></ion-segment-button>').join('') + '</ion-segment></div>' });
+      return L.shell({ title: 'Personas', end: '<ion-button data-anotar aria-label="Anotar">' + ic('add-circle', 'tb-ic') + '</ion-button>', top: '<div class="segw"><ion-segment value="discipulado" data-seg>' + SEGS.map(s => '<ion-segment-button value="' + s[0] + '"><ion-label>' + s[1] + '</ion-label></ion-segment-button>').join('') + '</ion-segment></div>' });
     }
     mount() {
       this.seg = 'discipulado';
@@ -87,22 +48,18 @@
       this.addEventListener('ionSwipe', e => { const o = e.target.querySelector('[data-qa]'); if (o) quick(o.dataset.qa); });
       L.on('personas:seg', s => { this.seg = s; const sg = this.querySelector('[data-seg]'); if (sg) sg.value = s; this.update(); });
     }
-    render() { return this.seg === 'familia' ? familiaHTML() : this.seg === 'iglesia' ? iglesiaHTML() : discipuladoHTML(); }
-    after() { L.setBadge('personas', unreadAll() > 0); }
+    /* Familia e Iglesia son módulos aparte (familia.js, iglesia.js) que se registran en L.pseg */
+    render() { const m = L.pseg[this.seg]; return m ? m.render(this) : discipuladoHTML(); }
+    after() { const m = L.pseg[this.seg]; m && m.after && m.after(this); L.setBadge('personas', Object.values(L.pseg).some(x => x.badge && x.badge())); }
     onClick(e) {
       const t = e.target; let el;
+      if (t.closest('[data-anotar]')) { anotar(); return; }
+      const mod = L.pseg[this.seg]; if (mod && mod.click && mod.click(e, this)) return;
       if ((el = t.closest('[data-qa]'))) { quick(el.dataset.qa); return; }
       if ((el = t.closest('[data-prep]'))) { this.push('page-encuentro', { pid: el.dataset.prep }); return; }
       if ((el = t.closest('[data-person]'))) { this.push('page-persona', { pid: el.dataset.person }); return; }
       if (t.closest('[data-lider]')) { this.push('page-lider'); return; }
       if (t.closest('[data-invite]')) { invite(); return; }
-      if (t.closest('[data-mesa]')) { mesaFlow(); return; }
-      if (t.closest('[data-q-next]')) { L.S.fam.q++; delete L.S.fam.ans[L.tk()]; L.save(); this.update(); return; }
-      if (t.closest('[data-q-ans]')) { L.prompt('Tu respuesta', { ph: 'Escribe para Ana', value: L.S.fam.ans[L.tk()] || '' }, v => { L.S.fam.ans[L.tk()] = v; L.save(); L.refresh(); L.toast('Ana lo va a ver esta noche', { icon: 'heart' }); }); return; }
-      if (t.closest('[data-couple-pray]')) { L.toast('Te lo recordamos a las 22:00', { icon: 'alarm' }); return; }
-      if ((el = t.closest('[data-fam]'))) { famActions(el.dataset.fam); return; }
-      if ((el = t.closest('[data-going]'))) { going(el.dataset.going); return; }
-      if ((el = t.closest('[data-canal]'))) { this.push('page-canal', { ch: el.dataset.canal }); return; }
     }
   }
   L.define('page-personas', PagePersonas);
@@ -116,60 +73,46 @@
     L.toast(a === 'oracion' ? 'Oraste por ' + p.first : a === 'mensaje' ? 'Le escribiste a ' + p.first : 'Anotaste un encuentro con ' + p.first, { icon: D.ICON[a] });
     L.checkAch();
   }
+  /* Anotar (el «＋ Anotar» de v3): con quién y qué hiciste, en dos toques */
+  const LOGA = [['oracion', 'Oré'], ['mensaje', 'Mensaje'], ['encuentro', 'Encuentro'], ['palabra', 'Estudio']];
+  function anotar(pre) {
+    const who = new Set(pre ? [pre] : []), what = new Set();
+    const ppl = L.S.people.map(p => [p.id, p.first, p.name]).concat([[D.LEADER.id, D.LEADER.first, D.LEADER.name], ['AN', 'Ana', 'Ana'], ['TO', 'Tomás', 'Tomás'], ['SO', 'Sofi', 'Sofi']]);
+    L.sheet('<h2 class="sh-title">Anotar</h2><p class="sh-sub">¿Con quién y qué hiciste?</p>' +
+      '<div class="who-pick">' + ppl.map(p => '<button class="' + (who.has(p[0]) ? 'on' : '') + '" data-w="' + p[0] + '">' + av(p[0], p[2], 46) + '<small>' + esc(p[1]) + '</small></button>').join('') + '</div>' +
+      '<div class="tiles what-pick">' + LOGA.map(x => '<button class="tile" data-a="' + x[0] + '" data-x="' + x[0] + '"><span class="aic">' + actIc(x[0], true) + '</span>' + x[1] + '</button>').join('') + '</div>' +
+      '<label class="fld"><input data-note placeholder="Nota (opcional)"></label><button class="btn" data-save disabled>Anotar</button>', {
+      mount: (el, m) => {
+        const ok = () => { el.querySelector('[data-save]').disabled = !(who.size && what.size); };
+        el.addEventListener('click', e => {
+          let b;
+          if ((b = e.target.closest('[data-w]'))) { const id = b.dataset.w; who.has(id) ? who.delete(id) : who.add(id); b.classList.toggle('on'); L.haptic(6); ok(); return; }
+          if ((b = e.target.closest('[data-x]'))) { const a = b.dataset.x; what.has(a) ? what.delete(a) : what.add(a); b.classList.toggle('on'); L.haptic(6); ok(); return; }
+          if (e.target.closest('[data-save]')) {
+            const note = el.querySelector('[data-note]').value.trim(), S = L.S, added = [];
+            who.forEach(w => what.forEach(a => { const x = { who: w, a, d: L.tk(), note }; S.log.unshift(x); added.push(x); if (a === 'oracion') S.stats.prayOthers++; }));
+            L.save(); L.refresh(); m.dismiss(); L.checkAch();
+            const names = [...who].map(w => (ppl.find(p => p[0] === w) || [0, w])[1]);
+            L.toast('Anotado con ' + (names.length > 2 ? names.slice(0, 2).join(', ') + ' y ' + (names.length - 2) + ' más' : names.join(' y ')), { icon: 'checkmark', undo: () => { S.log = S.log.filter(x => !added.includes(x)); L.save(); L.refresh(); } });
+          }
+        });
+      }
+    });
+  }
+  L.anotar = anotar;
+  /* animar (de v3): le llega tu ánimo y a veces responde */
+  const CHEER_BACK = { MA: 'María: ¡Gracias! Hoy me costó, esto me ayuda.', DV: 'Daniel: Gracias, hermano. Orá por mi jueves.', SR: 'Sofía: Gracias por acordarte de mí.', LO: 'Lucas: ¡Amén! Ya voy por Juan 5.' };
+  function cheer(p, btn) {
+    const S = L.S; S.cheered = S.cheered || {};
+    if (S.cheered[p.id + '@' + L.tk()]) { L.toast('Ya le mandaste ánimo hoy'); return; }
+    S.cheered[p.id + '@' + L.tk()] = 1; S.log.unshift({ who: p.id, a: 'mensaje', d: L.tk(), note: 'Ánimo' }); L.save();
+    L.sparks(btn, 12); L.haptic([8, 30, 10]); L.toast('Le mandaste ánimo a ' + p.first, { icon: 'sparkles' });
+    setTimeout(() => L.toast(CHEER_BACK[p.id] || p.first + ': ¡Gracias!', { icon: 'chatbubble' }), 2600);
+  }
   function invite() {
     L.sheet('<div class="medal"><div class="coin fl">' + ic('person-add') + '</div><h2>Invitar a alguien</h2><p class="muted">Le llega un enlace. Al aceptar, elige qué quiere compartir contigo.</p><button class="btn" data-ok>' + ic('share-outline') + 'Compartir enlace</button></div>',
       { mount: (el, m) => { el.querySelector('[data-ok]').onclick = () => { m.dismiss(); L.toast('Enlace copiado', { icon: 'link' }); }; } });
   }
-  function famActions(id) {
-    const f = D.FAMILY.find(x => x.id === id);
-    L.actions(f.name, [
-      { text: 'Orar por ' + f.name, icon: 'heart-outline', handler: () => L.toast('Oraste por ' + f.name, { icon: 'heart' }) },
-      { text: 'Mandarle una bendición', icon: 'chatbubble-outline', handler: () => L.toast('Le mandaste una bendición a ' + f.name, { icon: 'chatbubble' }) }
-    ]);
-  }
-  function going(id) {
-    const e = D.EVENTS.find(x => x.id === id), S = L.S, d = nextDate(e.dow);
-    if (S.going[id]) {
-      delete S.going[id]; S.routine = S.routine.filter(r => r.id !== 'ev-' + id);
-      L.toast('Ya no vas a ' + e.t);
-    } else {
-      S.going[id] = 1;
-      S.routine.push({ id: 'ev-' + id, a: 'encuentro', t: e.t, h: e.h, days: [], once: L.dk(d), n: e.place });
-      L.toast('Agregado a tu semana · ' + L.DN[d.getDay()] + ' ' + e.h, { icon: 'calendar' });
-    }
-    L.save(); L.refresh();
-  }
-
-  /* devocional en la mesa: leer → conversar → orar por turnos */
-  function mesaFlow() {
-    const mesa = D.MESAS[L.S.fam.mesa % D.MESAS.length];
-    const steps = [
-      { a: 'palabra', i: 'book', k: 'Leer', h: mesa.t, body: '<p class="eyebrow">' + esc(mesa.r) + '</p><blockquote class="mv">' + esc(mesa.v) + '</blockquote><p class="fl-hint">Que lo lea uno de los chicos en voz alta.</p>' },
-      { a: 'encuentro', i: 'chatbubbles', k: 'Conversar', h: 'Hablemos', body: '<div class="pcard"><b>' + ic('happy-outline') + 'Para Tomás y Sofi</b><p>' + esc(mesa.kids) + '</p></div><div class="pcard"><b>' + ic('people-outline') + 'Para los grandes</b><p>' + esc(mesa.big) + '</p></div>' },
-      { a: 'oracion', i: 'heart', k: 'Orar', h: 'Oramos por turnos', body: '<div class="turns">' + [['SO', 'Sofi', 'Da gracias por algo lindo de hoy.'], ['TO', 'Tomás', 'Pide por un amigo o por la escuela.'], ['AN', 'Ana', 'Ora por lo que hablaron.'], ['JC', 'Papá', 'Cierra bendiciendo a cada uno por su nombre.']].map(x => '<button class="turn" data-turn>' + av(x[0], x[1], 44) + '<div><b>' + x[1] + '</b><small>' + x[2] + '</small></div><i>' + ic('checkmark') + '</i></button>').join('') + '</div>' }
-    ];
-    let i = 0;
-    L.full((el, m) => {
-      const paint = () => {
-        const s = steps[i];
-        el.innerHTML = '<div class="fl-top"><div class="fl-bars">' + steps.map((_, k) => '<i class="' + (k < i ? 'done' : k === i ? 'now' : '') + '"></i>').join('') + '</div><button class="iconbtn" data-x>' + ic('close') + '</button></div>' +
-          '<div class="fl-stage"><div class="fl-body" data-a="' + s.a + '"><div class="fl-head"><div class="aic">' + ic(s.i) + '</div><p class="eyebrow">En familia · ' + s.k + '</p><h1>' + esc(s.h) + '</h1></div>' + s.body + '</div></div>' +
-          '<div class="fl-foot" data-a="' + s.a + '"><button class="btn c big" data-n>' + (i < steps.length - 1 ? 'Seguir' : 'Amén') + '</button></div>';
-      };
-      el.addEventListener('click', e => {
-        if (e.target.closest('[data-x]')) { m.dismiss(); return; }
-        const tb = e.target.closest('[data-turn]'); if (tb) { tb.classList.toggle('on'); L.haptic(8); return; }
-        if (e.target.closest('[data-n]')) {
-          if (i < steps.length - 1) { i++; paint(); return; }
-          L.S.fam.nights[L.tk()] = 1; L.S.fam.mesa++; L.save(); L.refresh();
-          m.dismiss().then(() => L.sheet('<div class="medal"><div class="coin fl">' + ic('home') + '</div><p class="eyebrow">Casa encendida</p><h2>Una noche más juntos</h2><p class="muted">' + L.weekDates(L.today()).filter(d => L.S.fam.nights[L.dk(d)]).length + ' de 4 esta semana</p><button class="btn" data-c>Amén</button></div>',
-            { mount: (s, mm) => { s.querySelector('[data-c]').onclick = () => mm.dismiss(); setTimeout(() => L.sparks(s.querySelector('.coin'), 20), 300); } }));
-        }
-      });
-      paint();
-    }, { cls: 'flow' });
-  }
-
   /* ---------- un discípulo ---------- */
   function weekRows(p) {
     return L.weekDates(L.today()).map(d => {
@@ -192,10 +135,16 @@
       const p = L.person(this.pid), its = L.discItems(p, L.today()), k = p.dToday;
       const head = '<div class="prof">' + av(p.id, p.name, 84, ringOf(p)) + '<h1>' + esc(p.name) + '</h1><p class="muted">' + esc(p.since) + ' · ' + esc(p.focus) + '</p>' +
         '<span class="share-pill">' + ic(p.share ? 'eye-outline' : 'eye-off-outline') + 'Comparte: ' + D.SHARE[p.share].n + '</span></div>' +
-        '<div class="qacts">' + [['oracion', 'heart', 'Orar'], ['mensaje', 'chatbubble', 'Escribir'], ['encuentro', 'people', 'Encuentro'], ['diario', 'create', 'Nota']].map(x => '<button data-a="' + x[0] + '" data-q="' + x[0] + '"><span>' + ic(x[1]) + '</span>' + x[2] + '</button>').join('') + '</div>';
+        '<div class="qacts">' + [['oracion', 'heart', 'Orar'], ['adoracion', 'sparkles', 'Animar'], ['mensaje', 'chatbubble', 'Escribir'], ['diario', 'create', 'Nota']].map(x => '<button data-a="' + x[0] + '" data-q="' + x[0] + '"><span>' + ic(x[1]) + '</span>' + x[2] + '</button>').join('') + '</div>';
+      /* cuándo se vieron y se escribieron por última vez (lo mide al líder, no al discípulo) */
+      const lastOf = a => { const mine = L.S.log.find(x => x.who === p.id && x.a === a); if (mine) return -L.diffDays(L.fromDk(mine.d), L.today()); const seed = p.log.find(x => x.a === a); return seed ? seed.w : null; };
+      const pill = (a, label) => { const n = lastOf(a); return n == null ? '' : '<span class="share-pill" data-a="' + a + '"><i class="pdot"></i>' + label + ' ' + (n === 0 ? 'hoy' : n === 1 ? 'ayer' : 'hace ' + n + ' días') + '</span>'; };
+      const contact = '<div class="contact-pills">' + pill('encuentro', 'Se vieron') + pill('mensaje', 'Le escribiste') + '</div>';
+      const shared = L.S.plans.filter(x => (x.people || []).includes(p.id));
+      const together = shared.length ? '<div class="sec"><h2>Planes juntos</h2></div>' + shared.map(x => '<div class="box pad together" data-a="' + x.acts[0] + '"><span class="aic">' + actIc(x.acts[0], true) + '</span><div><b>' + esc(x.name) + '</b><small>Día ' + Math.min(x.len, Math.max(1, L.planDay(x, L.today()))) + ' de ' + x.len + ' · los dos</small></div></div>').join('') : '';
       const up = window.Encuentro && Encuentro.upcoming().find(u => u.p.id === p.id);
       const prep = up ? '<button class="addrow" data-prep>' + ic('reader-outline') + 'Preparar · ' + esc(Encuentro.whenLabel(up)) + '</button>' : '';
-      const seg = prep + '<div class="sec"></div><div class="fl-seg three">' + [['hoy', 'Hoy'], ['semana', 'Semana'], ['historial', 'Historial']].map(x => '<button class="' + (this.tab === x[0] ? 'on' : '') + '" data-tab="' + x[0] + '">' + x[1] + '</button>').join('') + '</div>';
+      const seg = contact + prep + '<div class="sec"></div><div class="fl-seg three">' + [['hoy', 'Hoy'], ['semana', 'Semana'], ['historial', 'Historial']].map(x => '<button class="' + (this.tab === x[0] ? 'on' : '') + '" data-tab="' + x[0] + '">' + x[1] + '</button>').join('') + '</div>';
       let body = '';
       if (this.tab === 'hoy') {
         if (p.share >= 3) {
@@ -219,7 +168,7 @@
       const pets = L.S.pets.filter(x => x.who === p.id);
       const petsHTML = pets.length ? '<div class="sec"><h2>Oras por</h2></div><div class="box pad"><div class="mini-list">' + pets.map(x => '<div class="mini" data-a="oracion"><div class="aic">' + ic('heart') + '</div><div><b>' + esc(x.t) + '</b><small>' + x.n + ' veces</small></div>' +
         '<button class="chip' + (L.S.prayedToday[x.id] ? ' on' : '') + '" data-a="oracion" data-pp="' + x.id + '">' + (L.S.prayedToday[x.id] ? 'Hoy' : 'Oré') + '</button></div>').join('') + '</div></div>' : '';
-      return head + seg + body + petsHTML + '<p class="hint-swipe">' + ic('lock-closed-outline') + 'Lo decide ' + esc(p.first) + '. Puede cambiarlo cuando quiera.</p>';
+      return head + seg + body + together + petsHTML + '<p class="hint-swipe">' + ic('lock-closed-outline') + 'Lo decide ' + esc(p.first) + '. Puede cambiarlo cuando quiera.</p>';
     }
     onClick(e) {
       const t = e.target, p = L.person(this.pid); let el;
@@ -227,6 +176,7 @@
       if ((el = t.closest('[data-tab]'))) { this.tab = el.dataset.tab; this.update(); return; }
       if ((el = t.closest('[data-q]'))) {
         const a = el.dataset.q;
+        if (a === 'adoracion') { cheer(p, el); return; }
         if (a === 'diario') { L.prompt('Nota sobre ' + p.first, { ph: 'Solo la ves tú' }, v => { p.log.unshift({ a: 'diario', t: v, w: 0 }); L.save(); this.update(); L.toast('Nota guardada', { icon: 'create' }); }); return; }
         quick(a + ':' + p.id); el.querySelector('span').classList.add('pop'); return;
       }
@@ -275,52 +225,4 @@
   }
   L.define('page-lider', PageLider);
 
-  /* ---------- un canal del foro ---------- */
-  class PageCanal extends L.Page {
-    shell() {
-      this.c = D.CHANNELS.find(x => x.id === this.ch);
-      return '<ion-header translucent="true"><ion-toolbar><ion-buttons slot="start"><ion-back-button text="" default-href="#"></ion-back-button></ion-buttons><ion-title>' + esc(this.c.n) + '</ion-title></ion-toolbar></ion-header>' +
-        '<ion-content fullscreen="true"><div class="pg canal" data-a="' + this.c.a + '"></div></ion-content>' +
-        '<ion-footer class="compose"><div class="cbar"><input type="text" placeholder="' + (this.ch === 'oracion' ? '¿Por qué podemos orar?' : 'Escribe al canal') + '" data-in enterkeyhint="send"><button class="iconbtn send" data-send aria-label="Enviar">' + ic('arrow-up') + '</button></div></ion-footer>';
-    }
-    mount() {
-      this.addEventListener('ionViewWillEnter', () => document.querySelector('ion-tabs').classList.add('notabs'));
-      this.addEventListener('ionViewWillLeave', () => document.querySelector('ion-tabs').classList.remove('notabs'));
-      this.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.matches('[data-in]')) this.send(); });
-      setTimeout(() => { L.S.posts.forEach(p => { if (p.ch === this.ch) L.S.seen[p.id] = 1; }); L.save(); L.refresh(); }, 600);
-    }
-    render() {
-      const S = L.S, posts = S.posts.filter(p => p.ch === this.ch).sort((a, b) => a.w - b.w);
-      return '<p class="lead-note">' + esc(this.c.d) + '</p>' + posts.map(p => {
-        let act = '';
-        if (this.ch === 'oracion') {
-          const on = !!S.praying[p.id];
-          act = '<button class="pray-btn' + (on ? ' on' : '') + '" data-praying="' + p.id + '">' + ic(on ? 'heart' : 'heart-outline') + (on ? 'Estás orando' : 'Estoy orando') + '<b>' + ((p.pray || 0) + (on ? 1 : 0)) + '</b></button>';
-        } else {
-          const keys = Object.keys(p.rx || { amen: 0 });
-          act = '<div class="rxs">' + keys.map(k => { const on = !!S.rx[p.id + ':' + k]; return '<button class="rx' + (on ? ' on' : '') + '" data-rx="' + p.id + ':' + k + '">' + D.RX[k] + ' <b>' + ((p.rx[k] || 0) + (on ? 1 : 0)) + '</b></button>'; }).join('') + '</div>';
-        }
-        const replies = (p.replies || []).map(r => '<div class="reply">' + av(r.by, memberName(r.by), 28) + '<div><b>' + esc(memberName(r.by)) + '</b><p>' + esc(r.t) + '</p></div></div>').join('');
-        return '<article class="post' + (p.by === 'JC' ? ' mine' : '') + '"><header>' + (p.by === 'anon' ? '<span class="av anon" style="--s:36px">' + ic('person') + '</span>' : av(p.by, memberName(p.by), 36)) +
-          '<div><b>' + esc(memberName(p.by)) + '</b><small>' + (p.w ? L.ago(p.w) : 'ahora') + '</small></div></header><p>' + esc(p.t) + '</p>' + act + replies + '</article>';
-      }).join('');
-    }
-    send() {
-      const inp = this.querySelector('[data-in]'), t = inp.value.trim(); if (!t) return;
-      L.S.posts.push({ id: Date.now(), ch: this.ch, by: 'JC', w: 0, t, rx: this.ch === 'oracion' ? undefined : { amen: 0 }, pray: 0 });
-      inp.value = ''; L.save(); this.update(); L.haptic(8);
-      L.toast(this.ch === 'oracion' ? 'Publicado. Te avisamos cuando oren' : 'Publicado', { icon: 'checkmark' });
-    }
-    onClick(e) {
-      const t = e.target; let el;
-      if (t.closest('[data-send]')) { this.send(); return; }
-      if ((el = t.closest('[data-praying]'))) {
-        const id = el.dataset.praying, S = L.S;
-        if (S.praying[id]) delete S.praying[id]; else { S.praying[id] = 1; S.stats.prayOthers++; L.toast('Le avisamos que oras', { icon: 'heart' }); L.checkAch(); }
-        L.save(); this.update(); L.haptic(8); return;
-      }
-      if ((el = t.closest('[data-rx]'))) { const k = el.dataset.rx; if (L.S.rx[k]) delete L.S.rx[k]; else L.S.rx[k] = 1; L.save(); this.update(); L.haptic(6); return; }
-    }
-  }
-  L.define('page-canal', PageCanal);
 })();
