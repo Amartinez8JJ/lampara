@@ -218,7 +218,7 @@
       PAGES.add(this);
     }
     update() { if (!this.pg) return; this.pg.innerHTML = this.render(); this.after && this.after(); }
-    push(tag, props) { const nav = this.closest('ion-nav'); return nav && nav.push(tag, props); }
+    push(tag, props) { if (busy('nav', 650)) return null; const nav = this.closest('ion-nav'); return nav && nav.push(tag, props); }
     pop() { const nav = this.closest('ion-nav'); return nav && nav.pop(); }
   }
   /* cabecera iOS: título grande que se achica al bajar */
@@ -236,9 +236,13 @@
   const app = () => document.querySelector('ion-app');
   /* Ionic devuelve el overlay a su lugar justo después de cerrarlo: lo sacamos un instante más tarde */
   const gone = el => setTimeout(() => el.remove(), 60);
+  /* un toque doble no abre dos ventanas ni apila dos pantallas */
+  let overlayT = 0, navT = 0;
+  const busy = (which, ms) => { const n = Date.now(); if (which === 'nav' ? n - navT < ms : n - overlayT < ms) return true; if (which === 'nav') navT = n; else overlayT = n; return false; };
   /* hoja que se arrastra; su altura inicial se ajusta al contenido */
   function sheet(html, o) {
     o = o || {};
+    if (busy('overlay', 450)) return null;
     const meas = document.createElement('div');
     meas.className = 'sh-in sh-measure ' + (o.cls || '');
     meas.innerHTML = html;
@@ -263,6 +267,7 @@
   }
   /* tarjeta a pantalla casi completa (estilo iOS) con su propia navegación */
   function card(tag, props, o) {
+    if (busy('overlay', 450)) return null;
     const m = document.createElement('ion-modal');
     m.className = 'card ' + ((o && o.cls) || '');
     m.focusTrap = false;
@@ -279,6 +284,7 @@
   }
   /* pantalla completa (el modo «Empezar», la celebración) */
   function full(build, o) {
+    if (busy('overlay', 450)) return null;
     const m = document.createElement('ion-modal');
     m.className = 'full ' + ((o && o.cls) || '');
     m.focusTrap = false;
@@ -304,6 +310,7 @@
     t.present();
   }
   function actions(header, buttons, sub) {
+    if (busy('overlay', 450)) return;
     const a = document.createElement('ion-action-sheet');
     a.header = header; if (sub) a.subHeader = sub;
     a.buttons = buttons.concat([{ text: 'Cancelar', role: 'cancel' }]);

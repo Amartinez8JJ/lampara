@@ -849,3 +849,7 @@ ion-footer.compose { background: var(--tabbar); backdrop-filter: blur(20px); -we
 /* sin franjas: tintes */
 .ctxc.soft { box-shadow: none; background: color-mix(in srgb, var(--c) 13%, var(--surface)); }
 .post.mine { box-shadow: none; background: color-mix(in srgb, var(--c) 10%, var(--surface)); }
+
+/* focusTrap=false (evita el bucle de foco de Ionic) también deja tocar lo de atrás: lo volvemos a bloquear */
+ion-modal.ion-disable-focus-trap.show-modal { pointer-events: auto; }
+ion-modal.ion-disable-focus-trap::part(backdrop) { pointer-events: auto; }
