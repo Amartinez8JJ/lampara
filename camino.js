@@ -1,4 +1,4 @@
-/* Lámpara v4 · Tu camino (se abre desde tu foto o la llama)
+/* Lights · Tu camino (se abre desde tu foto o la llama)
    La llama de la semana, logros, los 66 libros, lo que sabes de memoria, lo que te llevas y tu privacidad. */
 (() => {
   const { esc, ic, av } = L;
@@ -34,6 +34,16 @@
       '<div class="bgrid"><div>' + D.BOOKS.slice(0, D.AT).map(cell).join('') + '</div><div>' + D.BOOKS.slice(D.AT).map(cell).join('') + '</div></div>' +
       '<div class="legend"><span><i class="bk n1"></i>1 vez</span><span><i class="bk n2"></i>2</span><span><i class="bk n3"></i>3 o más</span>' + ic('chevron-forward', 'chev') + '</div></button>';
   }
+  /* tu llama y todas sus etapas: las que ya tuviste a color, las que vienen en silueta */
+  function llamaHTML() {
+    const ld = L.litDays(), ti = L.tierOf(ld), T = L.TIERS[ti], NX = L.TIERS[ti + 1];
+    const prog = NX ? (ld - T.d) / (NX.d - T.d) : 1;
+    return '<div class="llama-card" style="--tc:' + T.c + '"><div class="lc-fl">' + L.llama(ti) + '</div><div class="lc-tx"><p class="eyebrow">Tu llama</p><h3>' + esc(T.n) + '</h3>' +
+      '<p><b>' + ld + '</b> días encendidos</p><i class="lc-bar"><s style="width:' + Math.round(prog * 100) + '%"></s></i><small>' + (NX ? (NX.d - ld === 1 ? 'Falta 1 día' : 'Faltan ' + (NX.d - ld) + ' días') + ' para ' + esc(NX.n) : 'Llegaste a la última') + '</small></div></div>' +
+      '<div class="tiers">' + L.TIERS.map((x, k) => '<div class="tr' + (k <= ti ? ' got' : '') + (k === ti ? ' now' : '') + '" style="--tc:' + x.c + '"><span>' + L.llama(k) + '</span><b>' + esc(x.n) + '</b><small>' + (x.d ? x.d + ' días' : 'el primero') + '</small></div>').join('') + '</div>' +
+      '<p class="fine">' + ic('sunny-outline') + 'Los días encendidos nunca bajan: si un día no la prendes, tu llama te espera.</p>';
+  }
+  L.llamaSheet = () => L.sheet(llamaHTML(), { cls: 'llama-sheet' });
   const stars = l => '<span class="stars">' + [1, 2, 3].map(i => ic(i <= l ? 'star' : 'star-outline')).join('') + '</span>';
 
   class PageCamino extends L.Page {
@@ -41,7 +51,8 @@
     render() {
       const S = L.S;
       return '<div class="prof me">' + av('JC', D.ME.name, 72, L.litToday() ? 'lit' : 'dim') + '<h1>' + esc(D.ME.name) + '</h1><p class="muted">' + (D.ME.since + S.off) + ' días caminando</p></div>' +
-        streakCard() + '<button class="addrow" data-repaso>' + ic('ribbon') + 'Repaso de la semana</button>' +
+        llamaHTML() +
+        '<div class="sec"><h2>Tus semanas</h2></div>' + streakCard() + '<button class="addrow" data-repaso>' + ic('ribbon') + 'Repaso de la semana</button>' +
         '<div class="sec"><h2>Logros</h2><span class="muted">' + D.ACH.filter(L.achEarned).length + ' de ' + D.ACH.length + '</span></div>' + achHTML() +
         '<div class="sec"><h2>Tu Biblia</h2></div>' + booksHTML() +
         '<div class="sec"><h2>De memoria</h2><span class="muted">' + S.memo.filter(m => m.lvl >= 3).length + ' versículos</span></div><ion-list inset="true" lines="inset">' + S.memo.map((m, i) => '<ion-item button detail="false" data-memo="' + i + '"><ion-label><h3>' + esc(m.r) + '</h3><p>' + esc(m.t) + '</p></ion-label><span slot="end">' + stars(m.lvl) + '</span></ion-item>').join('') + '</ion-list>' +

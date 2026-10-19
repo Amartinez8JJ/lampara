@@ -1,4 +1,4 @@
-/* Lámpara v4 · núcleo
+/* Lights · núcleo
    Ionic 8 (modo iOS) hace la navegación, las hojas y los gestos; acá vive el estado y las ayudas comunes. */
 (() => {
   /* ================= fechas ================= */
@@ -52,8 +52,48 @@
       '<path fill="url(#' + g + ')" d="M12 1c1.5 5 8 8.5 8 17.5C20 25.5 16.5 31 12 31c-4.8 0-8-4-8-9 0-4.5 2.5-7 4-9.5.6 2.5 1.6 3.9 3 4.3C10 11 11.5 5 12 1Z"/>' +
       '<path fill="#fff6d2" opacity=".9" d="M12 30c-2.4 0-4-2-4-4.5 0-2.5 2-4 3-6.5 1 2 4.8 3.5 4.8 6.6 0 2.6-1.6 4.4-3.8 4.4Z"/></svg>'; };
 
+  /* ================= la llama de Lights =================
+     Cambia de color, forma y tono según los días encendidos (nunca bajan: un día sin registro no te devuelve atrás).
+     Patrón de referencia: la racha de Duolingo, que cambia con los hitos, y la mascota de Finch, que evoluciona. */
+  const TIERS = [
+    { d: 0, n: 'Chispa', c: '#FF8A1F', l: '#FFE2A8', t: 0, sc: 0.74 },
+    { d: 10, n: 'Brote', c: '#22C98A', l: '#C6F6DF', t: 1, sc: 0.8 },
+    { d: 20, n: 'Vela', c: '#9B6CFF', l: '#E6DBFF', t: 2, sc: 0.85 },
+    { d: 30, n: 'Antorcha', c: '#3F84FF', l: '#D6E5FF', t: 2, sc: 0.9, tall: 1 },
+    { d: 50, n: 'Lámpara', c: '#FF4FA0', l: '#FFD5E8', t: 4, sc: 0.93, halo: 1 },
+    { d: 75, n: 'Faro', c: '#12C2EC', l: '#CCF5FF', t: 4, sc: 0.96, halo: 1, twin: 1 },
+    { d: 100, n: 'Fuego', c: '#FF4B3E', l: '#FFD6D1', t: 4, sc: 1, halo: 1, twin: 1, sp: 1 },
+    { d: 150, n: 'Aurora', c: '#F5B70F', l: '#FFF3C9', t: 4, sc: 1, halo: 2, twin: 1, sp: 1 },
+    { d: 200, n: 'Estrella', c: '#8F8BFF', l: '#FFFFFF', t: 5, sc: 1, halo: 2, twin: 1, sp: 1, star: 1 },
+    { d: 365, n: 'Lumbrera', c: '#FF8A1F', l: '#FFFFFF', t: 5, sc: 1, halo: 2, twin: 1, sp: 1, star: 1, rb: 1 }
+  ];
+  const tierOf = n => { let i = 0; TIERS.forEach((t, k) => { if (n >= t.d) i = k; }); return i; };
+  const TD = 'M60 8C76 46 100 66 100 100A40 40 0 0 1 20 100C20 66 44 46 60 8Z';
+  const TONGUES = [[-24, 14, -22, 0.56], [24, 18, 20, 0.52], [-36, 38, -36, 0.42], [36, 40, 34, 0.4], [0, 2, 0, 1.1]];
+  let lid = 0;
+  /* la llama de una etapa, en SVG: lenguas, halo, corazón, chispas y estrella según el nivel */
+  function llama(ti, o) {
+    o = o || {}; const T = TIERS[ti], id = 'll' + (++lid);
+    const g = 'url(#' + id + 'g)', gi = 'url(#' + id + 'i)';
+    const tr = (x, y, r, k) => 'translate(' + x + ' ' + y + ') rotate(' + r + ' 60 140) translate(60 140) scale(' + k + ') translate(-60 -140)';
+    const defs = '<defs>' + (T.rb
+      ? '<linearGradient id="' + id + 'g" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#FFC93C"/><stop offset=".3" stop-color="#FF5C4D"/><stop offset=".55" stop-color="#FF5FA8"/><stop offset=".78" stop-color="#9B6CFF"/><stop offset="1" stop-color="#3F84FF"/></linearGradient>'
+      : '<radialGradient id="' + id + 'g" cx="50%" cy="80%" r="75%"><stop offset="0" stop-color="' + T.l + '"/><stop offset=".55" stop-color="' + T.c + '"/><stop offset="1" stop-color="' + T.c + '"/></radialGradient>') +
+      '<radialGradient id="' + id + 'i" cx="50%" cy="80%" r="70%"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="' + T.l + '"/></radialGradient>' +
+      '<radialGradient id="' + id + 'h"><stop offset="0" stop-color="' + T.c + '" stop-opacity=".5"/><stop offset="1" stop-color="' + T.c + '" stop-opacity="0"/></radialGradient></defs>';
+    let b = '';
+    if (T.halo) b += '<circle class="halo" cx="60" cy="96" r="' + (T.halo > 1 ? 80 : 64) + '" fill="url(#' + id + 'h)"/>';
+    TONGUES.slice(0, T.t).forEach((q, k) => { b += '<g class="tw tw' + k + '"><path d="' + TD + '" fill="' + g + '" transform="' + tr(q[0], q[1] - (T.tall ? 8 : 0), q[2], q[3]) + '"/></g>'; });
+    b += '<g class="mw"><path d="' + TD + '" fill="' + g + '" transform="' + tr(0, 0, 0, T.sc) + '"/>';
+    if (T.twin) b += '<path d="' + TD + '" fill="' + T.l + '" opacity=".5" transform="' + tr(-7, -4, -10, T.sc * 0.48) + '"/>';
+    b += '<path class="coref" d="' + TD + '" fill="' + gi + '" transform="' + tr(0, 4, 0, T.sc * 0.5) + '"/></g>';
+    if (T.sp) b += '<circle class="sp sp0" cx="24" cy="44" r="4" fill="' + T.l + '"/><circle class="sp sp1" cx="98" cy="34" r="3" fill="' + T.l + '"/><circle class="sp sp2" cx="80" cy="14" r="2.5" fill="' + (T.rb ? '#fff' : T.c) + '"/>';
+    if (T.star) b += '<path class="star" d="M100 2l3 9 9 3-9 3-3 9-3-9-9-3 9-3z" fill="#fff"/>';
+    return '<svg class="llama ' + (o.cls || '') + '" viewBox="-12 -8 144 158" aria-hidden="true" style="--tc:' + T.c + '">' + defs + '<g class="ll-all">' + b + '</g></svg>';
+  }
+
   /* ================= estado ================= */
-  const KEY = 'lampara-v5';
+  const KEY = 'lights-v5';
   const clone = o => JSON.parse(JSON.stringify(o));
   /* cómo vino cada discípulo los últimos 14 días (L encendido, G gracia, E pábilo) */
   const DPAST = { MA: 'LLGLLLLLLGLLLL', DV: 'LELLLLGLLELLLL', SR: 'LGEELGLLEEGLLE', LO: 'LLLLLLLLLLLLLL' };
@@ -61,7 +101,7 @@
   function fresh() {
     const t0 = mid(new Date());
     const hist = {};
-    for (let i = 1; i <= 120; i++) hist[dk(addDays(t0, -i))] = i % 11 === 5 ? 'grace' : i % 23 === 9 ? 'ember' : 'lit';
+    for (let i = 1; i <= 56; i++) hist[dk(addDays(t0, -i))] = i % 11 === 5 ? 'grace' : i % 23 === 9 ? 'ember' : 'lit';
     const people = clone(D.PEOPLE).map(p => {
       p.hist = {}; [...DPAST[p.id]].forEach((c, i) => { p.hist[dk(addDays(t0, -(i + 1)))] = c === 'L' ? 'lit' : c === 'G' ? 'grace' : 'ember'; });
       p.dToday = DTODAY[p.id];
@@ -123,11 +163,13 @@
     return S.hist[k] || 'ember';
   }
   const GOAL = 5;
+  /* días encendidos en total (nunca bajan) */
+  function litDays() { let n = 0; for (const k in S.hist) if (S.hist[k] === 'lit') n++; return n + (litToday() ? 1 : 0); }
   const weekLit = () => weekDates(today()).filter(d => ['lit', 'grace'].includes(dayStatus(d))).length;
 
   function setDone(id, on, o) {
     o = o || {};
-    const k = tk(), wasLit = litToday(), wasAll = allDone(), wk0 = weekLit();
+    const k = tk(), wasLit = litToday(), wasAll = allDone(), wk0 = weekLit(), ld0 = litDays();
     S.done[k] = S.done[k] || {};
     if (on) S.done[k][id] = o.at || nowHM(); else delete S.done[k][id];
     emit(on ? 'itemDone' : 'itemUndone', id);
@@ -135,9 +177,10 @@
     save(); refresh();
     if (!on) return;
     haptic(12);
+    if (tierOf(litDays()) > tierOf(ld0)) setTimeout(() => evolveWhenFree(tierOf(ld0), tierOf(litDays()), litDays()), 900);
     if (!wasLit && litToday() && !o.quiet) {
       emit('lit');
-      toast('Encendiste tu día · ' + weekLit() + ' de ' + GOAL + ' esta semana', { icon: 'flame' });
+      toast('Encendiste tu llama · ' + litDays() + ' días encendidos', { icon: 'flame' });
     }
     if (!wasAll && allDone() && !o.quiet) setTimeout(celebrate, 380);
     const wkKey = dk(weekStart(today()));
@@ -330,12 +373,12 @@
   const haptic = p => { try { navigator.vibrate && navigator.vibrate(p); } catch (e) {} };
   const RM = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
   /* chispas que salen de un elemento (solo transform/opacity) */
-  function sparks(el, n) {
+  function sparks(el, n, color) {
     if (!el || RM()) return;
     const r = el.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
     for (let i = 0; i < (n || 14); i++) {
       const s = document.createElement('i');
-      s.className = 'spark';
+      s.className = 'spark'; if (color) s.style.background = color;
       s.style.left = cx + 'px'; s.style.top = cy + 'px';
       document.body.appendChild(s);
       const ang = Math.random() * Math.PI * 2, dist = 30 + Math.random() * 50;
@@ -401,8 +444,9 @@
     const v = D.VERSES[0];
     full((el, m) => {
       const wk = weekDates(today()).map(d => { const st = dayStatus(d), isT = same(d, today()); return '<span class="cw ' + st + (isT ? ' now' : '') + '"><i></i>' + DL[d.getDay()] + '</span>'; }).join('');
-      el.innerHTML = '<div class="celeb-in"><span class="lampa">' + ic('lampara') + '</span>' +
-        '<h1>Tu lámpara<br>está encendida</h1><p class="cv">«' + esc(v.t) + '»<small>' + esc(v.r) + '</small></p>' +
+      const ti = tierOf(litDays());
+      el.innerHTML = '<div class="celeb-in" style="--tc:' + TIERS[ti].c + '"><div class="cglow"></div><span class="lampa">' + llama(ti, { cls: 'big' }) + '</span>' +
+        '<h1>Tu llama<br>está encendida</h1><p class="cv">«' + esc(v.t) + '»<small>' + esc(v.r) + '</small></p>' +
         '<div class="cweek">' + wk + '</div><p class="wk-note">' + weekLit() + ' de ' + GOAL + ' días esta semana</p>' +
         '<button class="btn big" data-close>Amén</button></div>';
       el.querySelector('[data-close]').onclick = () => m.dismiss();
@@ -415,11 +459,26 @@
     if (document.querySelector('ion-modal, ion-action-sheet, ion-alert')) { setTimeout(summitWhenFree, 700); return; }
     full((el, m) => {
       const wk = weekDates(today()).map(d => { const st = dayStatus(d); return '<span class="cw ' + st + '"><i></i>' + DL[d.getDay()] + '</span>'; }).join('');
-      el.innerHTML = '<div class="celeb-in"><span class="lampa">' + ic('flame') + '</span><h1>Semana<br>encendida</h1><p class="cv">Llegaste a ' + GOAL + ' de 7 días. «La senda de los justos es como la luz de la aurora, que va en aumento.»<small>Proverbios 4:18</small></p>' +
+      const ti = tierOf(litDays());
+      el.innerHTML = '<div class="celeb-in" style="--tc:' + TIERS[ti].c + '"><div class="cglow"></div><span class="lampa">' + llama(ti, { cls: 'big' }) + '</span><h1>Semana<br>encendida</h1><p class="cv">Llegaste a ' + GOAL + ' de 7 días. «La senda de los justos es como la luz de la aurora, que va en aumento.»<small>Proverbios 4:18</small></p>' +
         '<div class="cweek">' + wk + '</div><p class="wk-note">' + (S.stats.weeksLit + 1) + ' semanas encendidas este año</p><button class="btn big" data-close>Amén</button></div>';
       el.querySelector('[data-close]').onclick = () => m.dismiss();
       haptic([12, 60, 20, 60, 30]);
     }, { cls: 'celeb' });
+  }
+
+  /* la llama cambia de etapa: de la vieja a la nueva, con su color */
+  function evolveWhenFree(from, to, n) {
+    if (document.querySelector('ion-modal, ion-action-sheet, ion-alert')) { setTimeout(() => evolveWhenFree(from, to, n), 700); return; }
+    full((el, m) => {
+      const T = TIERS[to], nx = TIERS[to + 1];
+      el.innerHTML = '<div class="evo" style="--tc:' + T.c + '"><div class="cglow"></div><div class="evo-stage"><span class="evo-old">' + llama(from, { cls: 'big' }) + '</span><span class="evo-new">' + llama(to, { cls: 'big' }) + '</span></div>' +
+        '<p class="eyebrow">' + n + ' días encendidos</p><h1>Tu llama ahora es <em>' + esc(T.n) + '</em></h1><p class="cv">' + (nx ? 'Cambió de color y de forma. La próxima, ' + esc(nx.n) + ', a los ' + nx.d + ' días.' : 'Llegaste a la última. Que siga ardiendo.') + '</p>' +
+        '<button class="btn big" data-close>Amén</button></div>';
+      el.querySelector('[data-close]').onclick = () => m.dismiss();
+      setTimeout(() => sparks(el.querySelector('.evo-new'), 34, T.c), 1150);
+      haptic([12, 60, 20, 60, 30]);
+    }, { cls: 'evolve' });
   }
 
   /* ================= demo: pasar al día siguiente ================= */
@@ -469,6 +528,7 @@
   window.L = {
     /* fechas */ mid, addDays, dk, fromDk, same, diffDays, DN, DS, DL, MN, MS, WEEK, cap, short, longDate, weekStart, weekDates, mins, nowHM, rel, ago,
     /* html */ esc, ic, actIc, av, avColor, ini, hueOf, flameSVG,
+    /* la llama */ TIERS, tierOf, litDays, llama,
     /* tema: automático según el celular, o fijo */ theme: { get: () => (window.LamparaTema ? LamparaTema.get() : 'auto'), set: v => { window.LamparaTema && LamparaTema.set(v); refresh(); } },
     /* estado */ get S() { return S; }, save, today, tk, clone,
     /* día */ itemsFor, todayItems, isDone, doneCount, litToday, allDone, dayStatus, weekLit, GOAL, setDone, skipToday, planDay,

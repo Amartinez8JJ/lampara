@@ -1,4 +1,4 @@
-/* Lámpara v4 · Hoy
+/* Lights · Hoy
    Estructura de YouVersion (versículo del día, prácticas guiadas con su duración, racha chica arriba)
    y el día agrupado por momento como Tiimo. Tocar = ver · círculo = marcar · mantener = menú · deslizar = atajos. */
 (() => {
@@ -41,7 +41,7 @@
 
   class PageHoy extends L.Page {
     shell() {
-      return L.shell({ title: 'Hoy', end: '<button class="streak" data-camino aria-label="Tu racha">' + ic('flame') + '<span class="fc-n"></span></button><button class="me-btn" data-camino aria-label="Tu camino">' + av('JC', 'Juan Carlos', 32) + '</button>' });
+      return L.shell({ title: 'Hoy', end: '<button class="streak" data-camino aria-label="Tu llama"><span class="fc-f"></span><span class="fc-n"></span></button><button class="me-btn" data-camino aria-label="Tu camino">' + av('JC', 'Juan Carlos', 32) + '</button>' });
     }
     mount() {
       this.prevOn = new Set();
@@ -68,10 +68,15 @@
       /* la barra de colores arranca como estaba y se completa en after(): así se anima */
       this.onNow = new Set(its.filter(i => L.isDone(i.id)).map(i => i.id));
       const cta = pend.length ? '<button class="btn" data-start>' + ic('play') + (k ? 'Seguir · ' + pend.length + ' más' : 'Empezar') + '</button>'
-        : n && k === n ? '<div class="done-line">' + ic('lampara') + 'Tu lámpara está encendida</div>' : n ? '<p class="muted">Lo que queda es con otras personas.</p>' : '<p class="muted">Nada planeado para hoy.</p>';
+        : n && k === n ? '<div class="done-line">Tu llama está encendida</div>' : n ? '<p class="muted">Lo que queda es con otras personas.</p>' : '<p class="muted">Nada planeado para hoy.</p>';
+      /* la llama: crece con lo que vas haciendo hoy y cambia de etapa con los días encendidos */
+      const ld = L.litDays(), ti = L.tierOf(ld), T = L.TIERS[ti], NX = L.TIERS[ti + 1], lit = L.litToday();
+      const prog = NX ? (ld - T.d) / (NX.d - T.d) : 1;
+      const flame = '<button class="tcd-fl' + (lit ? ' on' : '') + (n && k === n ? ' full' : '') + '" data-llama style="--tc:' + T.c + ';--lv:' + (n ? (0.55 + 0.45 * k / n).toFixed(2) : 1) + '" aria-label="Tu llama: ' + esc(T.n) + '">' + L.llama(ti) + '</button>';
+      const tier = '<div class="tier" style="--tc:' + T.c + '"><span><b>' + ld + '</b> días encendidos · <em>' + esc(T.n) + '</em></span><i><s style="width:' + Math.round(prog * 100) + '%"></s></i><small>' + (NX ? (NX.d - ld === 1 ? 'Falta 1 día' : 'Faltan ' + (NX.d - ld) + ' días') + ' para ' + esc(NX.n) : 'La última llama') + '</small></div>';
       /* lo que sigue (lo de «Ahora» en v3): la próxima pendiente late suave */
       const nx = its.find(i => !L.isDone(i.id));
-      const tcd = '<div class="tcd"><div class="tcd-top"><h2>Tu tiempo con Dios</h2><span>' + k + ' de ' + n + (min ? ' · ' + min + ' min' : '') + '</span></div>' + cta + '</div>';
+      const tcd = '<div class="tcd"><div class="tcd-hero">' + flame + '<div class="tcd-txt"><div class="tcd-top"><h2>Tu tiempo con Dios</h2><span>' + k + ' de ' + n + (min ? ' · ' + min + ' min' : '') + '</span></div>' + tier + '</div></div>' + cta + '</div>';
       const groups = MOMENTS.map(([name, icon, a, b]) => {
         const g = its.filter(i => L.mins(i.h) >= a && L.mins(i.h) < b);
         return g.length ? '<p class="moment">' + ic(icon) + name + '</p><div class="rings">' + g.map(i => ring(i, this.just, nx && i.id === nx.id)).join('') + '</div>' : '';
@@ -92,7 +97,11 @@
     }
     after() {
       const chip = this.querySelector('.streak');
-      if (chip) { chip.classList.toggle('lit', L.litToday()); chip.querySelector('.fc-n').textContent = L.weekLit(); }
+      if (chip) {
+        const ld = L.litDays(), ti = L.tierOf(ld);
+        chip.classList.toggle('lit', L.litToday()); chip.style.setProperty('--tc', L.TIERS[ti].c);
+        chip.querySelector('.fc-f').innerHTML = L.llama(ti, { cls: 'll-mini' }); chip.querySelector('.fc-n').textContent = ld;
+      }
       if (this.just) {
         const id = this.just; this.just = null;
         const b = this.pg.querySelector('[data-ring="' + id + '"]');
@@ -121,6 +130,7 @@
       if ((el = t.closest('[data-ctx]'))) { const c = L.topCtx(); if (c) c.click(el); return; }
       if (t.closest('[data-start]')) { Flujo.start(L.todayItems().filter(i => !L.isDone(i.id) && canFlow(i))); return; }
       if ((el = t.closest('[data-day]'))) { openDay(L.fromDk(el.dataset.day)); return; }
+      if (t.closest('[data-llama]')) { L.llamaSheet(); return; }
       if (t.closest('[data-camino]')) { L.card('page-camino'); return; }
       if ((el = t.closest('[data-vact]'))) { verseAct(el.dataset.vact); return; }
       if ((el = t.closest('[data-who]'))) { whoActions(el.dataset.who, this); return; }

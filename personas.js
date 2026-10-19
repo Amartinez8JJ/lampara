@@ -1,4 +1,4 @@
-/* Lámpara v4 · Personas
+/* Lights · Personas
    Tres lugares: Discipulado (a quién acompañas y quién te acompaña), Familia (la mesa y la pareja) e Iglesia (el foro).
    Lo que ves de cada discípulo lo decide él: Nada · Señal · Ritmo · Todo. */
 (() => {

@@ -9,8 +9,8 @@
 <script>(function(){var p="auto";try{p=localStorage.getItem("lampara-tema")||"auto"}catch(e){}var mq=matchMedia("(prefers-color-scheme: dark)");function apply(){var d=p==="dark"||(p==="auto"&&mq.matches);document.documentElement.classList.toggle("ion-palette-dark",d);var m=document.querySelector("meta[name=theme-color]");if(m)m.content=d?"#0A0A0B":"#F2F2F6";window.dispatchEvent(new Event("lampara-tema"))}apply();mq.addEventListener("change",apply);window.LamparaTema={get:function(){return p},set:function(v){p=v;try{localStorage.setItem("lampara-tema",v)}catch(e){}apply()}}})();</script>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="description" content="Lámpara · tu tiempo con Dios, tus planes y tu gente.">
-<title>Lámpara</title>
+<meta name="description" content="Lights · tu tiempo con Dios, tus planes y tu gente.">
+<title>Lights</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 32'%3E%3Cpath fill='%23ffb443' d='M12 31C5.2 31 2 26 3 20.8 4.2 15.2 9.2 12.4 10.8 2c4.4 6.6 10.6 11.6 10.4 19.2C21 26.8 17.4 31 12 31Z'/%3E%3C/svg%3E">
 <!-- Base: Ionic Framework 8 (MIT, gratuito) en modo iOS: navegación, hojas, gestos y listas nativas -->
 <script>window.Ionic = { config: { mode: 'ios', swipeBackEnabled: true, backButtonText: '' } };</script>
@@ -33,7 +33,7 @@
     <ion-tab tab="personas"><ion-nav id="nav-personas" root="page-personas"></ion-nav></ion-tab>
     <ion-tab tab="planes"><ion-nav id="nav-planes" root="page-planes"></ion-nav></ion-tab>
     <ion-tab-bar slot="bottom" id="tabbar" selected-tab="hoy">
-      <ion-tab-button tab="hoy"><span class="tbi" data-tbi="lampara"></span><ion-label>Hoy</ion-label></ion-tab-button>
+      <ion-tab-button tab="hoy"><span class="tbi" data-tbi="llama"></span><ion-label>Hoy</ion-label></ion-tab-button>
       <ion-tab-button tab="oracion"><span class="tbi" data-tbi="hands-praying"></span><ion-label>Oración</ion-label></ion-tab-button>
       <ion-tab-button tab="personas"><span class="tbi" data-tbi="people"></span><ion-label>Personas</ion-label><ion-badge id="badge-personas" hidden></ion-badge></ion-tab-button>
       <ion-tab-button tab="planes"><span class="tbi" data-tbi="calendar"></span><ion-label>Planes</ion-label></ion-tab-button>

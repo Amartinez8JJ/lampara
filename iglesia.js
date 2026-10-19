@@ -1,4 +1,4 @@
-/* Lámpara v5 · Iglesia (módulo de Personas): el foro de «El Buen Pastor».
+/* Lights · Iglesia (módulo de Personas): el foro de «El Buen Pastor».
    El segmento es un resumen: orar hoy, esta semana y los canales. La profundidad va en páginas propias:
    page-ig-canal, page-ig-hilo, page-ig-grupo y page-ig-evento. Publicar y Normas son hojas.
    Referencias: Church Center (agenda con «Voy», grupos), WhatsApp y Discord (canales, hilos, reacciones).

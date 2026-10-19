@@ -1,4 +1,4 @@
-/* Lámpara v4 · Oración
+/* Lights · Oración
    Pedidos con gestos (deslizar = oré / respondida), «Orar ahora» como tarjetas que se pasan, y lo que Dios respondió. */
 (() => {
   const { esc, ic, av } = L;

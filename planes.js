@@ -1,4 +1,4 @@
-/* Lámpara v4 · Planes
+/* Lights · Planes
    Mis planes (con invitaciones), Mi semana (rutina editable) y Explorar. Cada plan dice en qué consiste antes de unirte. */
 (() => {
   const { esc, ic, actIc, av } = L;

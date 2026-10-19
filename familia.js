@@ -1,4 +1,4 @@
-/* Lámpara v5 · Familia (módulo de Personas)
+/* Lights · Familia (módulo de Personas)
    Una columna: la casa encendida (4 noches juntos por semana), el devocional en la mesa, Ana y tú, los chicos
    (álbum de figuritas y versículo de la semana), la noche de familia y los logros del hogar.
    Referencias: Paired (pregunta del día con la respuesta del otro escondida hasta que respondes, «juntos hace»,

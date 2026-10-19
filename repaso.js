@@ -1,4 +1,4 @@
-/* Lámpara v4 · Domingo de repaso
+/* Lights · Domingo de repaso
    Cerrar la semana en 3 minutos: cómo vino, lo que te llevaste, lo que Dios hizo, la palabra que se repitió y tu foco. */
 (() => {
   const { esc, ic } = L;

@@ -1,4 +1,4 @@
-/* Lámpara v4 · datos de ejemplo
+/* Lights · datos de ejemplo
    Texto bíblico: Reina-Valera 1960, versículos sueltos de muestra (licencia pendiente para producción). */
 window.D = (() => {
   /* ---------- actividades: un color por actividad, misma intensidad (OKLCH L .79 C .13) ---------- */

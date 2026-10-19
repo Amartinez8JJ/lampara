@@ -1,4 +1,4 @@
-/* Lámpara v4 · Empezar
+/* Lights · Empezar
    Tu tiempo con Dios paso a paso, como historias: una práctica por pantalla, un botón para seguir. */
 (() => {
   const { esc, ic, actIc } = L;

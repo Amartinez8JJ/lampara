@@ -1,4 +1,4 @@
-/* Lámpara v4 · Antes del encuentro
+/* Lights · Antes del encuentro
    Antes de verte con un discípulo: cómo viene (según lo que comparte), lo que acordaron, por qué oras y de qué conversar.
    Después: anotas los acuerdos y quedan para la próxima. */
 (() => {
