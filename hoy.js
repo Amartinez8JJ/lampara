@@ -279,6 +279,7 @@
   }
 
   /* ---------- un día de la semana ---------- */
+  L.openDay = d => openDay(d);
   function openDay(d) {
     const n = L.diffDays(d, L.today()), st = L.dayStatus(d), its = L.itemsFor(d), k = L.dk(d);
     if (n === 0) return;
@@ -287,9 +288,11 @@
       sub = its.length ? its.length + ' planeadas' : 'Nada planeado';
       body = its.map(i => '<div class="mini" data-a="' + i.a + '"><div class="aic">' + actIc(i.a) + '</div><div><b>' + esc(i.t) + '</b><small>' + esc([i.h, i.planName || i.n].filter(Boolean).join(' · ')) + '</small></div></div>').join('');
     } else if (st === 'lit') {
-      const done = L.S.done[k], list = done ? its.filter(i => done[i.id]) : its;
-      sub = 'Encendido · ' + list.length + ' prácticas';
-      body = list.map(i => '<div class="mini" data-a="' + i.a + '"><div class="aic">' + actIc(i.a, true) + '</div><div><b>' + esc(i.t) + '</b><small>' + esc(D.NAME[i.a]) + '</small></div></div>').join('');
+      /* lo que hiciste, a color, y lo que quedó, apagado: lo mismo que cuenta el resumen */
+      const plan = L.dayPlan(d), list = L.dayDone(d), ids = new Set(list.map(i => i.id)), left = plan.filter(i => !ids.has(i.id));
+      sub = 'Encendido · ' + list.length + (plan.length ? ' de ' + plan.length : '') + ' prácticas';
+      body = list.map(i => '<div class="mini" data-a="' + i.a + '"><div class="aic">' + actIc(i.a, true) + '</div><div><b>' + esc(i.t) + '</b><small>' + esc(D.NAME[i.a]) + '</small></div></div>').join('') +
+        left.map(i => '<div class="mini left" data-a="' + i.a + '"><div class="aic">' + actIc(i.a) + '</div><div><b>' + esc(i.t) + '</b><small>Quedó para otro día</small></div></div>').join('');
     } else {
       sub = st === 'grace' ? 'Día de gracia · la llama siguió' : 'Sin registro · la llama no se apaga';
       body = '<div class="note">' + ic('flame-outline') + '<span>' + (st === 'grace' ? 'Cada semana tienes un día de gracia. Tu racha no se corta.' : 'Vuelve hoy y la llama se aviva.') + '</span></div>';

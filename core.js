@@ -162,6 +162,18 @@
     if (S.done[k] && Object.keys(S.done[k]).length) return 'lit';
     return S.hist[k] || 'ember';
   }
+  /* lo planeado un día (sin lo que sacaste) y lo que hiciste. En el historial de ejemplo no hay registro por práctica:
+     se toma una parte creíble y siempre igual de lo planeado (el resumen y el día lo muestran igual). */
+  const dayPlan = d => { const k = dk(d); return itemsFor(d).filter(it => !(S.skip[k] || []).includes(it.id)); };
+  const hash01 = s => { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0) / 4294967295; };
+  function dayDone(d) {
+    const k = dk(d), its = dayPlan(d);
+    if (S.done[k]) return its.filter(it => S.done[k][it.id]);
+    if (diffDays(d, today()) >= 0 || S.hist[k] !== 'lit') return [];
+    const got = its.filter(it => hash01(k + it.id) < 0.8);
+    return got.length || !its.length ? got : its.slice(0, 1);
+  }
+  const firstDay = () => Object.keys(S.hist).map(fromDk).reduce((a, d) => (diffDays(d, a) < 0 ? d : a), today());
   const GOAL = 5;
   /* días encendidos en total (nunca bajan) */
   function litDays() { let n = 0; for (const k in S.hist) if (S.hist[k] === 'lit') n++; return n + (litToday() ? 1 : 0); }
@@ -529,6 +541,7 @@
     /* fechas */ mid, addDays, dk, fromDk, same, diffDays, DN, DS, DL, MN, MS, WEEK, cap, short, longDate, weekStart, weekDates, mins, nowHM, rel, ago,
     /* html */ esc, ic, actIc, av, avColor, ini, hueOf, flameSVG,
     /* la llama */ TIERS, tierOf, litDays, llama,
+    /* el resumen */ dayPlan, dayDone, firstDay,
     /* tema: automático según el celular, o fijo */ theme: { get: () => (window.LamparaTema ? LamparaTema.get() : 'auto'), set: v => { window.LamparaTema && LamparaTema.set(v); refresh(); } },
     /* estado */ get S() { return S; }, save, today, tk, clone,
     /* día */ itemsFor, todayItems, isDone, doneCount, litToday, allDone, dayStatus, weekLit, GOAL, setDone, skipToday, planDay,

@@ -960,3 +960,105 @@ ion-modal.celeb .full-in, ion-modal.evolve .full-in { background: #0D0B12; color
 .tr:not(.got) b { color: var(--ink3); }
 .tr.now { background: color-mix(in srgb, var(--tc) 16%, var(--surface)); }
 .tr.now b { color: color-mix(in srgb, var(--tc) 72%, var(--ink)); }
+
+/* ================= Resumen de la semana y del mes =================
+   Dos números grandes con su anillo, como Apple Fitness: el de los días va con el color de tu llama y el de las prácticas en olivo.
+   La semana va en barras apiladas con el color de cada práctica; el mes, en un calendario de anillitos (el historial de Fitness). */
+.rs-nav { display: flex; align-items: center; gap: 10px; margin: 4px 0 14px; }
+.rs-nav > div { flex: 1; text-align: center; }
+.rs-nav b { display: block; font-family: var(--serif); font-optical-sizing: auto; font-size: 21px; font-weight: 600; letter-spacing: -0.01em; }
+.rs-nav small { color: var(--ink3); font-size: 13px; font-weight: 600; }
+.rs-nav .iconbtn[disabled] { opacity: 0.3; cursor: default; }
+.rs-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.rs-t { padding: 16px 14px 14px; border-radius: var(--r); background: var(--surface); }
+.rs-ring { position: relative; width: 96px; height: 96px; margin-bottom: 10px; }
+.rs-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.rs-ring circle { fill: none; stroke-width: 10; stroke-linecap: round; }
+.rs-ring .trk { stroke: color-mix(in srgb, var(--rc) 18%, transparent); }
+.rs-ring .bar { stroke: var(--rc); transition: stroke-dashoffset 1.1s var(--ease); }
+.rs-ring b { position: absolute; inset: 0; display: grid; place-items: center; font-size: 27px; font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.rs-ring b small { font-size: 14px; font-weight: 700; margin-left: 1px; }
+.rs-ring b span + small { position: relative; top: 4px; }
+.rs-ring b { grid-auto-flow: column; justify-content: center; align-items: center; }
+.rs-l { margin: 0; font-size: 14.5px; font-weight: 650; line-height: 1.25; }
+.rs-s { margin: 4px 0 0; color: var(--ink3); font-size: 12.5px; font-weight: 600; }
+.rs-dl { display: flex; align-items: center; gap: 3px; margin: 8px 0 0; font-size: 12px; font-weight: 700; color: var(--ink3); }
+.rs-dl .ico { font-size: 12px; }
+.rs-dl.up { color: color-mix(in srgb, var(--brand) 85%, var(--ink)); }
+.rs-dl.down .ico { transform: rotate(180deg); }
+
+.rs-week { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 12px; padding: 14px 10px 10px; border-radius: var(--r); background: var(--surface); }
+.rs-day { display: flex; flex-direction: column; align-items: center; gap: 4px; border: 0; background: none; padding: 0; color: var(--ink); cursor: pointer; font: inherit; }
+.rs-bar { position: relative; width: 100%; max-width: 30px; height: 128px; border-radius: 9px; background: var(--surface3); overflow: hidden; display: flex; flex-direction: column-reverse; }
+.rs-bar s { display: block; flex-shrink: 0; background: var(--c); border-top: 2px solid var(--surface); transform: scaleY(0); transform-origin: bottom; transition: transform 0.7s var(--spring); }
+.rs-bar.in s { transform: none; }
+.rs-bar s:last-child { border-radius: 0; }
+.rs-day .rs-sun { position: absolute; left: 50%; bottom: 8px; margin-left: -8px; font-size: 16px; color: var(--ink3); }
+.rs-day small { font-size: 12px; font-weight: 700; color: var(--ink3); }
+.rs-day i { font-style: normal; font-size: 12px; font-weight: 600; color: var(--ink4); margin-top: -4px; }
+.rs-day.now small, .rs-day.now i { color: var(--ink); }
+.rs-day.now .rs-bar { box-shadow: 0 0 0 2px var(--ink); }
+.rs-day.out .rs-bar { background: none; box-shadow: inset 0 0 0 1.5px var(--line2); }
+.rs-day.out { cursor: default; }
+
+.rs-cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px 4px; margin-top: 12px; padding: 14px 8px 10px; border-radius: var(--r); background: var(--surface); }
+.rs-cal .dh { text-align: center; font-size: 11.5px; font-weight: 700; color: var(--ink3); }
+.rs-c { position: relative; aspect-ratio: 1; width: 100%; max-width: 46px; justify-self: center; border: 0; background: none; padding: 0; cursor: pointer; color: var(--ink); font: inherit; }
+.rs-c svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+.rs-c circle { fill: none; stroke-width: 4; stroke-linecap: round; }
+.rs-c .trk { stroke: var(--surface3); }
+.rs-c .bar { stroke: var(--brand); transition: stroke-dashoffset 0.9s var(--ease); }
+.rs-c span { position: relative; display: grid; place-items: center; height: 100%; font-size: 12.5px; font-weight: 700; }
+.rs-c.lit span { color: var(--ink); }
+.rs-c.ember span, .rs-c.today span { color: var(--ink3); }
+.rs-c.now span { color: var(--brand); }
+.rs-c .rs-sun { position: absolute; right: -1px; top: -1px; font-size: 11px; color: var(--ink3); }
+.rs-c.out { cursor: default; }
+.rs-c.out span { color: var(--ink4); font-weight: 600; }
+.rs-wks { display: grid; gap: 2px; padding: 6px 14px; border-radius: var(--r); background: var(--surface); }
+.rs-wk { display: grid; grid-template-columns: 112px 1fr 44px; align-items: center; gap: 10px; padding: 9px 0; font-size: 13.5px; }
+.rs-wk + .rs-wk { border-top: 0.5px solid var(--line); }
+.rs-wk span { color: var(--ink2); font-weight: 600; }
+.rs-wk.cur span { color: var(--ink); }
+.rs-wk i, .rs-am i { display: block; height: 8px; border-radius: 4px; background: var(--surface3); overflow: hidden; }
+.rs-wk s, .rs-am s { display: block; height: 100%; width: 0; border-radius: 4px; background: var(--brand); transition: width 1s var(--ease); }
+.rs-wk b { text-align: right; font-variant-numeric: tabular-nums; }
+.rs-hint { display: flex; align-items: center; gap: 6px; margin: 10px 2px 0; color: var(--ink3); font-size: 12.5px; }
+.rs-hint .ico { font-size: 14px; }
+
+.rs-ins { display: grid; gap: 8px; }
+.rs-in { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: var(--r); background: var(--surface); }
+.rs-in .aic { margin: 0; background: color-mix(in srgb, var(--c, var(--brand)) 18%, transparent); color: var(--c, var(--brand)); }
+.rs-in:not([data-a]) .aic { --c: var(--brand); }
+.rs-in p { margin: 0; font-size: 14.5px; line-height: 1.4; color: var(--ink2); }
+.rs-in b { color: var(--ink); }
+.rs-acts { display: grid; padding: 4px 14px; border-radius: var(--r); background: var(--surface); }
+.rs-a { display: flex; align-items: center; gap: 12px; padding: 11px 0; }
+.rs-a + .rs-a { border-top: 0.5px solid var(--line); }
+.rs-a .aic { margin: 0; width: 34px; height: 34px; font-size: 17px; }
+.rs-am { flex: 1; min-width: 0; }
+.rs-am b { display: block; font-size: 15px; margin-bottom: 6px; }
+.rs-am s { background: var(--c); }
+.rs-a > span { text-align: right; min-width: 56px; }
+.rs-a > span b { display: block; font-size: 16px; font-variant-numeric: tabular-nums; }
+.rs-a > span small { color: var(--ink3); font-size: 12px; font-weight: 600; }
+.rs-foot { display: grid; gap: 10px; margin: 22px 0 8px; }
+.rs-msg { display: flex; gap: 10px; align-items: flex-start; padding: 12px; margin: 6px 0 16px; border-radius: var(--r); background: var(--surface2); }
+.rs-msg p { margin: 0; font-size: 15px; line-height: 1.4; }
+.mini.left { opacity: 0.55; }
+
+/* la tarjeta chica de Tu camino */
+.rs-mini { display: block; width: 100%; margin-top: 18px; padding: 14px 14px 12px; border: 0; border-radius: var(--r); background: var(--surface); color: var(--ink); text-align: left; cursor: pointer; font: inherit; }
+.rs-mini:active { transform: scale(0.98); }
+.rsm-h { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px; }
+.rsm-h b { font-family: var(--serif); font-optical-sizing: auto; font-size: 21px; font-weight: 600; }
+.rsm-h span { display: flex; align-items: center; gap: 2px; color: var(--ink3); font-size: 13.5px; font-weight: 600; }
+.rsm-h .ico { font-size: 13px; }
+.rsm-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.rsm-n { display: flex; align-items: center; gap: 10px; }
+.rsm-n svg { width: 44px; height: 44px; transform: rotate(-90deg); flex: none; }
+.rsm-n circle { fill: none; stroke-width: 5; stroke-linecap: round; }
+.rsm-n .trk { stroke: color-mix(in srgb, var(--rc) 18%, transparent); }
+.rsm-n .bar { stroke: var(--rc); }
+.rsm-n b { display: block; font-size: 20px; font-weight: 800; letter-spacing: -0.02em; }
+.rsm-n small { color: var(--ink3); font-size: 12px; font-weight: 600; }

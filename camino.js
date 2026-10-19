@@ -8,8 +8,7 @@
   function dayShapes(d) {
     const st = L.dayStatus(d);
     if (st !== 'lit') return { st, acts: [] };
-    const done = L.S.done[L.dk(d)], its = L.itemsFor(d);
-    let acts = done ? its.filter(i => done[i.id]).map(i => i.a) : its.map(i => i.a).slice(0, 2 + (d.getDate() % 2));
+    const acts = L.dayDone(d).map(i => i.a);
     return { st, acts: [...new Set(acts)].slice(0, 4) };
   }
   function streakCard() {
@@ -52,6 +51,7 @@
       const S = L.S;
       return '<div class="prof me">' + av('JC', D.ME.name, 72, L.litToday() ? 'lit' : 'dim') + '<h1>' + esc(D.ME.name) + '</h1><p class="muted">' + (D.ME.since + S.off) + ' días caminando</p></div>' +
         llamaHTML() +
+        L.resumenCard() +
         '<div class="sec"><h2>Tus semanas</h2></div>' + streakCard() + '<button class="addrow" data-repaso>' + ic('ribbon') + 'Repaso de la semana</button>' +
         '<div class="sec"><h2>Logros</h2><span class="muted">' + D.ACH.filter(L.achEarned).length + ' de ' + D.ACH.length + '</span></div>' + achHTML() +
         '<div class="sec"><h2>Tu Biblia</h2></div>' + booksHTML() +
@@ -67,6 +67,7 @@
       if (t.closest('[data-close]')) { this.closest('ion-modal').dismiss(); return; }
       if ((el = t.closest('[data-ach]'))) { achSheet(D.ACH.find(a => a.id === el.dataset.ach)); return; }
       if (t.closest('[data-books]')) { this.push('page-libros'); return; }
+      if (t.closest('[data-resumen]')) { this.push('page-resumen'); return; }
       if ((el = t.closest('[data-memo]'))) { memorize(+el.dataset.memo); return; }
       if (t.closest('[data-priv]')) { this.push('page-lider'); return; }
       if (t.closest('[data-next]')) { L.nextDay(); return; }
