@@ -15,7 +15,7 @@
     { n: 'Rama', t: 5, d: '5 veces por semana' },
     { n: 'Fruto', t: 7, d: 'todos los días' }
   ];
-  const DESC = { palabra: 'Leer la Biblia', oracion: 'Orar', meditar: 'Meditar', diario: 'Escribir tu diario', adoracion: 'Adorar', ayuno: 'Ayunar', encuentro: 'Encontrarte con alguien', mensaje: 'Escribir a tu gente' };
+  const DESC = { palabra: 'Leer la Biblia', oracion: 'Orar', meditar: 'Meditar', diario: 'Escribir tu diario', adoracion: 'Adorar', ayuno: 'Ayunar', encuentro: 'Encontrarte con alguien', llamada: 'Llamar a alguien', mensaje: 'Escribir a tu gente' };
 
   /* un día cuenta para el hábito si hiciste esa práctica (o la anotaste con alguien) */
   const didOn = (a, d) => L.dayDone(d).some(i => i.a === a) || L.S.log.some(x => x.a === a && x.d === L.dk(d));

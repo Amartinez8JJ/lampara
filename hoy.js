@@ -3,7 +3,7 @@
    y el día agrupado por momento como Tiimo. Tocar = ver · círculo = marcar · mantener = menú · deslizar = atajos. */
 (() => {
   const { esc, ic, actIc, av } = L;
-  const MIN = { oracion: 10, palabra: 15, meditar: 5, diario: 3, adoracion: 10, mensaje: 5, ayuno: 0, encuentro: 0 };
+  const MIN = { oracion: 10, palabra: 15, meditar: 5, diario: 3, adoracion: 10, mensaje: 5, ayuno: 0, encuentro: 0, llamada: 10 };
   const FLOWABLE = ['oracion', 'palabra', 'meditar', 'diario', 'adoracion', 'mensaje', 'ayuno'];
   const canFlow = it => FLOWABLE.includes(it.a) && !it.with;
   const CHK = '<span><svg class="ck" viewBox="0 0 24 24"><path d="M6 12.5l4 4L18 8"/></svg></span>';
@@ -278,7 +278,7 @@
     const meta = [D.NAME[it.a], it.h].concat(MIN[it.a] ? [MIN[it.a] + ' min'] : []).concat(it.src === 'p' ? [it.planName + ' · día ' + it.day + ' de ' + it.len] : []).join(' · ');
     const disc = it.with && L.person(it.with);
     const withP = it.with ? (it.with === 'ER' ? { id: 'ER', name: D.LEADER.name } : L.person(it.with)) : null;
-    const go = disc ? ['reader-outline', 'Preparar'] : it.with ? ['chatbubble', 'Escribirle'] : it.a === 'palabra' ? ['book', 'Leer'] : it.a === 'oracion' ? ['hands-praying', 'Orar'] : it.a === 'meditar' ? ['leaf', 'Meditar'] : it.a === 'diario' ? ['create', 'Escribir'] : it.a === 'mensaje' ? ['paper-plane', 'Escribir'] : ['play', 'Empezar'];
+    const go = it.a === 'llamada' ? ['phone', 'Llamar'] : disc ? ['reader-outline', 'Preparar'] : it.with ? ['chatbubble', 'Escribirle'] : it.a === 'palabra' ? ['book', 'Leer'] : it.a === 'oracion' ? ['hands-praying', 'Orar'] : it.a === 'meditar' ? ['leaf', 'Meditar'] : it.a === 'diario' ? ['create', 'Escribir'] : it.a === 'mensaje' ? ['paper-plane', 'Escribir'] : ['play', 'Empezar'];
     const html = '<div data-a="' + it.a + '"><div class="sh-head"><div class="aic">' + actIc(it.a, true) + '</div><div><h2>' + esc(it.t) + '</h2><p>' + esc(meta) + '</p></div></div>' +
       (it.n ? '<div class="note">' + ic('document-text-outline') + '<span>' + esc(it.n) + '</span></div>' : '') +
       (withP ? '<div class="mini-list"><div class="mini">' + av(withP.id, withP.name, 34) + '<div><b>' + esc(withP.name) + '</b><small>' + esc(it.h) + '</small></div></div></div>' : '') +
@@ -295,6 +295,7 @@
         if (nb) nb.onclick = () => { m.dismiss(); L.prompt('Anotar sobre ' + it.t, { ph: '¿Qué te quedó?' }, v => { L.S.keeps.unshift({ a: it.a, t: v, r: it.src === 'p' ? it.t : '', d: L.tk() }); L.save(); L.refresh(); L.toast('Anotado', { icon: 'create' }); }); };
         el.querySelector('[data-g]').onclick = () => {
           m.dismiss();
+          if (it.a === 'llamada') { m.onDidDismiss().then(() => L.llamar(it)); return; }
           if (disc) { m.onDidDismiss().then(() => Encuentro.open(it.with)); return; }
           if (it.with) { L.toast('Abrimos tu chat con ' + withP.name.split(' ')[0], { icon: 'chatbubble' }); return; }
           if (canFlow(it)) m.onDidDismiss().then(() => Flujo.start([it])); else L.setDone(id, true);
@@ -363,6 +364,7 @@
     const p = L.person(id), lead = id === D.LEADER.id, name = p ? p.first : lead ? D.LEADER.first : 'Ana';
     const btns = [
       { text: 'Orar por ' + name, icon: 'heart-outline', handler: () => { L.S.log.unshift({ who: id, a: 'oracion', d: L.tk() }); L.S.stats.prayOthers++; L.save(); L.toast('Oraste por ' + name, { icon: 'heart' }); L.checkAch(); } },
+      { text: 'Llamarle', icon: 'phone', handler: () => L.llamar(null, id) },
       { text: 'Escribirle', icon: 'chatbubble-outline', handler: () => { L.S.log.unshift({ who: id, a: 'mensaje', d: L.tk() }); L.save(); L.toast('Le escribiste a ' + name, { icon: 'chatbubble' }); } }
     ];
     if (p) btns.push({ text: 'Ver su día y su semana', icon: 'person-circle-outline', handler: () => page.push('page-persona', { pid: id }) });

@@ -74,7 +74,7 @@
     L.checkAch();
   }
   /* Anotar (el «＋ Anotar» de v3): con quién y qué hiciste, en dos toques */
-  const LOGA = [['oracion', 'Oré'], ['mensaje', 'Mensaje'], ['encuentro', 'Encuentro'], ['palabra', 'Estudio']];
+  const LOGA = [['oracion', 'Oré'], ['llamada', 'Llamé'], ['mensaje', 'Mensaje'], ['encuentro', 'Encuentro'], ['palabra', 'Estudio']];
   function anotar(pre) {
     const who = new Set(pre ? [pre] : []), what = new Set();
     const ppl = L.S.people.map(p => [p.id, p.first, p.name]).concat([[D.LEADER.id, D.LEADER.first, D.LEADER.name], ['AN', 'Ana', 'Ana'], ['TO', 'Tomás', 'Tomás'], ['SO', 'Sofi', 'Sofi']]);

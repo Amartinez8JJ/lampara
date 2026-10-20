@@ -6,7 +6,7 @@
    acá es una vela) y Hallow (la práctica a pantalla completa). La vela, la ola de luz y el sello son propios. */
 (() => {
   const { esc, ic } = L;
-  const MIN = { oracion: 10, palabra: 15, meditar: 5, diario: 3, adoracion: 10, mensaje: 5, ayuno: 0, encuentro: 0 };
+  const MIN = { oracion: 10, palabra: 15, meditar: 5, diario: 3, adoracion: 10, mensaje: 5, ayuno: 0, encuentro: 0, llamada: 10 };
   const HOLD = 650;
   const verse = r => D.VERSES.find(v => v.r === r) || (D.MEMO || []).find(v => v.r === r);
   const withName = it => it.with === 'ER' ? D.LEADER.first : (L.person(it.with) || {}).first || '';
@@ -16,7 +16,7 @@
     const q = verse(it.t) || verse(inf.ref);
     const meta = [it.h, MIN[it.a] ? MIN[it.a] + ' min' : '', (i + 1) + ' de ' + n].filter(Boolean).join(' · ');
     const sub = it.src === 'p' ? it.planName + ' · día ' + it.day + ' de ' + it.len : it.with ? 'con ' + withName(it) : D.NAME[it.a];
-    const go = it.with && L.person(it.with) ? 'Preparar' : it.with ? 'Escribir' : 'Empezar';
+    const go = it.a === 'llamada' ? 'Llamar' : it.with && L.person(it.with) ? 'Preparar' : it.with ? 'Escribir' : 'Empezar';
     return '<section class="dy-st' + (done ? ' done' : '') + '" data-a="' + it.a + '" data-id="' + it.id + '" data-i="' + i + '">' +
       '<span class="dy-art">' + ic(D.ICON[it.a]) + '</span><span class="dy-light"></span><span class="dy-stamp">HECHO</span>' +
       '<p class="dy-ey">' + ic('time') + esc(meta) + '</p><h2>' + esc(it.t) + '</h2><p class="dy-sub">' + esc(sub) + '</p>' +
@@ -24,7 +24,7 @@
       (q ? '<blockquote>«' + esc(q.t) + '»<small>' + esc(q.r) + '</small></blockquote>' : inf.why ? '<blockquote>' + esc(inf.why) + '<small>' + esc(inf.ref || '') + '</small></blockquote>' : '') +
       '<ol>' + (inf.how || []).map(h => '<li>' + esc(h) + '</li>').join('') + '</ol>' +
       '<div class="dy-acts">' +
-        '<button data-go>' + '<span>' + ic(it.with ? 'people' : 'play') + '</span>' + go + '</button>' +
+        '<button data-go>' + '<span>' + ic(it.a === 'llamada' ? 'phone' : it.with ? 'people' : 'play') + '</span>' + go + '</button>' +
         '<button data-note><span>' + ic('create') + '</span>Anotar</button>' +
         (done ? '' : '<button data-skip><span>' + ic('moon') + '</span>Hoy no</button>') +
         '<button class="dy-lit" data-lit aria-label="Mantén presionado para encender"><svg class="rg" viewBox="0 0 74 74"><circle cx="37" cy="37" r="34"/></svg><span>' + ic(done ? 'checkmark' : 'flame') + '</span>' + (done ? 'Hecho' : 'Mantén') + '</button>' +
@@ -56,7 +56,8 @@
       feed.querySelectorAll('.dy-st').forEach(s => io.observe(s));
       /* arranca en la que sigue */
       const first = startId ? its.findIndex(i => i.id === startId) : its.findIndex(i => !L.isDone(i.id));
-      requestAnimationFrame(() => { const s = feed.querySelector('[data-i="' + Math.max(0, first) + '"]'); if (s && first > 0) feed.scrollTop = s.offsetTop; });
+      const toFirst = () => { const s = feed.querySelector('[data-i="' + Math.max(0, first) + '"]'); if (s && first > 0 && !feed.dataset.moved) feed.scrollTop = s.offsetTop; };
+      requestAnimationFrame(toFirst); m.addEventListener('ionModalWillPresent', toFirst); m.addEventListener('ionModalDidPresent', () => { toFirst(); feed.dataset.moved = 1; });
       /* mantener = encender */
       let t = 0, holdB = null;
       const cancel = () => { clearTimeout(t); if (holdB) holdB.classList.remove('holding'); holdB = null; };
@@ -82,6 +83,7 @@
         if (tg.closest('[data-close]')) { m.dismiss(); return; }
         if (!it) return;
         if (tg.closest('[data-go]')) {
+          if (it.a === 'llamada') { m.dismiss().then(() => L.llamar(it)); return; }
           const p = it.with && L.person(it.with);
           if (p) { m.dismiss().then(() => window.Encuentro && Encuentro.open(it.with)); return; }
           if (it.with) { L.toast('Abrimos tu chat con ' + withName(it), { icon: 'chatbubble' }); return; }

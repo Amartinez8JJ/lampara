@@ -2,14 +2,16 @@
    Texto bíblico: Reina-Valera 1960, versículos sueltos de muestra (licencia pendiente para producción). */
 window.D = (() => {
   /* ---------- actividades: un color por actividad, misma intensidad (OKLCH L .79 C .13) ---------- */
-  const ACTS = ['oracion', 'palabra', 'meditar', 'diario', 'adoracion', 'ayuno', 'encuentro', 'mensaje'];
-  const NAME = { oracion: 'Oración', palabra: 'Palabra', meditar: 'Meditar', diario: 'Diario', adoracion: 'Adoración', ayuno: 'Ayuno', encuentro: 'Encuentro', mensaje: 'Mensaje' };
+  const ACTS = ['oracion', 'palabra', 'meditar', 'diario', 'adoracion', 'ayuno', 'encuentro', 'llamada', 'mensaje'];
+  const NAME = { oracion: 'Oración', palabra: 'Palabra', meditar: 'Meditar', diario: 'Diario', adoracion: 'Adoración', ayuno: 'Ayuno', encuentro: 'Encuentro', llamada: 'Llamada', mensaje: 'Mensaje' };
   /* cada actividad: glifo blanco relleno en un círculo de su color (dirección «Anillos»: Streaks + Apple Journal) */
-  const ICON = { oracion: 'hands-praying', palabra: 'book', meditar: 'water', diario: 'create', adoracion: 'musical-notes', ayuno: 'hourglass', encuentro: 'people', mensaje: 'chatbubble-ellipses' };
+  const ICON = { oracion: 'hands-praying', palabra: 'book', meditar: 'water', diario: 'create', adoracion: 'musical-notes', ayuno: 'hourglass', encuentro: 'people', llamada: 'phone', mensaje: 'chatbubble-ellipses' };
   /* formas planas por actividad: solo para arte (portadas de planes), no como ícono */
-  const SHAPE = { oracion: 'sh-oracion', palabra: 'sh-palabra', meditar: 'sh-meditar', diario: 'sh-diario', adoracion: 'sh-adoracion', ayuno: 'sh-ayuno', encuentro: 'sh-encuentro', mensaje: 'sh-mensaje' };
+  const SHAPE = { oracion: 'sh-oracion', palabra: 'sh-palabra', meditar: 'sh-meditar', diario: 'sh-diario', adoracion: 'sh-adoracion', ayuno: 'sh-ayuno', encuentro: 'sh-encuentro', llamada: 'sh-mensaje', mensaje: 'sh-mensaje' };
   const INFO = {
     oracion: { why: 'Hablar con Dios antes que con el mundo.', ref: 'Filipenses 4:6', how: ['Empieza dando gracias', 'Nombra a las personas', 'Termina en silencio'] },
+    /* 21/10, pedido del user: llamar a alguien para conversar y preguntarle cómo está (no es un encuentro: es corto y a cualquiera) */
+    llamada: { why: 'La congoja en el corazón del hombre lo abate; mas la buena palabra lo alegra.', ref: 'Proverbios 12:25', how: ['Elige a quién llamar', 'Pregúntale cómo está de verdad', 'Ofrécele orar por algo concreto'] },
     palabra: { why: 'Su palabra alumbra el paso de hoy.', ref: 'Salmo 119:105', how: ['Lee despacio', 'Elige un versículo', '¿Qué me pide hoy?'] },
     meditar: { why: 'Quedarte con una frase hasta que baje al corazón.', ref: 'Josué 1:8', how: ['Léela tres veces', 'Quédate en silencio', 'Guarda una palabra'] },
     diario: { why: 'Escribir lo que Dios hace para no olvidarlo.', ref: 'Salmo 103:2', how: ['Una línea alcanza', '¿Qué me dijo hoy?', '¿Qué le respondo?'] },
@@ -148,7 +150,8 @@ window.D = (() => {
     { id: 'r7', a: 'diario', t: 'Examen del día', h: '22:00', days: [4, 5], n: 'Gratitud, confesión, entrega' },
     { id: 'r8', a: 'adoracion', t: 'Culto', h: '10:00', days: [0], n: 'El Buen Pastor' },
     { id: 'r9', a: 'encuentro', t: 'Café con María', h: '17:00', days: [6], with: 'MA' },
-    { id: 'r10', a: 'encuentro', t: 'Reunión con Lucas', h: '18:00', days: [2], with: 'LO', n: 'Evangelio de Juan' }
+    { id: 'r10', a: 'encuentro', t: 'Reunión con Lucas', h: '18:00', days: [2], with: 'LO', n: 'Evangelio de Juan' },
+    { id: 'r11', a: 'llamada', t: 'Llamar a alguien', h: '20:30', days: [2, 4, 6], n: 'Preguntarle cómo está' }
   ];
 
   /* ---------- personas ---------- */

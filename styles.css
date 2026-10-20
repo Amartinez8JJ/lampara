@@ -15,6 +15,7 @@
   --on-fill: #FFFFFF;
   --oracion: #F0533F; --adoracion: #E5458F; --meditar: #7C5CE6; --palabra: #2F6FE4;
   --mensaje: #0EA5C9; --diario: #13A874; --encuentro: #5E9C12; --ayuno: #D99A00;
+  --llamada: #9A5B2E;  /* café: la charla de café; el único tono libre que no es naranja */
   --tabbar: rgba(255, 255, 255, 0.86); --tab-sel: rgba(60, 60, 67, 0.08);
   --frame: #DCDCE3;
   --r: 14px; --r-sm: 10px;
@@ -31,13 +32,14 @@
   --on-fill: #0A0A0B;
   --oracion: #FF5C4D; --adoracion: #FF5FA8; --meditar: #A27BFF; --palabra: #4B8BFF;
   --mensaje: #1EC8F0; --diario: #2ED69A; --encuentro: #B4E33D; --ayuno: #FFC93C;
+  --llamada: #D9A273;
   --tabbar: rgba(28, 28, 30, 0.82); --tab-sel: rgba(235, 235, 245, 0.1);
   --frame: #000;
 }
 /* un color por actividad */
 [data-a] { --c: var(--brand); }
 [data-a="oracion"] { --c: var(--oracion); } [data-a="adoracion"] { --c: var(--adoracion); } [data-a="meditar"] { --c: var(--meditar); } [data-a="palabra"] { --c: var(--palabra); }
-[data-a="mensaje"] { --c: var(--mensaje); } [data-a="diario"] { --c: var(--diario); } [data-a="encuentro"] { --c: var(--encuentro); } [data-a="ayuno"] { --c: var(--ayuno); }
+[data-a="mensaje"] { --c: var(--mensaje); } [data-a="diario"] { --c: var(--diario); } [data-a="encuentro"] { --c: var(--encuentro); } [data-a="ayuno"] { --c: var(--ayuno); } [data-a="llamada"] { --c: var(--llamada); }
 [data-a], .fl { --c-soft: color-mix(in srgb, var(--c) 15%, transparent); --c-line: color-mix(in srgb, var(--c) 45%, transparent); }
 .fl { --c: var(--brand); }
 
@@ -1291,3 +1293,28 @@ ion-modal.dia .full-in { background: #0A0A0B; }
 .dy-bigf { position: relative; width: 170px; height: 190px; margin-bottom: 16px; }
 .dy-end h2 { position: relative; font-size: 42px; } .dy-end p { position: relative; margin: 10px 0 22px; opacity: 0.8; font-size: 15px; }
 .dy-end .btn { position: relative; background: var(--tc); color: #0D0B12; }
+
+/* ================= Llamar a alguien (21/10) =================
+   La lista empieza por quien hace más que no hablas; después las preguntas y el botón; al final, cómo te fue. */
+.qa-grid button:last-child:nth-child(even) { grid-column: 1 / -1; }  /* el primer hijo es el título */
+.ll-list { display: grid; margin-top: 6px; }
+.ll-p { display: flex; align-items: center; gap: 12px; width: 100%; padding: 9px 2px; border: 0; background: none; color: var(--ink); text-align: left; cursor: pointer; font: inherit; }
+.ll-p + .ll-p { border-top: 0.5px solid var(--line); }
+.ll-p div { flex: 1; min-width: 0; } .ll-p b { display: block; font-size: 15.5px; } .ll-p small { color: var(--ink3); font-size: 12.5px; }
+.ll-ago { padding: 4px 10px; border-radius: 999px; background: var(--surface2); color: var(--ink2); font-size: 12px; font-weight: 700; white-space: nowrap; }
+.ll-ago.far { background: color-mix(in srgb, var(--llamada) 18%, transparent); color: color-mix(in srgb, var(--llamada) 80%, var(--ink)); }
+.ll-who { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+.ll-who .eyebrow { margin: 0; } .ll-who .sh-title { margin: 0; } .ll-who small { color: var(--ink3); font-size: 13px; font-weight: 600; }
+.ll-ask { margin: 6px 0 14px; padding: 0; list-style: none; counter-reset: q; display: grid; gap: 8px; }
+.ll-ask li { counter-increment: q; display: flex; gap: 10px; align-items: center; padding: 12px 14px; border-radius: 14px; background: var(--surface2); font-family: var(--serif); font-size: 18px; line-height: 1.3; }
+.ll-ask li::before { content: counter(q); flex: none; width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; background: var(--llamada); color: var(--on-fill); font: 800 12px var(--ui); }
+.ll-verse { margin: 0 0 16px; padding: 12px 14px; border-radius: 14px; background: color-mix(in srgb, var(--llamada) 12%, transparent); font-family: var(--serif); font-style: italic; font-size: 16px; line-height: 1.4; }
+.ll-verse small { display: block; margin-top: 4px; font-family: var(--ui); font-style: normal; font-size: 12px; font-weight: 700; color: var(--ink3); }
+.ll [data-call], .ll [data-save] { background: var(--llamada); color: var(--on-fill); }
+.ll-ringing { animation: ll-ring 0.5s ease-in-out infinite; }
+@keyframes ll-ring { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-2deg); } 75% { transform: rotate(2deg); } }
+.ll-how { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+.ll-how button { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 14px 6px; border: 0; border-radius: 16px; background: var(--surface2); color: var(--ink); font: 650 13px var(--ui); cursor: pointer; transition: transform 0.3s var(--spring), background-color 0.2s; }
+.ll-how button .ico { font-size: 24px; color: var(--llamada); }
+.ll-how button.on { background: var(--llamada); color: var(--on-fill); transform: scale(1.04); } .ll-how button.on .ico { color: var(--on-fill); }
+.ll .fld { margin-bottom: 12px; }

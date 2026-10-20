@@ -10,6 +10,7 @@
     ['oracion', 'hands-praying', 'Pedido de oración', 'por ti o por alguien', () => window.Oracion && Oracion.addPet()],
     ['palabra', 'book', 'Seguir leyendo', '', () => { const it = reading(); if (it && !L.isDone(it.id)) Flujo.start([it]); else L.go('hoy'), setTimeout(() => openHere('page-lectura'), 300); }],
     ['brand', 'add-circle', 'Agregar a hoy', 'una práctica solo hoy', () => window.Hoy && Hoy.addToday()],
+    ['llamada', 'phone', 'Llamar a alguien', 'para preguntar cómo está', () => L.llamar()],
     ['encuentro', 'people', 'Anotar con alguien', 'oraron, leyeron, hablaron', () => L.anotar()],
     ['meditar', 'leaf', 'Memorizar', 'un versículo', () => L.memorize && L.memorize()]
   ];
