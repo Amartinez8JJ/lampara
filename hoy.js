@@ -172,8 +172,12 @@
       const tcd = '<div class="tcd fogata ft" style="--tc:' + T.c + '"><div class="ft-l">' + flame + '</div><div class="ft-r"><p class="eyebrow">Tu tiempo con Dios</p><p class="fo-cap">' + capHTML(k0, n) + '</p>' +
         '<p class="ft-sub">' + k + ' de ' + n + (min ? ' · ' + min + ' min' : '') + '</p>' + tier + cta + '</div></div>';
       const bento = tiles();
-      const rail = '<div class="sec rail-h"><h2>Tus prácticas</h2><span class="muted">mantén para completar</span></div><div class="rail">' + its.map(i => ring(i, this.just, nx && i.id === nx.id)).join('') +
-        '<button class="rbtn add-ring" data-addtoday><span class="disk"><span class="core">' + ic('add') + '</span></span><b>Agregar</b><small>solo hoy</small></button></div>';
+      /* tus prácticas: una tarjeta con las que siguen apiladas; «Ver mi día» las abre a pantalla completa (dia.js) */
+      const pendAll = its.filter(i => !L.isDone(i.id)), stack = (pendAll.length ? pendAll : its).slice(0, 3).reverse();
+      const rail = '<div class="sec rail-h"><h2>Tus prácticas</h2><button class="more" data-addtoday>' + ic('add') + ' Agregar</button></div>' +
+        (n ? '<div class="dy-entry"><button class="dy-stack" data-dia aria-label="Ver mi día">' + stack.map((i, k) => '<i data-a="' + i.a + '" class="s' + (stack.length - 1 - k) + '">' + (k === stack.length - 1 ? (pendAll.length ? '<span>' + ic(D.ICON[i.a]) + '</span><b>' + esc(i.t) + '</b><small>' + esc(i.h) + (i.n ? ' · ' + esc(i.n) : '') + '</small>' : '<span>' + ic('flame') + '</span><b>Día completo</b><small>' + n + ' de ' + n + ' · tu llama está encendida</small>') : '') + '</i>').join('') + '</button>' +
+          '<div class="dy-dots">' + its.map(i => '<button data-dia="' + i.id + '" data-a="' + i.a + '" class="' + (L.isDone(i.id) ? 'done' : '') + (nx && i.id === nx.id ? ' next' : '') + '" aria-label="' + esc(i.t) + '">' + ic(L.isDone(i.id) ? 'checkmark' : D.ICON[i.a]) + '</button>').join('') + '</div>' +
+          '<button class="btn" data-dia>' + ic('play') + 'Ver mi día' + (pendAll.length && pendAll.length < n ? ' · ' + pendAll.length + ' más' : '') + '</button></div>' : '<p class="muted">Nada planeado para hoy.</p>');
       const ppl = [{ id: D.LEADER.id, name: D.LEADER.name, first: D.LEADER.first, lead: true }].concat(S.people).concat([{ id: 'AN', name: 'Ana', first: 'Ana', fam: true }]);
       return '<p class="today-date">' + L.longDate(t) + (S.focus ? '<span class="focus-chip">' + ic('flag') + esc(S.focus.t) + '</span>' : '') + '</p>' +
         tcd + rail + bento + (ctx ? ctx.html() : '') +
@@ -238,7 +242,8 @@
       if ((el = t.closest('[data-ring]'))) { if (this.fired) { this.fired = false; return; } openItem(el.dataset.ring, this); return; }
       if ((el = t.closest('[data-open]'))) { openItem(el.dataset.open, this); return; }
       if ((el = t.closest('[data-ctx]'))) { const c = L.topCtx(); if (c) c.click(el); return; }
-      if (t.closest('[data-start]')) { Flujo.start(L.todayItems().filter(i => !L.isDone(i.id) && canFlow(i))); return; }
+      if (t.closest('[data-start]')) { L.openDia(); return; }
+      if ((el = t.closest('[data-dia]'))) { L.openDia(el.dataset.dia || null); return; }
       if ((el = t.closest('[data-day]'))) { openDay(L.fromDk(el.dataset.day)); return; }
       if (t.closest('[data-llama]')) { L.llamaSheet(); return; }
       if ((el = t.closest('[data-acc]'))) { this.push(el.dataset.acc); return; }
