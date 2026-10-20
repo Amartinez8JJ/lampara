@@ -174,15 +174,16 @@
       const bento = tiles();
       /* tus prácticas: una tarjeta con las que siguen apiladas; «Ver mi día» las abre a pantalla completa (dia.js) */
       const pendAll = its.filter(i => !L.isDone(i.id)), stack = (pendAll.length ? pendAll : its).slice(0, 3).reverse();
-      const rail = '<div class="sec rail-h"><h2>Tus prácticas</h2><button class="more" data-addtoday>' + ic('add') + ' Agregar</button></div>' +
+      const rail = '<div class="sec"><h2>Tus prácticas</h2><button class="more" data-addtoday>' + ic('add') + ' Agregar</button></div>' +
         (n ? '<div class="dy-entry"><button class="dy-stack" data-dia aria-label="Ver mi día">' + stack.map((i, k) => '<i data-a="' + i.a + '" class="s' + (stack.length - 1 - k) + '">' + (k === stack.length - 1 ? (pendAll.length ? '<span>' + ic(D.ICON[i.a]) + '</span><b>' + esc(i.t) + '</b><small>' + esc(i.h) + (i.n ? ' · ' + esc(i.n) : '') + '</small>' : '<span>' + ic('flame') + '</span><b>Día completo</b><small>' + n + ' de ' + n + ' · tu llama está encendida</small>') : '') + '</i>').join('') + '</button>' +
           '<div class="dy-dots">' + its.map(i => '<button data-dia="' + i.id + '" data-a="' + i.a + '" class="' + (L.isDone(i.id) ? 'done' : '') + (nx && i.id === nx.id ? ' next' : '') + '" aria-label="' + esc(i.t) + '">' + ic(L.isDone(i.id) ? 'checkmark' : D.ICON[i.a]) + '</button>').join('') + '</div>' +
           '<button class="btn" data-dia>' + ic('play') + 'Ver mi día' + (pendAll.length && pendAll.length < n ? ' · ' + pendAll.length + ' más' : '') + '</button></div>' : '<p class="muted">Nada planeado para hoy.</p>');
       const ppl = [{ id: D.LEADER.id, name: D.LEADER.name, first: D.LEADER.first, lead: true }].concat(S.people).concat([{ id: 'AN', name: 'Ana', first: 'Ana', fam: true }]);
       return '<p class="today-date">' + L.longDate(t) + (S.focus ? '<span class="focus-chip">' + ic('flag') + esc(S.focus.t) + '</span>' : '') + '</p>' +
-        tcd + rail + bento + (ctx ? ctx.html() : '') +
+        tcd + '<div class="hoy-blk">' + rail + '</div>' + (ctx ? '<div class="hoy-blk">' + ctx.html() + '</div>' : '') +
+        '<div class="hoy-blk"><div class="sec"><h2>De un vistazo</h2></div>' + bento + '</div>' +
         (tipSeen() ? '' : '<div class="tip">' + ic('information-circle-outline') + '<span><b>Cómo se usa:</b> mantén presionado un círculo hasta que se llene: la práctica viaja a tu llama. Tócalo para leer qué hacer y tus notas.</span><button class="iconbtn" data-tipx aria-label="Cerrar">' + ic('close') + '</button></div>') +
-        '<div class="sec"><h2>Versículo del día</h2></div><div class="verse" data-verse data-a="palabra"><span class="art">' + ic('sh-palabra') + '</span><p class="eyebrow">Versículo del día · <b>' + esc(v.r) + '</b></p><p class="vt">«' + esc(v.t) + '»</p>' +
+        '<div class="sec"><h2>Versículo del día</h2></div><div class="verse" data-verse data-a="palabra"><span class="art">' + ic('sh-palabra') + '</span><p class="eyebrow"><b>' + esc(v.r) + '</b></p><p class="vt">«' + esc(v.t) + '»</p>' +
         '<div class="vacts"><button data-vact="keep" class="' + (saved ? 'on' : '') + '">' + ic(saved ? 'bookmark' : 'bookmark-outline') + (saved ? 'Guardado' : 'Guardar') + '</button>' +
         '<button data-vact="memo">' + ic('leaf-outline') + 'Memorizar</button><button data-vact="share">' + ic('paper-plane-outline') + 'Compartir</button></div></div>' +
         '<div class="sec"><h2>Tu gente</h2><button class="more" data-anotar>' + ic('add') + ' Anotar</button></div><div class="stories">' + ppl.map(p => {

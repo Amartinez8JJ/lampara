@@ -30,14 +30,14 @@
 .fh-n.fut span { box-shadow: none; color: var(--ink4); }
 .fh-n:not(.fut):active span { transform: scale(0.86); }
 .fh-hint { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 10px 0 2px; color: var(--ink3); font-size: 13px; }
-.fh-hint .ico { color: var(--brand); }
+.fh-hint .ico { color: var(--brand-ink); }
 /* meta cumplida: la casa pasa a color pleno (celebración, como el cierre del día) */
 .fam-casa.full { background: var(--brand); color: var(--on-brand); }
 .fam-casa.full .fh-top p, .fam-casa.full .fh-n small { color: inherit; opacity: 0.78; }
 .fam-casa.full .h-b { fill: var(--on-brand); }
 .fam-casa.full .h-w, .fam-casa.full .h-d, .fam-casa.full .h-l { fill: var(--brand); }
 .fam-casa.full .fh-n span { color: var(--on-brand); box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--on-brand) 38%, transparent); }
-.fam-casa.full .fh-n.on span { background: var(--on-brand); color: var(--brand); box-shadow: none; }
+.fam-casa.full .fh-n.on span { background: var(--on-brand); color: var(--brand-ink); box-shadow: none; }
 .fam-casa.full .fh-n.now:not(.on) span { box-shadow: inset 0 0 0 2px var(--on-brand); }
 .fam-casa.full .fh-n.fut span { box-shadow: none; opacity: 0.55; }
 
@@ -137,7 +137,7 @@ ion-modal .fp-avs .av + .av { box-shadow: 0 0 0 2.5px var(--ion-background-color
 .fam-coin .fam-house { width: 64px; height: 64px; }
 .fam-coin .fam-house .h-b { fill: var(--on-brand); }
 .fam-coin .fam-house .h-w, .fam-coin .fam-house .h-d, .fam-coin .fam-house .h-l { fill: var(--brand); }
-.fam-lit { display: inline-flex; align-items: center; gap: 6px; margin: -8px 0 20px; padding: 6px 12px; border-radius: 999px; background: color-mix(in srgb, var(--brand) 15%, transparent); color: var(--brand); font-size: 14px; font-weight: 700; }
+.fam-lit { display: inline-flex; align-items: center; gap: 6px; margin: -8px 0 20px; padding: 6px 12px; border-radius: 999px; background: color-mix(in srgb, var(--brand) 15%, transparent); color: var(--brand-ink); font-size: 14px; font-weight: 700; }
 .fam-quote { margin: -6px 0 20px; font-family: var(--serif); font-optical-sizing: auto; font-size: 19px; line-height: 1.35; }
 .fam-quote small { display: block; margin-top: 4px; font-family: var(--ui); font-size: 13px; font-weight: 700; color: var(--ink3); }
 .medal .share-pill .av { margin-left: -6px; }

@@ -25,15 +25,18 @@
 }
 /* ================= tokens: oscuro (B) ================= */
 .ion-palette-dark {
-  --bg: #0A0A0B; --surface: #161618; --surface2: #1F1F22; --surface3: #2A2A2E;
-  --line: rgba(235, 235, 245, 0.09); --line2: rgba(235, 235, 245, 0.16);
-  --ink: #F5F5F7; --ink2: rgba(235, 235, 245, 0.8); --ink3: rgba(235, 235, 245, 0.56); --ink4: rgba(235, 235, 245, 0.3);
-  --brand: #AFC25A; --on-brand: #0A0A0B;
-  --on-fill: #0A0A0B;
-  --oracion: #FF5C4D; --adoracion: #FF5FA8; --meditar: #A27BFF; --palabra: #4B8BFF;
-  --mensaje: #1EC8F0; --diario: #2ED69A; --encuentro: #B4E33D; --ayuno: #FFC93C;
-  --llamada: #D9A273;
-  --tabbar: rgba(28, 28, 30, 0.82); --tab-sel: rgba(235, 235, 245, 0.1);
+  /* 21/10: grafito cálido en lugar de negro puro (Things 3 y Apple Fitness de noche): las tarjetas se separan del fondo.
+     El olivo baja a un tono profundo con texto blanco (el verde lima fosforescente cansaba) y lo que se lee en olivo
+     usa --brand-ink. Los colores de actividad, un punto menos fosforescentes. */
+  --bg: #0F100D; --surface: #1A1B17; --surface2: #23241F; --surface3: #2E2F29;
+  --line: rgba(240, 238, 225, 0.08); --line2: rgba(240, 238, 225, 0.15);
+  --ink: #F2F1EA; --ink2: rgba(240, 238, 225, 0.8); --ink3: rgba(240, 238, 225, 0.55); --ink4: rgba(240, 238, 225, 0.3);
+  --brand: #76882F; --on-brand: #FFFFFF; --brand-ink: #B6C673;
+  --on-fill: #0F100D;
+  --oracion: #FF6A5C; --adoracion: #F56BA9; --meditar: #A58BFA; --palabra: #5E96F7;
+  --mensaje: #3EC1E0; --diario: #3DCB97; --encuentro: #A3CF55; --ayuno: #F0C14E;
+  --llamada: #D29E70;
+  --tabbar: rgba(32, 33, 28, 0.84); --tab-sel: rgba(240, 238, 225, 0.1);
   --frame: #000;
 }
 /* un color por actividad */
@@ -55,15 +58,15 @@ html.ios, html.md {
   --ion-color-primary-shade: #546616; --ion-color-primary-tint: #6f8230;
 }
 html.ion-palette-dark.ios, html.ion-palette-dark.md {
-  --ion-background-color: #0A0A0B; --ion-background-color-rgb: 10, 10, 11;
-  --ion-text-color: #F5F5F7; --ion-text-color-rgb: 245, 245, 247;
-  --ion-item-background: #161618; --ion-card-background: #161618;
-  --ion-toolbar-background: #0A0A0B; --ion-border-color: rgba(235, 235, 245, 0.09);
-  --ion-color-primary: #AFC25A; --ion-color-primary-rgb: 175, 194, 90; --ion-color-primary-contrast: #0A0A0B; --ion-color-primary-contrast-rgb: 10, 10, 11;
-  --ion-color-primary-shade: #9aab4f; --ion-color-primary-tint: #b7c86b;
+  --ion-background-color: #0F100D; --ion-background-color-rgb: 15, 16, 13;
+  --ion-text-color: #F2F1EA; --ion-text-color-rgb: 242, 241, 234;
+  --ion-item-background: #1A1B17; --ion-card-background: #1A1B17;
+  --ion-toolbar-background: #0F100D; --ion-border-color: rgba(240, 238, 225, 0.08);
+  --ion-color-primary: #B6C673; --ion-color-primary-rgb: 182, 198, 115; --ion-color-primary-contrast: #0F100D; --ion-color-primary-contrast-rgb: 15, 16, 13;
+  --ion-color-primary-shade: #a0ae65; --ion-color-primary-tint: #bdcc81;
 }
 html.ios ion-modal, html.md ion-modal { --ion-background-color: #F2F2F6; --ion-toolbar-background: #F2F2F6; --ion-item-background: #FFFFFF; }
-html.ion-palette-dark.ios ion-modal, html.ion-palette-dark.md ion-modal { --ion-background-color: #111113; --ion-toolbar-background: #111113; --ion-item-background: #1C1C1F; }
+html.ion-palette-dark.ios ion-modal, html.ion-palette-dark.md ion-modal { --ion-background-color: #141511; --ion-toolbar-background: #141511; --ion-item-background: #1F201B; }
 html, body { background: var(--frame); }
 body { font-family: var(--ui); -webkit-font-smoothing: antialiased; color: var(--ink); }
 ion-icon { width: 1em; height: 1em; display: inline-block; flex: none; }
@@ -99,7 +102,7 @@ ion-tab-button ion-label { font-size: 10.5px; margin-top: 3px; }
 .tbi .on { opacity: 0; }
 ion-tab-button.tab-selected .tbi .on { opacity: 1; }
 ion-tab-button.tab-selected .tbi .off { opacity: 0; }
-ion-tab-button[tab="hoy"].tab-selected .tbi { color: var(--brand); }
+ion-tab-button[tab="hoy"].tab-selected .tbi { color: var(--brand-ink); }
 ion-tab-button ion-badge { --background: var(--brand); width: 9px; height: 9px; min-width: 9px; padding: 0; top: 8px; left: calc(50% + 7px); border-radius: 50%; }
 ion-tabs.notabs ion-tab-bar { transform: translateY(140%); opacity: 0; pointer-events: none; }
 ion-tabs.notabs .pg { padding-bottom: 30px; }
@@ -113,7 +116,7 @@ ion-segment-button { --indicator-color: var(--surface); --color: var(--ink2); --
 .ion-palette-dark ion-segment-button { --indicator-color: #3A3A3F; }
 .sec { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin: 28px 2px 10px; }
 .sec h2 { margin: 0; font-family: var(--serif); font-optical-sizing: auto; font-size: 23px; font-weight: 600; letter-spacing: -0.01em; }
-.sec .more, .link { color: var(--brand); font-weight: 600; font-size: 15px; background: none; border: 0; padding: 0; cursor: pointer; }
+.sec .more, .link { color: var(--brand-ink); font-weight: 600; font-size: 15px; background: none; border: 0; padding: 0; cursor: pointer; }
 .sec .muted { font-size: 14px; }
 .box { background: var(--surface); border-radius: var(--r); }
 .pad { padding: 16px; }
@@ -185,10 +188,10 @@ ion-item-option.o-del { --background: #E5484D; --color: #fff; }
 /* ================= Hoy (estructura de YouVersion; agrupado por momento como Tiimo) ================= */
 .today-date { margin: -4px 2px 14px; color: var(--ink3); font-size: 15px; font-weight: 500; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .focus-chip { display: inline-flex; align-items: center; gap: 5px; height: 26px; padding: 0 10px; border-radius: 999px; background: var(--surface3); color: var(--ink2); font-size: 13px; font-weight: 600; }
-.focus-chip .ico { color: var(--brand); }
+.focus-chip .ico { color: var(--brand-ink); }
 .streak { display: inline-flex; align-items: center; gap: 4px; height: 32px; padding: 0 11px 0 8px; border-radius: 999px; border: 0; background: var(--surface3); color: var(--ink2); font-weight: 700; font-size: 15px; cursor: pointer; }
 .streak .ico { font-size: 18px; color: var(--ink4); transition: color 0.4s; }
-.streak.lit .ico { color: var(--brand); }
+.streak.lit .ico { color: var(--brand-ink); }
 .streak.ignite .ico { animation: ignite 0.9s var(--spring); }
 @keyframes ignite { 0% { transform: scale(0.4); } 50% { transform: scale(1.5); } 100% { transform: scale(1); } }
 .me-btn { border: 0; background: none; padding: 0 4px 0 6px; cursor: pointer; }
@@ -198,7 +201,7 @@ ion-item-option.o-del { --background: #E5484D; --color: #fff; }
 .wd small { font-size: 12px; font-weight: 600; color: var(--ink3); }
 .wd .dot { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-size: 15px; font-weight: 650; color: var(--ink2); }
 .wd.lit .dot { background: var(--brand); color: var(--on-brand); }
-.wd.grace .dot { box-shadow: inset 0 0 0 1.5px var(--brand); color: var(--brand); }
+.wd.grace .dot { box-shadow: inset 0 0 0 1.5px var(--brand); color: var(--brand-ink); }
 .wd.ember .dot { color: var(--ink4); }
 .wd.future .dot { color: var(--ink3); }
 .wd.now small { color: var(--ink); }
@@ -227,7 +230,7 @@ ion-item-option.o-del { --background: #E5484D; --color: #fff; }
 .segbar i::after { content: ''; position: absolute; inset: 0; background: var(--c); transform: scaleX(0); transform-origin: left; transition: transform 0.6s var(--ease); }
 .segbar i.on::after { transform: none; }
 .tcd .done-line { display: flex; align-items: center; gap: 10px; font-weight: 600; }
-.tcd .done-line .ico { font-size: 26px; color: var(--brand); }
+.tcd .done-line .ico { font-size: 26px; color: var(--brand-ink); }
 .moment { margin: 18px 4px 8px; font-size: 13px; font-weight: 600; color: var(--ink3); display: flex; align-items: center; gap: 6px; }
 .moment .ico { font-size: 15px; }
 .add-today { display: flex; align-items: center; gap: 6px; margin: 12px 6px 0; font-size: 15px; }
@@ -317,7 +320,7 @@ ion-modal.sheet::part(handle) { background: var(--ink4); width: 38px; top: 6px; 
 
 /* avisos */
 ion-toast.tst { --background: var(--ink); --color: var(--bg); --border-radius: 14px; --box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25); --button-color: var(--brand); font-weight: 600; }
-ion-toast.tst::part(icon) { color: var(--brand); }
+ion-toast.tst::part(icon) { color: var(--brand-ink); }
 
 /* ================= pantalla completa ================= */
 ion-modal.full { --width: 100%; --height: 100%; --border-radius: 0; }
@@ -339,7 +342,7 @@ ion-modal.celeb .full-in { background: var(--brand); color: var(--on-brand); }
 .cw.grace i { opacity: 0.8; }
 .cw.now i { animation: pop 0.6s 0.9s var(--spring) both; }
 .celeb-in .wk-note { margin: 0 0 26px; font-weight: 600; opacity: 0.8; animation: up 0.7s 0.6s var(--ease) both; }
-.celeb-in .btn { background: var(--on-brand); color: var(--brand); animation: up 0.7s 0.75s var(--ease) both; }
+.celeb-in .btn { background: var(--on-brand); color: var(--brand-ink); animation: up 0.7s 0.75s var(--ease) both; }
 
 /* ================= Empezar: paso a paso ================= */
 .fl-top { display: flex; align-items: center; gap: 12px; padding: 14px 16px 8px; }
@@ -445,13 +448,13 @@ ion-item.prayed h3 { color: var(--ink2); }
 .ddots { display: flex; gap: 3px; }
 .ddots i { width: 14px; height: 14px; font-size: 14px; color: var(--c); display: grid; }
 .dflame { font-size: 20px; color: var(--ink4); }
-.dflame.on { color: var(--brand); }
+.dflame.on { color: var(--brand-ink); }
 .dlock { color: var(--ink4); font-size: 17px; }
 .sig { display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border-radius: 6px; font-size: 12.5px; font-weight: 700; background: var(--diario); color: var(--on-fill); }
 .sig.cuesta { background: var(--ayuno); }
 .sig.hablar { background: var(--oracion); }
 .sig.big { height: 40px; padding: 0 18px; font-size: 18px; border-radius: 10px; margin: 6px 0 10px; }
-.addrow { display: flex; align-items: center; gap: 10px; width: 100%; margin-top: 10px; padding: 14px 16px; border: 0; border-radius: var(--r); background: var(--surface); color: var(--brand); font-weight: 600; font-size: 15.5px; cursor: pointer; }
+.addrow { display: flex; align-items: center; gap: 10px; width: 100%; margin-top: 10px; padding: 14px 16px; border: 0; border-radius: var(--r); background: var(--surface); color: var(--brand-ink); font-weight: 600; font-size: 15.5px; cursor: pointer; }
 .addrow .ico { font-size: 22px; }
 .prof { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 10px 0 4px; }
 .prof .av { margin-bottom: 14px; }
@@ -470,7 +473,7 @@ ion-item.prayed h3 { color: var(--ink2); }
 .muted.sm { font-size: 12.5px; }
 .box.center { display: flex; flex-direction: column; align-items: center; }
 .bigflame { font-size: 64px; width: 64px; height: 64px; margin: 4px auto 10px; color: var(--ink4); }
-.bigflame.on { color: var(--brand); }
+.bigflame.on { color: var(--brand-ink); }
 .bigline { font-size: 19px; margin-bottom: 4px; }
 .locked { text-align: center; display: flex; flex-direction: column; align-items: center; }
 .locked .lk { width: 52px; height: 52px; border-radius: 50%; display: grid; place-items: center; font-size: 22px; background: var(--surface3); color: var(--ink3); margin-bottom: 12px; }
@@ -486,7 +489,7 @@ ion-item.prayed h3 { color: var(--ink2); }
 .dits { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
 .wi { width: 24px; height: 24px; font-size: 24px; color: var(--c); display: grid; font-style: normal; }
 .wtag { display: inline-flex; align-items: center; gap: 6px; color: var(--ink3); font-size: 13.5px; font-weight: 600; }
-.wtag .ico { color: var(--brand); }
+.wtag .ico { color: var(--brand-ink); }
 .dn { color: var(--ink3); font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; display: flex; align-items: center; }
 .chev { font-size: 14px; color: var(--ink4); margin-left: 4px; }
 .hdots { display: flex; justify-content: space-between; gap: 6px; }
@@ -516,7 +519,7 @@ ion-item.prayed h3 { color: var(--ink2); }
 .evs { display: flex; gap: 10px; overflow-x: auto; margin: 0 -16px; padding: 0 16px 4px; scrollbar-width: none; }
 .evs::-webkit-scrollbar { display: none; }
 .ev { flex: none; width: 164px; padding: 14px; border-radius: var(--r); background: var(--surface); display: flex; flex-direction: column; }
-.ev .eyebrow { color: var(--brand); }
+.ev .eyebrow { color: var(--brand-ink); }
 .ev b { font-size: 16px; line-height: 1.25; }
 .ev small { color: var(--ink3); font-size: 13px; margin: 2px 0 12px; }
 .ev .chip { align-self: flex-start; margin-top: auto; }
@@ -712,7 +715,7 @@ ion-footer.compose { background: var(--tabbar); backdrop-filter: blur(20px); -we
 .rv-big small { font-family: var(--ui); font-size: 18px; font-weight: 600; color: var(--ink3); letter-spacing: 0; }
 .rv-flames { display: flex; justify-content: space-between; margin-bottom: 22px; }
 .rv-flames span { display: flex; flex-direction: column; align-items: center; gap: 6px; font-size: 12px; font-weight: 700; color: var(--ink3); }
-.rv-flames .ico { font-size: 34px; color: var(--brand); }
+.rv-flames .ico { font-size: 34px; color: var(--brand-ink); }
 .rv-flames i { width: 34px; height: 34px; display: grid; place-items: center; }
 .rv-flames i::before { content: ''; width: 14px; height: 14px; border-radius: 50%; box-shadow: inset 0 0 0 2px var(--ink4); }
 .rv-flames .grace i::before { box-shadow: inset 0 0 0 2px var(--brand); }
@@ -784,7 +787,7 @@ ion-footer.compose { background: var(--tabbar); backdrop-filter: blur(20px); -we
 .together b { display: block; font-family: var(--serif); font-size: 19px; font-weight: 600; }
 .together small { color: var(--ink3); font-size: 13.5px; }
 .tip { display: flex; align-items: flex-start; gap: 10px; margin: 12px 0 0; padding: 12px 10px 12px 14px; border-radius: var(--r-sm); background: var(--surface3); color: var(--ink2); font-size: 14px; line-height: 1.35; }
-.tip > .ico { font-size: 18px; color: var(--brand); margin-top: 1px; }
+.tip > .ico { font-size: 18px; color: var(--brand-ink); margin-top: 1px; }
 .tip span { flex: 1; }
 .tip b { color: var(--ink); }
 .tip .iconbtn { width: 26px; height: 26px; font-size: 13px; background: none; color: var(--ink3); }
@@ -1009,11 +1012,11 @@ ion-modal.celeb .full-in, ion-modal.evolve .full-in { background: #0D0B12; color
 .rs-c svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
 .rs-c circle { fill: none; stroke-width: 4; stroke-linecap: round; }
 .rs-c .trk { stroke: var(--surface3); }
-.rs-c .bar { stroke: var(--brand); transition: stroke-dashoffset 0.9s var(--ease); }
+.rs-c .bar { stroke: var(--brand-ink); transition: stroke-dashoffset 0.9s var(--ease); }
 .rs-c span { position: relative; display: grid; place-items: center; height: 100%; font-size: 12.5px; font-weight: 700; }
 .rs-c.lit span { color: var(--ink); }
 .rs-c.ember span, .rs-c.today span { color: var(--ink3); }
-.rs-c.now span { color: var(--brand); }
+.rs-c.now span { color: var(--brand-ink); }
 .rs-c .rs-sun { position: absolute; right: -1px; top: -1px; font-size: 11px; color: var(--ink3); }
 .rs-c.out { cursor: default; }
 .rs-c.out span { color: var(--ink4); font-weight: 600; }
@@ -1318,3 +1321,39 @@ ion-modal.dia .full-in { background: #0A0A0B; }
 .ll-how button .ico { font-size: 24px; color: var(--llamada); }
 .ll-how button.on { background: var(--llamada); color: var(--on-fill); transform: scale(1.04); } .ll-how button.on .ico { color: var(--on-fill); }
 .ll .fld { margin-bottom: 12px; }
+
+/* ================= 21/10: el modo oscuro, más calmo =================
+   Lo que se lee en olivo usa un olivo claro; las tarjetas de contexto pasan a ser tonales (un tinte del color y
+   su botón pleno), como las de Apple Fitness y Things 3 de noche; el + sin halo. */
+:root:not(.ion-palette-dark) { --brand-ink: var(--brand); }
+.ion-palette-dark .sec .more, .ion-palette-dark .link, .ion-palette-dark .tip > .ico, .ion-palette-dark .rs-dl.up,
+.ion-palette-dark .dy-dots button.next, .ion-palette-dark .tab-btn-sel, .ion-palette-dark .rs-c.now span { color: var(--brand-ink); }
+.ion-palette-dark .ctxc { background: color-mix(in srgb, var(--c) 19%, var(--surface)); color: var(--ink); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c) 28%, transparent); }
+.ion-palette-dark .ctxc .eyebrow { color: color-mix(in srgb, var(--c) 70%, var(--ink)); opacity: 1; }
+.ion-palette-dark .ctxc > p.muted { color: var(--ink2); opacity: 1; }
+.ion-palette-dark .ctxc .btn { background: var(--c); color: var(--on-fill); }
+.ion-palette-dark .ctxc.fl .btn { color: #fff; }
+.ion-palette-dark .ctxc .aic { background: var(--c); color: var(--on-fill); }
+.ion-palette-dark .ctxc .av { box-shadow: 0 0 0 2px var(--c); }
+.ion-palette-dark .fab { box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45); }
+.ion-palette-dark .tcd.fogata.ft { background: color-mix(in srgb, var(--tc) 11%, var(--surface)); }
+.ion-palette-dark .dy-entry, .ion-palette-dark .bt, .ion-palette-dark .verse { box-shadow: inset 0 0 0 1px var(--line); }
+.ion-palette-dark .rs-t, .ion-palette-dark .rs-week, .ion-palette-dark .rs-cal { box-shadow: inset 0 0 0 1px var(--line); }
+
+/* ================= 21/10: el ritmo de Hoy =================
+   Cada bloque con su título y el mismo aire entre bloques (28 px); la llama en brasa ya no queda perdida en un rincón. */
+.ft { align-items: center !important; min-height: 214px; }
+.ft-l { align-self: stretch; display: flex; align-items: center; }
+.ft .fo-z { height: 100%; min-height: 200px; width: 100%; }
+.ft .fo-fl { transform: scale(calc(0.42 + var(--s, 0.34) * 0.58)); margin-bottom: 18px; }
+.hoy-blk { margin-top: 28px; }
+.hoy-blk > .ctxc { margin: 0; }
+.hoy-blk .sec { margin-top: 0; }
+.bento { margin-top: 0; }
+.tip { margin-top: 16px; }
+/* las tarjetas grandes de color, también tonales de noche */
+.ion-palette-dark .pray-hero, .ion-palette-dark .ig-pc { background: color-mix(in srgb, var(--c, var(--oracion)) 20%, var(--surface)); color: var(--ink); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c, var(--oracion)) 30%, transparent); }
+.ion-palette-dark .pray-hero .ph-ic { color: var(--oracion); }
+.ion-palette-dark .pray-hero .btn { background: var(--oracion); color: var(--on-fill); }
+.ion-palette-dark .ig-pc .av { box-shadow: 0 0 0 2px var(--c); }
+.ion-palette-dark .ig-pc .ig-float { color: var(--c); }
