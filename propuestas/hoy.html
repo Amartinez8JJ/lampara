@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lights · nuevo Hoy</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400..700;1,6..72,400..600&display=swap">
+<style>
+  :root { --ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", Roboto, system-ui, sans-serif; --serif: "Newsreader", Georgia, serif;
+    --spring: cubic-bezier(.34,1.56,.64,1); --ease: cubic-bezier(.22,1,.36,1);
+    --pg: #E9E9EE; --pgi: #111114; --pgi3: rgba(60,60,67,.62); --card: #F6F6F9; }
+  html.dk { --pg: #000; --pgi: #F5F5F7; --pgi3: rgba(235,235,245,.56); --card: #0E0E10; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { margin: 0; background: var(--pg); color: var(--pgi); font-family: var(--ui); -webkit-font-smoothing: antialiased; }
+  a { color: inherit; }
+  svg.ico { width: 1em; height: 1em; fill: currentColor; display: block; flex: none; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 30px 16px 60px; }
+  .top { display: flex; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+  .top > div { flex: 1; min-width: 280px; }
+  h1 { font-family: var(--serif); font-weight: 600; font-size: 40px; letter-spacing: -.015em; margin: 0 0 6px; }
+  .lead { color: var(--pgi3); font-size: 15px; margin: 0 0 8px; max-width: 760px; line-height: 1.45; }
+  .tg { display: flex; gap: 4px; padding: 4px; border-radius: 999px; background: var(--card); }
+  .tg button { border: 0; background: none; color: var(--pgi); font: 600 13px var(--ui); padding: 7px 14px; border-radius: 999px; cursor: pointer; }
+  .tg button.on { background: var(--pgi); color: var(--pg); }
+  .dirs { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 520px), 1fr)); gap: 18px; margin-top: 22px; }
+  .dir { background: var(--card); border-radius: 28px; padding: 20px 16px; }
+  .dir h2 { font-family: var(--serif); font-weight: 600; font-size: 30px; margin: 0 4px 4px; }
+  .dir .why { margin: 0 4px 8px; font-size: 14px; line-height: 1.45; }
+  .dir .refs { margin: 0 4px 6px; font-size: 12.5px; color: var(--pgi3); line-height: 1.55; }
+  .dir .refs a { text-decoration-color: color-mix(in srgb, currentColor 35%, transparent); }
+  .dir ul { margin: 6px 4px 16px; padding-left: 18px; font-size: 13.5px; line-height: 1.5; }
+  .dir ul b { font-weight: 700; }
+  .try { margin: 0 4px 12px; font-size: 12.5px; font-weight: 700; color: var(--pgi3); }
+  .stage { display: flex; justify-content: center; }
+
+  /* ===== el teléfono (tokens de Lights) ===== */
+  .ph { --bg: #F2F2F6; --surface: #FFFFFF; --surface2: #F2F2F6; --surface3: #E7E7EC; --line: rgba(60,60,67,.12); --ink: #111114; --ink2: rgba(60,60,67,.86); --ink3: rgba(60,60,67,.62); --ink4: rgba(60,60,67,.32);
+    --brand: #5F7419; --on-brand: #fff; --on-fill: #fff; --oracion: #F0533F; --palabra: #2F6FE4; --meditar: #7C5CE6; --encuentro: #5E9C12; --diario: #13A874; --mensaje: #0EA5C9; --tc: #3F84FF;
+    position: relative; width: 360px; max-width: 100%; height: 740px; border-radius: 44px; overflow: hidden; background: var(--bg); color: var(--ink); box-shadow: 0 0 0 10px #111, 0 0 0 11px #2b2b2e; margin: 12px 0 16px; }
+  html.dk .ph { --bg: #0A0A0B; --surface: #161618; --surface2: #1F1F22; --surface3: #2A2A2E; --line: rgba(235,235,245,.09); --ink: #F5F5F7; --ink2: rgba(235,235,245,.8); --ink3: rgba(235,235,245,.56); --ink4: rgba(235,235,245,.3);
+    --brand: #AFC25A; --on-brand: #0A0A0B; --on-fill: #0A0A0B; --oracion: #FF5C4D; --palabra: #4B8BFF; --meditar: #A27BFF; --encuentro: #B4E33D; --diario: #2ED69A; --mensaje: #1EC8F0; }
+  [data-a="oracion"] { --c: var(--oracion); } [data-a="palabra"] { --c: var(--palabra); } [data-a="meditar"] { --c: var(--meditar); } [data-a="encuentro"] { --c: var(--encuentro); } [data-a="diario"] { --c: var(--diario); } [data-a="mensaje"] { --c: var(--mensaje); } [data-a="brand"] { --c: var(--brand); }
+  .scr { position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden; padding: 0 0 120px; scrollbar-width: none; }
+  .scr::-webkit-scrollbar { display: none; }
+  .sb { height: 44px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px; font-size: 14px; font-weight: 650; }
+  .llama { display: block; width: 100%; height: 100%; overflow: visible; }
+  .llama g, .llama circle, .llama .star { transform-box: view-box; }
+  .llama .ll-all { transform-origin: 60px 140px; animation: ll-sway 3.2s ease-in-out infinite; }
+  .llama .mw { transform-origin: 60px 140px; animation: ll-flick 1.9s ease-in-out infinite; }
+  .llama .tw { transform-origin: 60px 140px; animation: ll-flick 1.5s ease-in-out infinite; } .llama .tw1 { animation-duration: 1.7s; animation-delay: -.4s; }
+  .llama .coref { animation: ll-core 2.4s ease-in-out infinite; }
+  @keyframes ll-sway { 0%, 100% { transform: rotate(-1.2deg); } 50% { transform: rotate(1.2deg); } }
+  @keyframes ll-flick { 0%, 100% { transform: scale(1, 1); } 35% { transform: scale(.97, 1.05); } 70% { transform: scale(1.02, .97); } }
+  @keyframes ll-core { 0%, 100% { opacity: 1; } 50% { opacity: .78; } }
+
+  /* barra de pestañas con el + al medio (Threads, Instagram: crear siempre a un toque) */
+  .tb { position: absolute; left: 12px; right: 12px; bottom: 18px; height: 64px; border-radius: 32px; display: flex; align-items: center; justify-content: space-around; padding: 0 6px;
+    background: color-mix(in srgb, var(--surface) 82%, transparent); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); box-shadow: 0 0 0 .5px var(--line), 0 8px 24px rgba(0,0,0,.08); z-index: 20; }
+  .tb > span { display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 10px; font-weight: 650; color: var(--ink4); width: 56px; }
+  .tb > span .ico { font-size: 22px; } .tb > span.on { color: var(--brand); }
+  .plus { width: 54px; height: 54px; border-radius: 50%; border: 0; background: var(--brand); color: var(--on-brand); display: grid; place-items: center; font-size: 26px; cursor: pointer; transition: transform .35s var(--spring); box-shadow: 0 6px 16px color-mix(in srgb, var(--brand) 40%, transparent); }
+  .plus:active { transform: scale(.9); }
+  .ph.menu .plus { transform: rotate(135deg); background: var(--ink); color: var(--bg); box-shadow: none; }
+  .veil { position: absolute; inset: 0; z-index: 15; background: color-mix(in srgb, var(--bg) 55%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); opacity: 0; pointer-events: none; transition: opacity .3s; }
+  .ph.menu .veil { opacity: 1; pointer-events: auto; }
+  .qa { position: absolute; left: 16px; right: 16px; bottom: 96px; z-index: 18; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; pointer-events: none; }
+  .ph.menu .qa { pointer-events: auto; }
+  .qa button { display: flex; align-items: center; gap: 10px; min-height: 64px; padding: 10px 12px; border: 0; border-radius: 20px; background: var(--c); color: var(--on-fill); text-align: left; font: 650 14px/1.2 var(--ui); cursor: pointer;
+    opacity: 0; transform: translateY(26px) scale(.86); transition: opacity .25s, transform .45s var(--spring); }
+  .qa button small { display: block; font-size: 11.5px; font-weight: 600; opacity: .78; margin-top: 2px; }
+  .qa button .ico { font-size: 22px; }
+  .ph.menu .qa button { opacity: 1; transform: none; }
+  .qa button.wide { grid-column: 1 / -1; }
+  .qa button:active { transform: scale(.95) !important; }
+  .qa .qtitle { grid-column: 1 / -1; font-family: var(--serif); font-size: 24px; font-weight: 600; margin: 0 2px 2px; color: var(--ink); opacity: 0; transition: opacity .3s .05s; }
+  .ph.menu .qa .qtitle { opacity: 1; }
+
+  /* pantallas de acceso rápido (entran desde la derecha, como una página de iOS) */
+  .sub { position: absolute; inset: 0; z-index: 30; background: var(--bg); transform: translateX(100%); transition: transform .45s var(--ease); overflow-y: auto; scrollbar-width: none; padding-bottom: 40px; }
+  .sub.on { transform: none; box-shadow: -20px 0 40px rgba(0,0,0,.12); }
+  .subh { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; gap: 8px; padding: 50px 14px 8px; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+  .subh button { border: 0; background: none; color: var(--brand); display: flex; align-items: center; gap: 2px; font: 600 16px var(--ui); cursor: pointer; padding: 4px 0; }
+  .subh button .ico { font-size: 20px; }
+  .sub h3 { font-family: var(--serif); font-weight: 600; font-size: 32px; margin: 4px 18px 12px; letter-spacing: -.01em; }
+  .sub .card { margin: 0 14px 12px; padding: 14px; border-radius: 18px; background: var(--surface); }
+  .bigring { display: flex; align-items: center; gap: 16px; }
+  .bigring svg { width: 92px; height: 92px; transform: rotate(-90deg); flex: none; }
+  .bigring circle { fill: none; stroke-width: 9; stroke-linecap: round; }
+  .bigring b { display: block; font-size: 26px; font-weight: 800; }
+  .bigring small { color: var(--ink3); font-size: 13px; font-weight: 600; }
+  .row { display: flex; align-items: center; gap: 12px; padding: 10px 0; }
+  .row + .row { border-top: .5px solid var(--line); }
+  .row .g { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--c); color: var(--on-fill); font-size: 16px; flex: none; }
+  .row .g.off { background: var(--surface3); color: var(--c); }
+  .row div { flex: 1; min-width: 0; } .row b { display: block; font-size: 15px; } .row small { color: var(--ink3); font-size: 12.5px; }
+  .row .go { padding: 7px 12px; border-radius: 999px; background: var(--brand); color: var(--on-brand); font-size: 13px; font-weight: 700; }
+  .wkd { display: grid; grid-template-columns: 44px 1fr; gap: 10px; align-items: center; padding: 9px 0; }
+  .wkd + .wkd { border-top: .5px solid var(--line); }
+  .wkd .dn { text-align: center; } .wkd .dn small { display: block; font-size: 11px; font-weight: 700; color: var(--ink3); } .wkd .dn b { font-size: 18px; }
+  .wkd.now .dn b { display: inline-grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--brand); color: var(--on-brand); font-size: 15px; }
+  .wkd .chips { display: flex; flex-wrap: wrap; gap: 5px; }
+  .wkd .chips span { display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px 4px 5px; border-radius: 999px; background: color-mix(in srgb, var(--c) 15%, transparent); color: var(--ink); font-size: 11.5px; font-weight: 650; }
+  .wkd .chips span .ico { font-size: 12px; color: var(--c); }
+  .wkd .chips span.done { background: var(--c); color: var(--on-fill); } .wkd .chips span.done .ico { color: var(--on-fill); }
+  .wkd.past { opacity: .7; }
+  .bk { display: grid; grid-template-columns: repeat(13, 1fr); gap: 3px; margin-top: 10px; }
+  .bk i { aspect-ratio: 1; border-radius: 3px; background: var(--surface3); } .bk i.r { background: var(--palabra); } .bk i.n { background: color-mix(in srgb, var(--palabra) 45%, transparent); }
+
+  /* el orbe con estela, como en la fogata de ahora */
+  .orb { position: fixed; left: 0; top: 0; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; pointer-events: none; z-index: 999; }
+  .trail { position: fixed; left: 0; top: 0; width: 7px; height: 7px; margin: -3.5px 0 0 -3.5px; border-radius: 50%; pointer-events: none; z-index: 998; }
+  .spark { position: fixed; width: 6px; height: 6px; border-radius: 2px; pointer-events: none; z-index: 999; }
+
+  /* ====== A · La línea del día ====== */
+  .A .head { position: sticky; top: 0; z-index: 10; padding: 44px 16px 10px; background: color-mix(in srgb, var(--bg) 86%, transparent); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
+  .A .hrow { display: flex; align-items: center; gap: 10px; }
+  .A .hfl { width: 40px; height: 46px; flex: none; transform-origin: 50% 90%; transition: transform .8s var(--spring), filter .8s; }
+  .A .hrow b { font-family: var(--serif); font-size: 28px; font-weight: 600; letter-spacing: -.01em; line-height: 1; }
+  .A .hrow small { display: block; color: var(--ink3); font-size: 12.5px; font-weight: 650; margin-top: 3px; }
+  .A .hrow .av { margin-left: auto; width: 32px; height: 32px; border-radius: 50%; background: #FF5C4D; color: #fff; display: grid; place-items: center; font-size: 11px; font-weight: 800; }
+  .A .segs { display: flex; gap: 3px; margin-top: 10px; }
+  .A .segs i { flex: 1; height: 5px; border-radius: 3px; background: color-mix(in srgb, var(--c) 22%, transparent); position: relative; overflow: hidden; }
+  .A .segs i::after { content: ''; position: absolute; inset: 0; background: var(--c); transform: scaleX(0); transform-origin: left; transition: transform .6s var(--ease); }
+  .A .segs i.on::after { transform: none; }
+  .acc { display: flex; gap: 8px; overflow-x: auto; padding: 4px 16px 6px; scrollbar-width: none; scroll-snap-type: x mandatory; }
+  .acc::-webkit-scrollbar { display: none; }
+  .ac { flex: none; width: 132px; scroll-snap-align: start; border: 0; border-radius: 18px; padding: 11px 12px; background: var(--surface); color: var(--ink); text-align: left; cursor: pointer; font: inherit; transition: transform .2s var(--ease); }
+  .ac:active { transform: scale(.95); }
+  .ac .vis { height: 34px; margin-bottom: 8px; display: flex; align-items: flex-end; gap: 3px; }
+  .ac .vis svg { width: 34px; height: 34px; transform: rotate(-90deg); }
+  .ac .vis circle { fill: none; stroke-width: 5; stroke-linecap: round; }
+  .ac .vis i { flex: 1; border-radius: 3px; background: var(--surface3); } .ac .vis i.l { background: var(--brand); } .ac .vis i.t { background: var(--ink); }
+  .ac b { display: block; font-size: 13.5px; } .ac small { display: block; color: var(--ink3); font-size: 11.5px; font-weight: 600; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tl { padding: 6px 16px 0; }
+  .mo { display: flex; align-items: center; gap: 6px; margin: 14px 0 6px 52px; font-size: 12.5px; font-weight: 700; color: var(--ink3); }
+  .it { position: relative; display: grid; grid-template-columns: 44px 1fr; gap: 8px; margin-bottom: 8px; }
+  .it time { padding-top: 15px; font-size: 12px; font-weight: 700; color: var(--ink3); text-align: right; font-variant-numeric: tabular-nums; }
+  .it::before { content: ''; position: absolute; left: 50px; top: 0; bottom: -8px; width: 2px; background: var(--surface3); }
+  .pill { position: relative; overflow: hidden; border-radius: 18px; background: var(--surface); cursor: pointer; user-select: none; -webkit-user-select: none; touch-action: manipulation; transition: transform .25s var(--spring); }
+  .pill .fillb { position: absolute; inset: 0; background: color-mix(in srgb, var(--c) 18%, transparent); transform: scaleX(0); transform-origin: left; }
+  .pill.holding .fillb { transform: scaleX(1); transition: transform .6s linear; }
+  .pill.holding { transform: scale(.98); }
+  .pill .pr { position: relative; display: flex; align-items: center; gap: 10px; padding: 10px 12px; }
+  .pill .g { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; font-size: 17px; background: color-mix(in srgb, var(--c) 16%, transparent); color: var(--c); flex: none; transition: background-color .3s, color .3s, transform .4s var(--spring); }
+  .pill .pt { flex: 1; min-width: 0; } .pill b { display: block; font-size: 15px; } .pill .pt small { display: flex; align-items: center; gap: 4px; color: var(--ink3); font-size: 12px; font-weight: 600; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .pill .pt small .ico { font-size: 12px; flex: none; }
+  .pill .mn { color: var(--ink3); font-size: 12px; font-weight: 700; }
+  .pill.done { background: var(--c); color: var(--on-fill); }
+  .pill.done .g { background: var(--on-fill); color: var(--c); }
+  .pill.done .pt small, .pill.done .mn { color: color-mix(in srgb, var(--on-fill) 80%, transparent); }
+  .pill.done.pop .g { animation: pop .5s var(--spring); }
+  @keyframes pop { 0% { transform: scale(.6); } 60% { transform: scale(1.2); } 100% { transform: scale(1); } }
+  .pill .ex { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .4s var(--ease); }
+  .pill.open .ex { grid-template-rows: 1fr; }
+  .pill .ex > div { overflow: hidden; }
+  .pill .exi { padding: 0 12px 12px 58px; font-size: 13px; line-height: 1.45; }
+  .pill .exi .note { display: flex; gap: 6px; padding: 8px 10px; border-radius: 12px; background: var(--surface2); margin-bottom: 8px; }
+  .pill.done .exi .note { background: color-mix(in srgb, var(--on-fill) 18%, transparent); }
+  .pill .exi ol { margin: 0 0 10px; padding-left: 18px; }
+  .pill .exi .bt { display: flex; gap: 6px; }
+  .pill .exi .bt span { padding: 7px 12px; border-radius: 999px; background: var(--c); color: var(--on-fill); font-weight: 700; font-size: 12.5px; }
+  .pill .exi .bt span.gh { background: var(--surface2); color: var(--ink); }
+  .pill.done .exi .bt span { background: var(--on-fill); color: var(--c); }
+
+  /* ====== B · El tablero ====== */
+  .B .bh { padding: 46px 16px 6px; display: flex; align-items: center; justify-content: space-between; }
+  .B .bh b { font-family: var(--serif); font-size: 34px; font-weight: 600; letter-spacing: -.01em; }
+  .B .bh small { display: block; color: var(--ink3); font-size: 13px; font-weight: 600; }
+  .B .bh .av { width: 32px; height: 32px; border-radius: 50%; background: #FF5C4D; color: #fff; display: grid; place-items: center; font-size: 11px; font-weight: 800; }
+  .bento { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 6px 16px; }
+  .tile { position: relative; border: 0; border-radius: 22px; padding: 13px; background: var(--surface); color: var(--ink); text-align: left; cursor: pointer; font: inherit; overflow: hidden; transition: transform .2s var(--ease); }
+  .tile:active { transform: scale(.96); }
+  .tile .k { display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 700; color: var(--ink3); }
+  .tile .k .ico { font-size: 13px; color: var(--c, var(--brand)); }
+  .tile b.big { display: block; font-size: 26px; font-weight: 800; letter-spacing: -.02em; margin-top: 8px; }
+  .tile .s { display: block; font-size: 12.5px; font-weight: 600; color: var(--ink2); margin-top: 2px; }
+  .tile.fire { grid-column: 1 / -1; display: flex; align-items: center; gap: 12px; min-height: 150px; background: color-mix(in srgb, var(--tc) 10%, var(--surface)); }
+  .tile.fire .ffl { width: 104px; height: 120px; flex: none; transform-origin: 50% 90%; transition: transform .8s var(--spring); }
+  .tile.fire h4 { margin: 0; font-family: var(--serif); font-size: 24px; font-weight: 600; }
+  .tile.fire p { margin: 2px 0 10px; font-size: 13px; color: var(--ink2); }
+  .tile.fire .go { display: inline-flex; align-items: center; gap: 6px; padding: 9px 14px; border-radius: 999px; background: var(--brand); color: var(--on-brand); font-weight: 700; font-size: 13.5px; }
+  .tile .mring { position: absolute; right: 12px; top: 12px; width: 40px; height: 40px; transform: rotate(-90deg); }
+  .tile .mring circle { fill: none; stroke-width: 5; stroke-linecap: round; }
+  .tile .wb { display: flex; align-items: flex-end; gap: 4px; height: 38px; margin-top: 10px; }
+  .tile .wb i { flex: 1; border-radius: 4px; background: var(--surface3); } .tile .wb i.l { background: var(--brand); } .tile .wb i.t { background: var(--ink); }
+  .rail { display: flex; gap: 10px; overflow-x: auto; padding: 4px 16px 8px; scrollbar-width: none; scroll-snap-type: x mandatory; }
+  .rail::-webkit-scrollbar { display: none; }
+  .rsec { display: flex; align-items: baseline; justify-content: space-between; padding: 14px 18px 4px; }
+  .rsec b { font-family: var(--serif); font-size: 21px; font-weight: 600; } .rsec small { color: var(--ink3); font-size: 12.5px; font-weight: 600; }
+  .rb { flex: none; width: 92px; scroll-snap-align: start; display: flex; flex-direction: column; align-items: center; gap: 5px; border: 0; background: none; padding: 0; color: var(--ink); cursor: pointer; font: inherit; user-select: none; -webkit-user-select: none; touch-action: manipulation; }
+  .rb .disk { position: relative; width: 76px; height: 76px; display: grid; place-items: center; }
+  .rb svg.rg { position: absolute; inset: 0; width: 76px; height: 76px; transform: rotate(-90deg); }
+  .rb .rg circle { fill: none; stroke-width: 5; } .rb .trk { stroke: color-mix(in srgb, var(--c) 22%, transparent); }
+  .rb .bar { stroke: var(--c); stroke-linecap: round; stroke-dasharray: 220; stroke-dashoffset: 220; transition: stroke-dashoffset .3s var(--ease); }
+  .rb.holding .bar { transition: stroke-dashoffset .6s linear; stroke-dashoffset: 0; } .rb.done .bar { stroke-dashoffset: 0; }
+  .rb .core { width: 60px; height: 60px; border-radius: 50%; display: grid; place-items: center; font-size: 26px; background: var(--surface); color: var(--c); transition: background-color .3s, transform .35s var(--spring); }
+  .rb.holding .core { transform: scale(.88); } .rb.done .core { background: var(--c); color: var(--on-fill); }
+  .rb.done.pop .core { animation: pop .5s var(--spring); }
+  .rb b { font-size: 12px; text-align: center; line-height: 1.2; } .rb small { font-size: 11px; color: var(--ink3); font-weight: 600; display: flex; align-items: center; gap: 3px; }
+  .rb small .ico { font-size: 10px; }
+  .rb.next .disk::after { content: ''; position: absolute; inset: -5px; border-radius: 50%; border: 2px solid var(--c); opacity: .5; animation: beat 1.8s ease-in-out infinite; }
+  @keyframes beat { 50% { transform: scale(1.06); opacity: .15; } }
+  .shB { position: absolute; left: 0; right: 0; bottom: 0; z-index: 25; padding: 10px 18px 30px; border-radius: 28px 28px 0 0; background: var(--surface); transform: translateY(105%); transition: transform .45s var(--ease); box-shadow: 0 -10px 30px rgba(0,0,0,.12); }
+  .shB.on { transform: none; }
+  .shB .grab { width: 38px; height: 5px; border-radius: 3px; background: var(--surface3); margin: 0 auto 12px; }
+  .shB h4 { margin: 0 0 2px; font-family: var(--serif); font-size: 24px; font-weight: 600; } .shB .meta { color: var(--ink3); font-size: 13px; font-weight: 600; margin-bottom: 10px; }
+  .shB .note { display: flex; gap: 8px; padding: 10px 12px; border-radius: 14px; background: var(--surface2); font-size: 14px; margin-bottom: 10px; }
+  .shB ol { margin: 0 0 14px; padding-left: 20px; font-size: 14px; line-height: 1.5; }
+  .shB .bt { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .shB .bt span { text-align: center; padding: 12px; border-radius: 999px; background: var(--c); color: var(--on-fill); font-weight: 700; font-size: 14px; }
+  .shB .bt span.gh { background: var(--surface2); color: var(--ink); }
+  .plusB { position: absolute; right: 18px; bottom: 96px; z-index: 21; }
+  .B .qa { bottom: 166px; }
+
+  .op { margin-top: 26px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 18px; }
+  .op > div { padding: 20px; border-radius: 24px; background: var(--card); }
+  .op h3 { font-family: var(--serif); font-size: 24px; font-weight: 600; margin: 0 0 10px; }
+  .op p, .op li { font-size: 14.5px; line-height: 1.5; } .op ul { padding-left: 18px; margin: 0; }
+  @media (max-width: 420px) { .ph { width: 100%; height: 700px; border-radius: 34px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><div><h1>Un Hoy más rápido</h1>
+    <p class="lead">Dos direcciones para el nuevo orden de Hoy. Las dos suman el <b>botón +</b> para hacer lo frecuente en un toque, y los <b>accesos</b> a Mi lectura, Mi semana y el resumen sin salir de Hoy. Los dos teléfonos se pueden tocar: mantené presionado para completar, tocá para leer la nota y abrí el +.</p></div>
+    <div class="tg" id="tg"><button data-t="l" class="on">Claro</button><button data-t="d">Oscuro</button></div></div>
+  <div class="dirs">
+    <section class="dir">
+      <h2>A · La línea del día</h2>
+      <p class="why">El día como una línea de tiempo con la hora a la izquierda. Cada práctica es una fila que se <b>despliega en el lugar</b> con su nota y los pasos, sin abrir otra pantalla. Arriba, una barra fija con tu llama y el avance del día, siempre a la vista. Debajo, una fila de accesos que se desliza.</p>
+      <p class="refs">De <a href="https://structured.app" target="_blank" rel="noopener">Structured</a>: la línea de tiempo con la hora y los colores. De <a href="https://www.tiimoapp.com" target="_blank" rel="noopener">Tiimo</a>: el día por momentos. De <a href="https://culturedcode.com/things/" target="_blank" rel="noopener">Things 3</a>: la fila que se abre en el lugar. De <a href="https://www.threads.net" target="_blank" rel="noopener">Threads</a> e Instagram: el + al medio de la barra.</p>
+      <ul>
+        <li><b>Más denso:</b> entra todo el día en una pantalla. Los anillos de ahora dejan una práctica sola por fila.</li>
+        <li><b>La nota a la vista:</b> la nota se lee en la misma fila, sin tocar nada.</li>
+        <li><b>Completar:</b> mantener presionado llena la fila con su color y un orbe vuela a la llama de arriba.</li>
+      </ul>
+      <p class="try">Probá: mantener presionado «Mateo 23–25» · tocar «Oración» · el + de la barra · «Mi lectura»</p>
+      <div class="stage"><div class="ph A" id="phA"></div></div>
+    </section>
+    <section class="dir">
+      <h2>B · El tablero</h2>
+      <p class="why">Hoy como un tablero de widgets. Arriba, tu llama grande con el botón para empezar. Debajo, cuatro mosaicos: Mi lectura, Mi semana, Oración y tu próximo encuentro. Las prácticas son anillos en una fila que se desliza, con la que sigue latiendo primero. El + flota abajo a la derecha.</p>
+      <p class="refs">De los <a href="https://support.apple.com/es-es/118610" target="_blank" rel="noopener">widgets de iOS</a>: los mosaicos. Del resumen de <a href="https://www.apple.com/es/apple-fitness-plus/" target="_blank" rel="noopener">Apple Fitness</a>: el anillo y el número grande. De <a href="https://streaksapp.com" target="_blank" rel="noopener">Streaks</a>: los anillos que se mantienen para completar, como ahora. De <a href="https://www.youversion.com" target="_blank" rel="noopener">YouVersion</a>: el plan de lectura con su avance.</p>
+      <ul>
+        <li><b>Cambia menos:</b> mantiene los anillos de hoy y la fogata.</li>
+        <li><b>Accesos más grandes:</b> los mosaicos muestran datos (80 % de la Biblia, 4 de 7 días) antes de tocarlos.</li>
+        <li><b>La nota</b> se ve en una hoja que sube al tocar el anillo.</li>
+      </ul>
+      <p class="try">Probá: mantener presionado un anillo · tocar «Oración» · el + flotante · el mosaico «Mi semana»</p>
+      <div class="stage"><div class="ph B" id="phB"></div></div>
+    </section>
+  </div>
+  <div class="op">
+    <div><h3>Mi opinión</h3><p>Me quedo con la <b>A</b>. Resuelve lo que se ve en tu captura: con anillos de a tres, una práctica de tarde o de noche ocupa una fila entera. En la línea del día entra todo de una vez y la nota se lee sin tocar. El + al medio de la barra es el patrón más reconocible para «crear rápido».</p><p>De la B tomaría los mosaicos con datos para los accesos, en la fila que se desliza.</p></div>
+    <div><h3>Qué hay en el +</h3><ul><li>Anotar lo que Dios te dijo</li><li>Pedido de oración</li><li>Agregar algo a hoy</li><li>Seguir leyendo (tu plan, en el capítulo de hoy)</li><li>Anotar un encuentro</li><li>Memorizar un versículo</li></ul></div>
+    <div><h3>Lo que no sale de una referencia</h3><p>La fila de accesos (Mi lectura, Mi semana, Permanecer, Resumen) es una mezcla: la forma viene de los widgets de iOS, pero su contenido es propio de Lights.</p></div>
+  </div>
+</div>
+<script src="icons.js"></script>
+<script>
+const ic = (n, c) => '<svg class="ico' + (c ? ' ' + c : '') + '" viewBox="0 0 256 256">' + (ICONS[n] || '') + '</svg>';
+  const TIERS = [
+    { d: 0, n: 'Chispa', c: '#FF8A1F', l: '#FFE2A8', t: 0, sc: 0.74 },
+    { d: 10, n: 'Brote', c: '#22C98A', l: '#C6F6DF', t: 1, sc: 0.8 },
+    { d: 20, n: 'Vela', c: '#9B6CFF', l: '#E6DBFF', t: 2, sc: 0.85 },
+    { d: 30, n: 'Antorcha', c: '#3F84FF', l: '#D6E5FF', t: 2, sc: 0.9, tall: 1 },
+    { d: 50, n: 'Lámpara', c: '#FF4FA0', l: '#FFD5E8', t: 4, sc: 0.93, halo: 1 },
+    { d: 75, n: 'Faro', c: '#12C2EC', l: '#CCF5FF', t: 4, sc: 0.96, halo: 1, twin: 1 },
+    { d: 100, n: 'Fuego', c: '#FF4B3E', l: '#FFD6D1', t: 4, sc: 1, halo: 1, twin: 1, sp: 1 },
+    { d: 150, n: 'Aurora', c: '#F5B70F', l: '#FFF3C9', t: 4, sc: 1, halo: 2, twin: 1, sp: 1 },
+    { d: 200, n: 'Estrella', c: '#8F8BFF', l: '#FFFFFF', t: 5, sc: 1, halo: 2, twin: 1, sp: 1, star: 1 },
+    { d: 365, n: 'Lumbrera', c: '#FF8A1F', l: '#FFFFFF', t: 5, sc: 1, halo: 2, twin: 1, sp: 1, star: 1, rb: 1 }
+  ];
+  const tierOf = n => { let i = 0; TIERS.forEach((t, k) => { if (n >= t.d) i = k; }); return i; };
+  const TD = 'M60 8C76 46 100 66 100 100A40 40 0 0 1 20 100C20 66 44 46 60 8Z';
+  const TONGUES = [[-24, 14, -22, 0.56], [24, 18, 20, 0.52], [-36, 38, -36, 0.42], [36, 40, 34, 0.4], [0, 2, 0, 1.1]];
+  let lid = 0;
+  /* la llama de una etapa, en SVG: lenguas, halo, corazón, chispas y estrella según el nivel */
+  function llama(ti, o) {
+    o = o || {}; const T = TIERS[ti], id = 'll' + (++lid);
+    const g = 'url(#' + id + 'g)', gi = 'url(#' + id + 'i)';
+    const tr = (x, y, r, k) => 'translate(' + x + ' ' + y + ') rotate(' + r + ' 60 140) translate(60 140) scale(' + k + ') translate(-60 -140)';
+    const defs = '<defs>' + (T.rb
+      ? '<linearGradient id="' + id + 'g" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#FFC93C"/><stop offset=".3" stop-color="#FF5C4D"/><stop offset=".55" stop-color="#FF5FA8"/><stop offset=".78" stop-color="#9B6CFF"/><stop offset="1" stop-color="#3F84FF"/></linearGradient>'
+      : '<radialGradient id="' + id + 'g" cx="50%" cy="80%" r="75%"><stop offset="0" stop-color="' + T.l + '"/><stop offset=".55" stop-color="' + T.c + '"/><stop offset="1" stop-color="' + T.c + '"/></radialGradient>') +
+      '<radialGradient id="' + id + 'i" cx="50%" cy="80%" r="70%"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="' + T.l + '"/></radialGradient>' +
+      '<radialGradient id="' + id + 'h"><stop offset="0" stop-color="' + T.c + '" stop-opacity=".5"/><stop offset="1" stop-color="' + T.c + '" stop-opacity="0"/></radialGradient></defs>';
+    let b = '';
+    if (T.halo) b += '<circle class="halo" cx="60" cy="96" r="' + (T.halo > 1 ? 80 : 64) + '" fill="url(#' + id + 'h)"/>';
+    TONGUES.slice(0, T.t).forEach((q, k) => { b += '<g class="tw tw' + k + '"><path d="' + TD + '" fill="' + g + '" transform="' + tr(q[0], q[1] - (T.tall ? 8 : 0), q[2], q[3]) + '"/></g>'; });
+    b += '<g class="mw"><path d="' + TD + '" fill="' + g + '" transform="' + tr(0, 0, 0, T.sc) + '"/>';
+    if (T.twin) b += '<path d="' + TD + '" fill="' + T.l + '" opacity=".5" transform="' + tr(-7, -4, -10, T.sc * 0.48) + '"/>';
+    b += '<path class="coref" d="' + TD + '" fill="' + gi + '" transform="' + tr(0, 4, 0, T.sc * 0.5) + '"/></g>';
+    if (T.sp) b += '<circle class="sp sp0" cx="24" cy="44" r="4" fill="' + T.l + '"/><circle class="sp sp1" cx="98" cy="34" r="3" fill="' + T.l + '"/><circle class="sp sp2" cx="80" cy="14" r="2.5" fill="' + (T.rb ? '#fff' : T.c) + '"/>';
+    if (T.star) b += '<path class="star" d="M100 2l3 9 9 3-9 3-3 9-3-9-9-3 9-3z" fill="#fff"/>';
+    return '<svg class="llama ' + (o.cls || '') + '" viewBox="-12 -8 144 158" aria-hidden="true" style="--tc:' + T.c + '">' + defs + '<g class="ll-all">' + b + '</g></svg>';
+  }
+
+const G = { oracion: 'hands-praying', palabra: 'book', meditar: 'water', encuentro: 'people', diario: 'create', mensaje: 'chatbubble-ellipses' };
+const ITEMS = [
+  { id: 'o', a: 'oracion', t: 'Oración', h: '06:15', m: 10, n: 'Por María, Daniel y papá', how: ['Agradece por una cosa de ayer', 'Ora por María, Daniel y papá', 'Entrega el día'] },
+  { id: 'mt', a: 'palabra', t: 'Mateo 23–25', h: '06:35', m: 18, p: 'Biblia en un año · día 293', how: ['Lee los tres capítulos', 'Marca una frase', 'Llévate un versículo'] },
+  { id: 'j', a: 'palabra', t: 'Juan 15:1–17', h: '06:50', m: 15, p: 'Permanecer · día 5 de 7', how: ['Lee despacio', '¿Qué dice de permanecer?', 'Coméntalo con María'] },
+  { id: 'jm', a: 'meditar', t: 'Juan 15:4', h: '06:50', m: 5, p: 'Permanecer · día 5 de 7', how: ['Repite el versículo', 'Quédate en una palabra', 'Respóndele a Dios'] },
+  { id: 'l', a: 'encuentro', t: 'Reunión con Lucas', h: '18:00', n: 'Evangelio de Juan', how: ['Pregúntale cómo le fue', 'Lean Juan 3', 'Oren juntos'] },
+  { id: 'e', a: 'encuentro', t: 'Con Esteban', h: '19:00', n: 'Lleva tus preguntas de la semana', how: ['Cuéntale tu semana', 'Tus preguntas', 'Un acuerdo para la próxima'] }
+];
+const MOM = [['Mañana', 'sunny', 0, 720], ['Tarde', 'cafe', 720, 1140], ['Noche', 'moon', 1140, 1441]];
+const mins = h => +h.slice(0, 2) * 60 + +h.slice(3);
+const QA = [['diario', 'create', 'Anotar', 'lo que Dios te dijo'], ['oracion', 'hands-praying', 'Pedido de oración', 'por ti o por alguien'], ['palabra', 'book', 'Seguir leyendo', 'Mateo 23–25 · 18 min'], ['brand', 'add-circle', 'Agregar a hoy', 'una práctica o un plan'], ['encuentro', 'people', 'Anotar un encuentro', 'cómo les fue'], ['meditar', 'leaf', 'Memorizar', 'tu versículo de hoy']];
+const WEEK = [['L', 19, ['oracion', 'palabra', 'palabra', 'meditar'], 4, 'past'], ['M', 20, ['oracion', 'palabra', 'palabra', 'meditar', 'encuentro', 'encuentro'], 0, 'now'], ['X', 21, ['oracion', 'palabra', 'palabra', 'meditar']], ['J', 22, ['oracion', 'palabra', 'palabra', 'meditar', 'diario', 'encuentro']], ['V', 23, ['oracion', 'palabra', 'diario']], ['S', 24, ['palabra']], ['D', 25, ['palabra', 'encuentro']]];
+const vib = p => { try { navigator.vibrate && navigator.vibrate(p); } catch (e) {} };
+const cssc = el => getComputedStyle(el).getPropertyValue('--c').trim();
+function sparks(el, color, n) { const r = el.getBoundingClientRect(); for (let i = 0; i < (n || 14); i++) { const s = document.createElement('i'); s.className = 'spark'; s.style.background = color; s.style.left = (r.left + r.width / 2) + 'px'; s.style.top = (r.top + r.height / 2) + 'px'; document.body.appendChild(s); const g = Math.random() * 6.28, d = 30 + Math.random() * 50; s.animate([{ transform: 'translate(-50%,-50%)', opacity: 1 }, { transform: 'translate(calc(-50% + ' + Math.cos(g) * d + 'px), calc(-50% + ' + Math.sin(g) * d + 'px)) scale(.3)', opacity: 0 }], { duration: 600 + Math.random() * 400, easing: 'cubic-bezier(.2,.8,.2,1)' }).onfinish = () => s.remove(); } }
+function orb(from, to, color, cb) {
+  const a = from.getBoundingClientRect(), b = to.getBoundingClientRect(), x0 = a.left + a.width / 2, y0 = a.top + a.height / 2, x2 = b.left + b.width / 2, y2 = b.top + b.height * .6;
+  const x1 = (x0 + x2) / 2 + 60, y1 = Math.min(y0, y2) - 50;
+  const o = document.createElement('i'); o.className = 'orb'; o.style.background = 'radial-gradient(circle, #fff 0 22%, ' + color + ' 62%)'; o.style.boxShadow = '0 0 16px 4px ' + color; document.body.appendChild(o);
+  const t0 = performance.now(); let last = 0; const ease = t => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+  (function step(now) { const t = Math.min(1, (now - t0) / 560), e = ease(t), u = 1 - e, x = u * u * x0 + 2 * u * e * x1 + e * e * x2, y = u * u * y0 + 2 * u * e * y1 + e * e * y2;
+    o.style.transform = 'translate(' + x + 'px,' + y + 'px) scale(' + (1 - .4 * e) + ')';
+    if (now - last > 14) { last = now; const tr = document.createElement('i'); tr.className = 'trail'; tr.style.background = color; document.body.appendChild(tr); tr.animate([{ transform: 'translate(' + x + 'px,' + y + 'px)', opacity: .6 }, { transform: 'translate(' + x + 'px,' + (y + 8) + 'px) scale(.15)', opacity: 0 }], { duration: 400 }).onfinish = () => tr.remove(); }
+    if (t < 1) requestAnimationFrame(step); else { o.remove(); cb(); } })(t0);
+}
+const hit = el => el.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.16,.84)', offset: .25 }, { transform: 'scale(.94,1.1)', offset: .6 }, { transform: 'scale(1)' }], { duration: 650, easing: 'ease-out' });
+
+/* las dos pantallas de acceso rápido, iguales en A y B */
+function subs() {
+  const ring = (p, c) => '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" stroke="color-mix(in srgb, ' + c + ' 18%, transparent)"/><circle cx="50" cy="50" r="42" stroke="' + c + '" stroke-dasharray="263.9" stroke-dashoffset="' + (263.9 * (1 - p)).toFixed(1) + '"/></svg>';
+  const books = Array.from({ length: 66 }, (_, i) => '<i class="' + (i < 39 ? 'r' : i === 39 ? 'n' : '') + '"></i>').join('');
+  return '<div class="sub" data-s="lectura"><div class="subh"><button data-back>' + ic('chevron-back') + 'Hoy</button></div><h3>Mi lectura</h3>' +
+    '<div class="card" data-a="palabra"><div class="bigring">' + ring(.8, 'var(--palabra)') + '<div><b>80%</b><small>Biblia en un año · día 293 de 365</small></div></div><div class="bk">' + books + '</div></div>' +
+    '<div class="card"><div class="row" data-a="palabra"><span class="g">' + ic('book') + '</span><div><b>Hoy · Mateo 23–25</b><small>18 min · capítulos 23, 24 y 25</small></div><span class="go">Leer</span></div>' +
+    '<div class="row" data-a="palabra"><span class="g off">' + ic('book') + '</span><div><b>Mañana · Mateo 26–27</b><small>20 min</small></div></div><div class="row" data-a="palabra"><span class="g off">' + ic('book') + '</span><div><b>Jueves · Mateo 28</b><small>8 min · terminas Mateo</small></div></div></div>' +
+    '<div class="card"><div class="row" data-a="meditar"><span class="g">' + ic('water') + '</span><div><b>Permanecer · Juan 13–17</b><small>Día 5 de 7 · con María</small></div><span class="go">Seguir</span></div></div></div>' +
+    '<div class="sub" data-s="semana"><div class="subh"><button data-back>' + ic('chevron-back') + 'Hoy</button></div><h3>Mi semana</h3><div class="card">' +
+    WEEK.map(w => '<div class="wkd ' + (w[4] || '') + '"><div class="dn"><small>' + w[0] + '</small><b>' + w[1] + '</b></div><div class="chips">' + w[2].map((a, i) => '<span data-a="' + a + '" class="' + (w[3] > i ? 'done' : '') + '">' + ic(G[a]) + ({ oracion: 'Oración', palabra: i === 1 ? 'Juan 15' : 'Mateo', meditar: 'Meditar', encuentro: 'Encuentro', diario: 'Diario' })[a] + '</span>').join('') + '</div></div>').join('') +
+    '</div><div class="card"><div class="row" data-a="brand"><span class="g">' + ic('calendar') + '</span><div><b>Cambiar mi semana</b><small>Mover, sacar o agregar prácticas</small></div></div></div></div>';
+}
+const qaHTML = () => '<div class="veil" data-veil></div><div class="qa"><p class="qtitle">¿Qué quieres hacer?</p>' + QA.map((q, i) => '<button data-a="' + q[0] + '" data-q="' + i + '" style="transition-delay:' + (i * 35) + 'ms">' + ic(q[1]) + '<span>' + q[2] + '<small>' + q[3] + '</small></span></button>').join('') + '</div>';
+
+function buildA() {
+  const ph = document.getElementById('phA');
+  const seg = ITEMS.map(i => '<i data-a="' + i.a + '" data-seg="' + i.id + '"></i>').join('');
+  const acc = [['lectura', '<svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15" stroke="color-mix(in srgb, var(--palabra) 20%, transparent)"/><circle cx="18" cy="18" r="15" stroke="var(--palabra)" stroke-dasharray="94.2" stroke-dashoffset="18.8"/></svg>', 'Mi lectura', 'Mateo 23–25 · 80%'],
+    ['semana', '<i class="l" style="height:70%"></i><i class="t" style="height:40%"></i><i style="height:55%"></i><i style="height:80%"></i><i style="height:35%"></i><i style="height:20%"></i><i style="height:30%"></i>', 'Mi semana', '1 de 7 · hoy martes'],
+    ['lectura', '<svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15" stroke="color-mix(in srgb, var(--meditar) 20%, transparent)"/><circle cx="18" cy="18" r="15" stroke="var(--meditar)" stroke-dasharray="94.2" stroke-dashoffset="40"/></svg>', 'Permanecer', 'Día 5 de 7 · con María'],
+    ['semana', '<svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15" stroke="color-mix(in srgb, var(--brand) 20%, transparent)"/><circle cx="18" cy="18" r="15" stroke="var(--brand)" stroke-dasharray="94.2" stroke-dashoffset="15"/></svg>', 'Resumen', 'Octubre · 84% de los días']];
+  ph.innerHTML = '<div class="scr"><div class="head"><div class="hrow"><span class="hfl" id="Afl">' + llama(3) + '</span><div><b>Martes 20</b><small id="Acap">0 de 6 · en brasa</small></div><span class="av">JC</span></div><div class="segs">' + seg + '</div></div>' +
+    '<div class="acc">' + acc.map(x => '<button class="ac" data-open="' + x[0] + '"><div class="vis">' + x[1] + '</div><b>' + x[2] + '</b><small>' + x[3] + '</small></button>').join('') + '</div>' +
+    '<div class="tl">' + MOM.map(([n, i, a, b]) => { const g = ITEMS.filter(x => mins(x.h) >= a && mins(x.h) < b); return g.length ? '<p class="mo">' + ic(i) + n + '</p>' + g.map(x =>
+      '<div class="it"><time>' + x.h + '</time><div class="pill" data-a="' + x.a + '" data-id="' + x.id + '"><span class="fillb"></span><div class="pr"><span class="g">' + ic(G[x.a]) + '</span><div class="pt"><b>' + x.t + '</b><small>' + (x.n ? ic('document-text') + x.n : x.p) + '</small></div>' + (x.m ? '<span class="mn">' + x.m + ' min</span>' : '') + '</div>' +
+      '<div class="ex"><div><div class="exi">' + (x.n ? '<div class="note">' + ic('document-text') + x.n + '</div>' : '') + '<ol>' + x.how.map(h => '<li>' + h + '</li>').join('') + '</ol><div class="bt"><span>' + (x.a === 'encuentro' ? 'Preparar' : 'Empezar') + '</span><span class="gh">Hoy no</span></div></div></div></div></div></div>').join('') : ''; }).join('') + '</div></div>' +
+    '<nav class="tb"><span class="on">' + ic('llama') + 'Hoy</span><span>' + ic('hands-praying') + 'Oración</span><button class="plus" data-plus aria-label="Acciones rápidas">' + ic('add') + '</button><span>' + ic('people') + 'Personas</span><span>' + ic('calendar') + 'Planes</span></nav>' + qaHTML() + subs();
+  wire(ph, '.pill', el => el.classList.toggle('open'), 'A');
+}
+function buildB() {
+  const ph = document.getElementById('phB');
+  const nx = 'o';
+  ph.innerHTML = '<div class="scr"><div class="bh"><div><small>Martes 20 de octubre</small><b>Hoy</b></div><span class="av">JC</span></div>' +
+    '<div class="bento"><button class="tile fire" data-start><span class="ffl" id="Bfl">' + llama(3) + '</span><div><h4 id="Bcap">En brasa</h4><p>0 de 6 · 50 min · Antorcha, 48 días</p><span class="go">' + ic('play') + 'Empezar</span></div></button>' +
+    '<button class="tile" data-open="lectura" data-a="palabra"><span class="k">' + ic('book') + 'Mi lectura</span><svg class="mring" viewBox="0 0 36 36"><circle cx="18" cy="18" r="15" stroke="color-mix(in srgb, var(--palabra) 20%, transparent)"/><circle cx="18" cy="18" r="15" stroke="var(--palabra)" stroke-dasharray="94.2" stroke-dashoffset="18.8"/></svg><b class="big">80%</b><span class="s">Hoy Mateo 23–25</span></button>' +
+    '<button class="tile" data-open="semana"><span class="k">' + ic('calendar') + 'Mi semana</span><div class="wb"><i class="l" style="height:70%"></i><i class="t" style="height:40%"></i><i style="height:55%"></i><i style="height:80%"></i><i style="height:35%"></i><i style="height:20%"></i><i style="height:30%"></i></div><span class="s">1 de 7 días</span></button>' +
+    '<button class="tile" data-a="oracion"><span class="k">' + ic('hands-praying') + 'Oración</span><b class="big">5</b><span class="s">pedidos · 1 respondido</span></button>' +
+    '<button class="tile" data-a="encuentro"><span class="k">' + ic('people') + 'Próximo</span><b class="big">18:00</b><span class="s">Lucas · Evangelio de Juan</span></button></div>' +
+    '<div class="rsec"><b>Tus prácticas</b><small>mantén para completar</small></div><div class="rail">' + ITEMS.map(x => '<button class="rb' + (x.id === nx ? ' next' : '') + '" data-a="' + x.a + '" data-id="' + x.id + '"><span class="disk"><svg class="rg" viewBox="0 0 76 76"><circle class="trk" cx="38" cy="38" r="35"/><circle class="bar" cx="38" cy="38" r="35"/></svg><span class="core">' + ic(G[x.a]) + '</span></span><b>' + x.t + '</b><small>' + x.h + (x.n ? ic('document-text') : '') + '</small></button>').join('') + '</div>' +
+    '<div class="rsec"><b>Versículo del día</b><small>Juan 15:5</small></div><div class="bento"><div class="tile" style="grid-column:1/-1" data-a="palabra"><span class="k">' + ic('book') + 'Juan 15:5</span><p style="font-family:var(--serif);font-size:18px;line-height:1.35;margin:8px 0 0">«Yo soy la vid, vosotros los pámpanos; el que permanece en mí, y yo en él, este lleva mucho fruto.»</p></div></div></div>' +
+    '<nav class="tb"><span class="on">' + ic('llama') + 'Hoy</span><span>' + ic('hands-praying') + 'Oración</span><span>' + ic('people') + 'Personas</span><span>' + ic('calendar') + 'Planes</span></nav><button class="plus plusB" data-plus aria-label="Acciones rápidas">' + ic('add') + '</button>' +
+    '<div class="shB" data-a="palabra"></div>' + qaHTML() + subs();
+  wire(ph, '.rb', el => openSheet(ph, el.dataset.id), 'B');
+  ph.querySelector('[data-start]').onclick = () => { const f = ph.querySelector('.rb:not(.done)'); if (f) f.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' }); };
+}
+function openSheet(ph, id) {
+  const x = ITEMS.find(i => i.id === id), s = ph.querySelector('.shB'); s.dataset.a = x.a;
+  s.innerHTML = '<div class="grab"></div><h4>' + x.t + '</h4><p class="meta">' + [x.h, x.m ? x.m + ' min' : '', x.p || ''].filter(Boolean).join(' · ') + '</p>' + (x.n ? '<div class="note">' + ic('document-text') + x.n + '</div>' : '') + '<ol>' + x.how.map(h => '<li>' + h + '</li>').join('') + '</ol><div class="bt"><span class="gh" data-close>Cerrar</span><span>' + (x.a === 'encuentro' ? 'Preparar' : 'Empezar') + '</span></div>';
+  s.classList.add('on'); ph.querySelector('.veil').style.cssText = 'opacity:1;pointer-events:auto';
+}
+/* lo común: mantener = completar (orbe a la llama), tocar = ver; el +; los accesos */
+function wire(ph, sel, onTap, which) {
+  const N = ITEMS.length; let done = 0, t = 0, fired = false, cur = null;
+  const fl = ph.querySelector(which === 'A' ? '#Afl' : '#Bfl'), cap = ph.querySelector(which === 'A' ? '#Acap' : '#Bcap');
+  const lv = () => { const p = done / N; fl.style.transform = 'scale(' + (.55 + .45 * p) + ')'; fl.style.filter = 'saturate(' + (.15 + .85 * p) + ')'; };
+  lv();
+  ph.addEventListener('pointerdown', e => { const el = e.target.closest(sel); fired = false; if (!el || el.classList.contains('done')) return; cur = el; el.classList.add('holding'); vib(4);
+    t = setTimeout(() => { fired = true; el.classList.remove('holding'); el.classList.add('done', 'pop'); vib([12, 40, 20]); const c = cssc(el); sparks(el.querySelector('.g, .core'), c);
+      const sg = ph.querySelector('[data-seg="' + el.dataset.id + '"]'); if (sg) sg.classList.add('on');
+      orb(el.querySelector('.g, .core'), fl, c, () => { done++; lv(); hit(fl); sparks(fl, c, 10); cap.textContent = which === 'A' ? done + ' de ' + N + (done === N ? ' · encendida' : ' · se aviva') : done === N ? 'Encendida' : 'Se aviva'; if (done === N) { sparks(fl, '#3F84FF', 30); vib([20, 60, 30]); } }); }, 620); });
+  const end = () => { clearTimeout(t); if (cur) cur.classList.remove('holding'); cur = null; };
+  ['pointerup', 'pointercancel', 'pointerleave'].forEach(ev => ph.addEventListener(ev, end));
+  ph.addEventListener('contextmenu', e => e.preventDefault());
+  ph.addEventListener('click', e => {
+    const T = e.target;
+    if (T.closest('[data-plus]')) { ph.classList.toggle('menu'); vib(8); return; }
+    if (T.closest('[data-veil]') || T.closest('[data-close]')) { ph.classList.remove('menu'); const s = ph.querySelector('.shB'); if (s) s.classList.remove('on'); ph.querySelector('.veil').style.cssText = ''; return; }
+    const q = T.closest('[data-q]'); if (q) { ph.classList.remove('menu'); vib(10); if (+q.dataset.q === 2) setTimeout(() => ph.querySelector('[data-s="lectura"]').classList.add('on'), 250); return; }
+    const o = T.closest('[data-open]'); if (o) { ph.querySelector('[data-s="' + o.dataset.open + '"]').classList.add('on'); return; }
+    if (T.closest('[data-back]')) { T.closest('.sub').classList.remove('on'); return; }
+    const el = T.closest(sel); if (el && !fired) onTap(el); fired = false;
+  });
+}
+buildA(); buildB();
+document.getElementById('tg').addEventListener('click', e => { const b = e.target.closest('[data-t]'); if (!b) return; document.documentElement.classList.toggle('dk', b.dataset.t === 'd'); document.querySelectorAll('#tg button').forEach(x => x.classList.toggle('on', x === b)); });
+</script>
+</body>
+</html>
