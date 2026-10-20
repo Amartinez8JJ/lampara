@@ -81,6 +81,31 @@
     }, 320);
   }
 
+  /* ---------- los mosaicos del tablero: cada uno ya dice algo antes de tocarlo (widgets de iOS) ---------- */
+  function tiles() {
+    const S = L.S, t = L.today();
+    const bib = S.plans.find(p => p.id === 'biblia' && !p.paused);
+    let lect = '';
+    if (bib) {
+      const day = Math.max(1, Math.min(bib.len, L.planDay(bib, t))), it = L.todayItems().find(i => i.plan === 'biblia'), p = day / bib.len;
+      lect = '<button class="bt" data-acc="page-lectura" data-a="palabra"><span class="bt-k">' + ic('book') + 'Mi lectura</span><span class="bt-ring">' + (L.ringSVG ? L.ringSVG(p, 'var(--palabra)', 15) : '') + '</span>' +
+        '<b class="bt-big">' + Math.round(p * 100) + '<small>%</small></b><span class="bt-s">' + (it ? (L.isDone(it.id) ? 'Leíste ' : 'Hoy ') + esc(it.t) : 'Día ' + day + ' de ' + bib.len) + '</span></button>';
+    }
+    const wk = L.weekDates(t), litN = wk.filter(d => L.dayStatus(d) === 'lit').length;
+    const bars = wk.map(d => { const n = L.diffDays(d, t), pl = L.dayPlan(d).length, dn = L.dayDone(d).length;
+      const h = n > 0 ? Math.min(1, pl / 6) * 0.6 : pl ? dn / pl : 0;
+      return '<i class="' + (n > 0 ? 'f' : n === 0 ? 't' : dn ? 'l' : '') + '" style="height:' + Math.max(12, Math.round(h * 100)) + '%"></i>'; }).join('');
+    const sem = '<button class="bt" data-acc="page-semana"><span class="bt-k">' + ic('calendar') + 'Mi semana</span><span class="bt-bars">' + bars + '</span><span class="bt-s"><b>' + litN + ' de 7</b> días · meta ' + L.GOAL + '</span></button>';
+    const hs = L.habits ? L.habits() : [], risk = hs.filter(h => h.state === 'programa' || h.state === 'riesgo').length;
+    const hab = '<button class="bt wide" data-acc="page-habitos"><span class="bt-k">' + ic('leaf') + 'Tus hábitos' + (risk ? '<em class="bt-risk">' + risk + ' en riesgo</em>' : '') + '</span><span class="bt-habs">' +
+      hs.slice(0, 4).map(h => '<span class="bt-h" data-a="' + h.a + '"><span class="aic">' + actIc(h.a, true) + '</span><span><b>' + esc(D.NAME[h.a]) + '</b>' + L.habitPips(h.lv, h.a) + '<small>' + h.name + ' · ' + h.c + '/' + Math.max(h.need, 1) + '</small></span></span>').join('') + '</span></button>';
+    const ora = '<button class="bt" data-go="oracion" data-a="oracion"><span class="bt-k">' + ic('hands-praying') + 'Oración</span><b class="bt-big">' + S.pets.length + '</b><span class="bt-s">pedidos · ' + S.answered.length + ' respondidos</span></button>';
+    const u = window.Encuentro ? Encuentro.upcoming()[0] : null;
+    const prox = u ? '<button class="bt" data-enc="' + u.p.id + '" data-a="encuentro"><span class="bt-k">' + ic('people') + 'Próximo</span><b class="bt-big">' + esc(u.it.h) + '</b><span class="bt-s">' + (u.n === 0 ? 'Hoy' : u.n === 1 ? 'Mañana' : L.cap(L.DN[u.d.getDay()])) + ' · ' + esc(u.p.first) + '</span></button>'
+      : '<button class="bt" data-acc="page-resumen"><span class="bt-k">' + ic('trending-up') + 'Resumen</span><b class="bt-big">%</b><span class="bt-s">tu semana y tu mes</span></button>';
+    return '<div class="bento">' + lect + sem + hab + ora + prox + '</div>';
+  }
+
   function weekHTML() {
     const t = L.today();
     return '<div class="week">' + L.weekDates(t).map(d => {
@@ -139,24 +164,23 @@
       const lvFrom = this.just ? (n ? k0 / n : 0) : this.lvShown != null ? this.lvShown : this.lvTo;
       this.capTo = capHTML(k, n);
       const flame = '<div class="fo-z' + (n && k === n && !this.just ? ' blaze' : '') + '" style="--tc:' + T.c + ';' + lvVars(lvFrom) + '"><div class="fo-flash"></div><div class="fo-glow"></div>' +
-        '<button class="fo-fl" data-llama aria-label="Tu llama: ' + esc(T.n) + '"><span class="fo-in">' + L.llama(ti) + '</span></button></div>' +
-        '<p class="fo-cap">' + capHTML(k0, n) + '</p>';
-      const tier = '<div class="tier fo-tier" style="--tc:' + T.c + '"><span><em>' + esc(T.n) + '</em> · <b>' + ld + '</b> días encendidos</span><i><s style="width:' + Math.round(prog * 100) + '%"></s></i><small>' + (NX ? (NX.d - ld === 1 ? 'Falta 1 día' : 'Faltan ' + (NX.d - ld) + ' días') + ' para ' + esc(NX.n) : 'La última llama') + '</small></div>';
+        '<button class="fo-fl" data-llama aria-label="Tu llama: ' + esc(T.n) + '"><span class="fo-in">' + L.llama(ti) + '</span></button></div>';
+      const tier = '<div class="tier fo-tier" style="--tc:' + T.c + '"><span><em>' + esc(T.n) + '</em> · <b>' + ld + '</b> días</span><i><s style="width:' + Math.round(prog * 100) + '%"></s></i><small>' + (NX ? (NX.d - ld === 1 ? 'Falta 1 día' : 'Faltan ' + (NX.d - ld) + ' días') + ' para ' + esc(NX.n) : 'La última llama') + '</small></div>';
       /* lo que sigue (lo de «Ahora» en v3): la próxima pendiente late suave */
       const nx = its.find(i => !L.isDone(i.id));
-      const tcd = '<div class="tcd fogata"><div class="tcd-top"><h2>Tu tiempo con Dios</h2><span>' + k + ' de ' + n + (min ? ' · ' + min + ' min' : '') + '</span></div>' + flame + tier + cta + '</div>';
-      const groups = MOMENTS.map(([name, icon, a, b]) => {
-        const g = its.filter(i => L.mins(i.h) >= a && L.mins(i.h) < b);
-        return g.length ? '<p class="moment">' + ic(icon) + name + '</p><div class="rings">' + g.map(i => ring(i, this.just, nx && i.id === nx.id)).join('') + '</div>' : '';
-      }).join('');
+      /* el tablero (propuesta B, elegida el 20/10): la fogata grande, mosaicos con datos y las prácticas en una fila */
+      const tcd = '<div class="tcd fogata ft" style="--tc:' + T.c + '"><div class="ft-l">' + flame + '</div><div class="ft-r"><p class="eyebrow">Tu tiempo con Dios</p><p class="fo-cap">' + capHTML(k0, n) + '</p>' +
+        '<p class="ft-sub">' + k + ' de ' + n + (min ? ' · ' + min + ' min' : '') + '</p>' + tier + cta + '</div></div>';
+      const bento = tiles();
+      const rail = '<div class="sec rail-h"><h2>Tus prácticas</h2><span class="muted">mantén para completar</span></div><div class="rail">' + its.map(i => ring(i, this.just, nx && i.id === nx.id)).join('') +
+        '<button class="rbtn add-ring" data-addtoday><span class="disk"><span class="core">' + ic('add') + '</span></span><b>Agregar</b><small>solo hoy</small></button></div>';
       const ppl = [{ id: D.LEADER.id, name: D.LEADER.name, first: D.LEADER.first, lead: true }].concat(S.people).concat([{ id: 'AN', name: 'Ana', first: 'Ana', fam: true }]);
-      return '<p class="today-date">' + L.longDate(t) + (S.focus ? '<span class="focus-chip">' + ic('flag') + esc(S.focus.t) + '</span>' : '') + '</p>' + weekHTML() +
-        (ctx ? ctx.html() : '') + tcd + groups +
+      return '<p class="today-date">' + L.longDate(t) + (S.focus ? '<span class="focus-chip">' + ic('flag') + esc(S.focus.t) + '</span>' : '') + '</p>' +
+        tcd + rail + bento + (ctx ? ctx.html() : '') +
         (tipSeen() ? '' : '<div class="tip">' + ic('information-circle-outline') + '<span><b>Cómo se usa:</b> mantén presionado un círculo hasta que se llene: la práctica viaja a tu llama. Tócalo para leer qué hacer y tus notas.</span><button class="iconbtn" data-tipx aria-label="Cerrar">' + ic('close') + '</button></div>') +
-        '<div class="verse" data-verse data-a="palabra"><span class="art">' + ic('sh-palabra') + '</span><p class="eyebrow">Versículo del día · <b>' + esc(v.r) + '</b></p><p class="vt">«' + esc(v.t) + '»</p>' +
+        '<div class="sec"><h2>Versículo del día</h2></div><div class="verse" data-verse data-a="palabra"><span class="art">' + ic('sh-palabra') + '</span><p class="eyebrow">Versículo del día · <b>' + esc(v.r) + '</b></p><p class="vt">«' + esc(v.t) + '»</p>' +
         '<div class="vacts"><button data-vact="keep" class="' + (saved ? 'on' : '') + '">' + ic(saved ? 'bookmark' : 'bookmark-outline') + (saved ? 'Guardado' : 'Guardar') + '</button>' +
         '<button data-vact="memo">' + ic('leaf-outline') + 'Memorizar</button><button data-vact="share">' + ic('paper-plane-outline') + 'Compartir</button></div></div>' +
-        '<button class="link add-today" data-addtoday>' + ic('add-circle') + ' Agregar algo a hoy</button>' +
         '<div class="sec"><h2>Tu gente</h2><button class="more" data-anotar>' + ic('add') + ' Anotar</button></div><div class="stories">' + ppl.map(p => {
           const cls = p.lead || p.fam ? 'dim' : p.signal === 'hablar' || p.signal === 'cuesta' ? 'talk' : p.share >= 2 && p.dToday > 0 ? 'lit' : 'dim';
           return '<button class="story" data-who="' + p.id + '">' + av(p.id, p.name, 56, cls) + '<small>' + esc(p.first) + '</small></button>';
@@ -168,6 +192,14 @@
         const ld = L.litDays(), ti = L.tierOf(ld);
         chip.classList.toggle('lit', L.litToday()); chip.style.setProperty('--tc', L.TIERS[ti].c);
         chip.querySelector('.fc-f').innerHTML = L.llama(ti, { cls: 'll-mini' }); chip.querySelector('.fc-n').textContent = ld;
+      }
+      /* la fila de prácticas queda donde la dejaste; la primera vez, en la que sigue */
+      L.animateRings && L.animateRings(this.pg);
+      const rail = this.pg.querySelector('.rail');
+      if (rail) {
+        const nxr = rail.querySelector('.rbtn.next');
+        rail.scrollLeft = this.railX != null ? this.railX : nxr ? Math.max(0, nxr.offsetLeft - 16) : 0;
+        rail.addEventListener('scroll', () => { this.railX = rail.scrollLeft; }, { passive: true });
       }
       const z = this.pg.querySelector('.fo-z'), lv = this.lvTo, cap = this.capTo, all = lv === 1;
       const land = (color, hit) => {
@@ -209,6 +241,8 @@
       if (t.closest('[data-start]')) { Flujo.start(L.todayItems().filter(i => !L.isDone(i.id) && canFlow(i))); return; }
       if ((el = t.closest('[data-day]'))) { openDay(L.fromDk(el.dataset.day)); return; }
       if (t.closest('[data-llama]')) { L.llamaSheet(); return; }
+      if ((el = t.closest('[data-acc]'))) { this.push(el.dataset.acc); return; }
+      if ((el = t.closest('[data-enc]'))) { Encuentro.open(el.dataset.enc); return; }
       if (t.closest('[data-camino]')) { L.card('page-camino'); return; }
       if ((el = t.closest('[data-vact]'))) { verseAct(el.dataset.vact); return; }
       if ((el = t.closest('[data-who]'))) { whoActions(el.dataset.who, this); return; }
@@ -348,5 +382,5 @@
     });
   }
 
-  window.Hoy = { openItem, openDay, canFlow };
+  window.Hoy = { openItem, openDay, canFlow, addToday };
 })();

@@ -96,6 +96,7 @@
   }
   L.define('page-libros', PageLibros);
 
+  L.memorize = i => memorize(i != null ? i : Math.max(0, L.S.memo.findIndex(m => m.lvl < 3)));
   /* ---------- memorizar: arma el versículo tocando las palabras en orden ---------- */
   function memorize(i) {
     const m = L.S.memo[i];
